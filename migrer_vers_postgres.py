@@ -104,9 +104,13 @@ def main():
                 continue
             if "id" not in meta_cible.tables[nom].columns:
                 continue
-            cnx_cible.execute(sa.text(
-                "SELECT setval(pg_get_serial_sequence('\\"%s\\"', 'id'), "
-                "COALESCE((SELECT MAX(id) FROM \\"%s\\"), 1), true)" % (nom, nom)))
+            # Les guillemets doubles entourent le nom de table cote PostgreSQL :
+            # on ecrit la requete en triple guillemets pour n'avoir rien a
+            # echapper, ce qui cassait le fichier.
+            requete = (
+                """SELECT setval(pg_get_serial_sequence('"%s"', 'id'), """
+                """COALESCE((SELECT MAX(id) FROM "%s"), 1), true)""" % (nom, nom))
+            cnx_cible.execute(sa.text(requete))
 
     print()
     print("  %s ligne(s) copiees." % total)

@@ -73,6 +73,12 @@ def adresse_base():
     # Les hebergeurs ecrivent « postgres:// », que SQLAlchemy ne reconnait plus.
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
+    # Devant « postgresql:// », SQLAlchemy va chercher psycopg2, un pilote que
+    # le projet n'installe pas : requirements.txt fournit psycopg 3. On nomme
+    # donc le pilote explicitement, sinon le demarrage echoue sur
+    # « No module named psycopg2 ».
+    if url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
 
 
