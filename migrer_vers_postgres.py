@@ -41,6 +41,31 @@ TABLES = [
 ]
 
 
+def ordonner_parents_avant_enfants(lignes, colonne="parent_id"):
+    """Range une table qui se refere a elle-meme : parents d'abord.
+
+    PostgreSQL verifie les cles etrangeres a chaque ligne inseree, la ou
+    SQLite ferme les yeux. Une sous-categorie inseree avant sa parente fait
+    donc echouer toute la copie. On place d'abord les lignes sans parent,
+    puis celles dont le parent vient d'etre pose, et ainsi de suite.
+    """
+    restantes = list(lignes)
+    rangees, connus = [], set()
+    while restantes:
+        tour = [l for l in restantes
+                if not l.get(colonne) or l[colonne] in connus]
+        if not tour:
+            # Parent absent ou boucle : on pose le reste tel quel plutot que
+            # de tourner sans fin. PostgreSQL dira precisement ce qui manque.
+            rangees.extend(restantes)
+            break
+        connus.update(l["id"] for l in tour if l.get("id") is not None)
+        poses = {id(l) for l in tour}
+        rangees.extend(tour)
+        restantes = [l for l in restantes if id(l) not in poses]
+    return rangees
+
+
 def confirmer(cible):
     print("=" * 64)
     print("  COPIE DE LA BOUTIQUE VERS POSTGRESQL")
@@ -93,6 +118,9 @@ def main():
 
             lignes = [dict(r._mapping) for r in
                       cnx_source.execute(sa.select(*[table_source.c[c] for c in colonnes]))]
+            # Une table qui se refere a elle-meme doit etre rangee.
+            if lignes and "parent_id" in colonnes:
+                lignes = ordonner_parents_avant_enfants(lignes)
             if lignes:
                 cnx_cible.execute(sa.insert(table_cible), lignes)
             total += len(lignes)
