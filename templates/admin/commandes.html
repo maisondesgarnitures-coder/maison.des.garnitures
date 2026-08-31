@@ -1,0 +1,305 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Commandes{% endblock %}
+{% block entete %}Gestion des commandes{% endblock %}
+{% macro marque_livreur(nom, tr) %}
+  {% if tr and tr.logo %}
+    <img src="{{ url_for('static', filename='img/produits/' + tr.logo) }}"
+         alt="{{ nom }}" class="logo-transporteur">
+  {% elif tr %}
+    {# Pas de logo televerse : une pastille aux initiales, de couleur stable. #}
+    <span class="pastille-livreur" style="background: {{ tr.couleur }};"
+          title="{{ nom }}">{{ tr.initiales }}</span>
+  {% endif %}
+{% endmacro %}
+
+{% block contenu_admin %}
+<div class="filtres-statut">
+  <a href="{{ url_for('admin_commandes') }}"
+     class="onglet-statut{{ ' actif' if not statut_actif and not corbeille }}">
+    Toutes <em>{{ nb_par_statut.get('_toutes', 0) }}</em>
+  </a>
+  {% for code, libelle in statuts %}
+  <a href="{{ url_for('admin_commandes', statut=code) }}"
+     class="onglet-statut statut-{{ code }}{{ ' actif' if statut_actif == code }}">
+    {{ libelle }} <em>{{ nb_par_statut.get(code, 0) }}</em>
+  </a>
+  {% endfor %}
+  {% if role == 'proprietaire' %}
+  <a href="{{ url_for('admin_commandes_export') }}" class="btn btn-bleu btn-petit exporter">
+    Exporter en Excel/CSV
+  </a>
+  {% endif %}
+</div>
+<form method="get" class="barre-recherche-commandes">
+  <div class="champ-recherche">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input type="text" name="q" value="{{ recherche or '' }}"
+           placeholder="Telephone, nom, numero de commande, ville, suivi...">
+  </div>
+
+  <select name="transporteur">
+    <option value="">Tous les transporteurs</option>
+    {% for t in transporteurs_liste %}
+    <option value="{{ t.nom }}" {% if transporteur_filtre == t.nom %}selected{% endif %}>{{ t.nom }}</option>
+    {% endfor %}
+    <option value="sans" {% if transporteur_filtre == 'sans' %}selected{% endif %}>Sans transporteur</option>
+  </select>
+
+  <label class="periode">Du <input type="date" name="du" value="{{ du or '' }}"></label>
+  <label class="periode">au <input type="date" name="au" value="{{ au or '' }}"></label>
+
+  {% if statut_actif %}<input type="hidden" name="statut" value="{{ statut_actif }}">{% endif %}
+  <button type="submit" class="btn btn-bleu btn-petit">Filtrer</button>
+  {% if recherche or du or au or transporteur_filtre %}
+  <a href="{{ url_for('admin_commandes', statut=statut_actif) }}" class="btn btn-secondaire btn-petit">Effacer</a>
+  {% endif %}
+</form>
+
+<p class="resultat-filtre">
+  <strong>{{ commandes|length }}</strong> commande(s) affichee(s) sur {{ total_commandes }}
+  {%- if recherche or du or au or transporteur_filtre or statut_actif %} &middot; filtre actif{% endif %}
+</p>
+
+<table class="table-admin">
+  <tr>
+    <th class="col-case"><input type="checkbox" id="toutCocher" title="Tout selectionner"></th>
+    <th>Numero</th><th class="col-articles">Articles</th><th>Client</th><th>Telephone</th><th>Adresse</th><th>Total</th><th>Statut</th><th>Livreur</th><th>Date</th><th>Actions</th></tr>
+  {% for c in commandes %}
+  <tr>
+    <td class="col-case">
+      <input type="checkbox" class="case-commande" value="{{ c.id }}"
+             aria-label="Selectionner {{ c.numero }}">
+    </td>
+    <td>{{ c.numero }}</td>
+    <td class="col-articles">
+      {% set premier = c.lignes|first %}
+      {% set produit = vignettes.get(premier.produit_id) if premier else none %}
+      <span class="vignette-commande" title="{{ c.lignes|map(attribute='nom_produit')|join(', ') }}">
+        {% if produit and produit.image %}
+          <img src="{{ url_for('static', filename='img/produits/' + produit.image) }}" alt="">
+        {% else %}
+          <span class="sans-photo">&mdash;</span>
+        {% endif %}
+        <span class="compteur-articles">{{ c.lignes|map(attribute='quantite')|sum }}</span>
+      </span>
+    </td>
+    <td>{{ c.nom_client }}</td>
+    <td>{{ c.telephone }}</td>
+    <td class="col-adresse">
+      {% if c.gouvernorat %}<strong>{{ c.gouvernorat }}</strong>{% endif %}
+      {% if c.ville %}<span class="detail-adresse">{{ c.ville }}</span>{% endif %}
+      {% if c.adresse %}<span class="detail-adresse">{{ c.adresse }}</span>{% endif %}
+      {% if not c.gouvernorat and not c.ville and not c.adresse %}
+        <span class="sans-livreur">non renseignee</span>
+      {% endif %}
+    </td>
+    <td>{{ "%.2f"|format(c.total) }} TND</td>
+    <td><span class="badge-statut statut-{{ c.statut }}">{{ c.statut }}</span></td>
+    <td class="cellule-livreur">
+      {% if c.transporteur %}
+        {% set tr = transporteurs_par_nom.get(c.transporteur) %}
+        {{ marque_livreur(c.transporteur, tr) }}
+        <span class="nom-livreur">{{ c.transporteur }}</span>
+        {% if c.numero_suivi %}
+          {% set lien = tr.lien_suivi(c.numero_suivi) if tr else None %}
+          <span class="code-suivi">
+            {% if lien %}<a href="{{ lien }}" target="_blank" rel="noopener">{{ c.numero_suivi }}</a>
+            {% else %}{{ c.numero_suivi }}{% endif %}
+          </span>
+        {% endif %}
+      {% else %}
+        <span class="sans-livreur">pas encore assigne</span>
+      {% endif %}
+    </td>
+    <td>{{ c.date_creation.strftime("%d/%m/%Y %H:%M") }}</td>
+    <td class="actions-commande">
+      <a href="{{ url_for('admin_commande_detail', commande_id=c.id) }}"
+         class="icone-action" title="Voir la commande" aria-label="Voir">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c-5 0-9 4.5-9 7s4 7 9 7 9-4.5 9-7-4-7-9-7zm0 11.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+      </a>
+      <a href="{{ url_for('admin_commande_modifier', commande_id=c.id) }}" data-ouvre-panneau
+         class="icone-action"
+         title="Modifier la commande" aria-label="Modifier">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      </a>
+      {% if role == 'proprietaire' %}
+      {# Le message passe par des attributs data : ecrit dans l'attribut
+         onsubmit, il se cassait sur les apostrophes et les retours a la ligne,
+         et le formulaire partait alors sans rien demander. #}
+      {% if corbeille %}
+      <form method="post" action="{{ url_for('admin_commande_restaurer', commande_id=c.id) }}">
+        <button type="submit" class="icone-action vert" title="Restaurer" aria-label="Restaurer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3a9 9 0 0 0-9 9H1l4 4 4-4H6a7 7 0 1 1 2 4.9l-1.4 1.5A9 9 0 1 0 13 3z"/></svg>
+        </button>
+      </form>
+      <form method="post" action="{{ url_for('admin_commande_effacer', commande_id=c.id) }}"
+            data-confirmer="Effacer definitivement la commande {{ c.numero }} ?"
+            data-confirmer-suite="Cette fois rien ne sera recuperable.">
+        <button type="submit" class="icone-action rouge" title="Effacer definitivement"
+                aria-label="Effacer definitivement">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </form>
+      {% else %}
+      <form method="post" action="{{ url_for('admin_commande_supprimer', commande_id=c.id) }}"
+            data-confirmer="Mettre la commande {{ c.numero }} a la corbeille ?"
+            data-confirmer-suite="{% if c.statut != 'livree' %}Les articles reviendront en stock. {% endif %}Tu pourras la restaurer.">
+        <button type="submit" class="icone-action rouge" title="Mettre a la corbeille"
+                aria-label="Mettre a la corbeille">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </form>
+      {% endif %}
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<div class="pied-commandes">
+  <label class="par-page">
+    Lignes par page
+    <select name="par_page" id="choixParPage">
+      {% for n in [25, 50, 100] %}
+      <option value="{{ n }}" {% if par_page == n %}selected{% endif %}>{{ n }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  {% if nb_pages > 1 %}
+  <nav class="pagination-commandes">
+    {% for p in range(1, nb_pages + 1) %}
+      {% if p == page %}
+        <span class="page-active">{{ p }}</span>
+      {% else %}
+        <a href="{{ url_for('admin_commandes', page=p, par_page=par_page, q=recherche or none,
+                            statut=statut_actif or none, du=du or none, au=au or none,
+                            transporteur=transporteur_filtre or none) }}">{{ p }}</a>
+      {% endif %}
+    {% endfor %}
+  </nav>
+  {% endif %}
+</div>
+
+{# Barre flottante : elle n'apparait que lorsqu'au moins une ligne est cochee. #}
+<div class="barre-selection" id="barreSelection" hidden>
+  <button type="button" class="icone-barre" id="viderSelection"
+          title="Annuler la selection" aria-label="Annuler la selection">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+  </button>
+  <span class="compte-selection"><strong class="nb-choisies">0</strong> commande(s) selectionnee(s)</span>
+
+  <button type="button" class="icone-barre" id="ouvrirImpression"
+          title="Imprimer les bordereaux" aria-label="Imprimer les bordereaux">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3zm-3 11H8v-5h8v5zm3-7a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM18 3H6v4h12V3z"/></svg>
+  </button>
+  <button type="button" class="icone-barre" id="ouvrirEdition"
+          title="Modifier les commandes" aria-label="Modifier les commandes">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+  </button>
+  <form method="post" action="{{ url_for('admin_commandes_supprimer_groupe') }}" id="formSuppressionGroupe"
+        data-confirmer="Mettre les commandes selectionnees a la corbeille ?"
+        data-confirmer-suite="Les articles non livres reviendront en stock. Tu pourras les restaurer.">
+    <button type="submit" class="icone-barre danger"
+            title="Mettre a la corbeille" aria-label="Mettre a la corbeille">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+    </button>
+  </form>
+</div>
+
+
+<!-- ============ Fenetre : impression ============ -->
+<dialog class="fenetre fenetre-impression" id="fenetreImpression">
+  <form method="post" action="{{ url_for('admin_imprimer_bordereaux') }}" id="formImpression">
+    <div class="entete-fenetre">
+      <h3>Imprimer les bordereaux</h3>
+      <button type="button" class="fermer-fenetre" aria-label="Fermer">&times;</button>
+    </div>
+
+    <div class="boite-selection">
+      <p class="resume-selection"><strong class="nb-choisies">0</strong> commande(s) selectionnee(s) :</p>
+      <div class="pastilles-selection"></div>
+    </div>
+
+    <label class="case-converty">
+      <input type="checkbox" name="grouper" value="1">
+      <span>
+        <strong>Grouper par produit</strong>
+        <small>Les commandes contenant le meme article sortent a la suite : la preparation des colis va plus vite.</small>
+      </span>
+    </label>
+
+    <label class="case-converty">
+      <input type="checkbox" name="marquer" value="1" checked>
+      <span>
+        <strong>Marquer comme imprimees</strong>
+        <small>Elles pourront etre ecartees ensuite grace au filtre d'impression.</small>
+      </span>
+    </label>
+
+    <div class="choix-impression une-carte">
+      <button type="submit" class="carte-choix">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3zm-3 11H8v-5h8v5zm3-7a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM18 3H6v4h12V3z"/></svg>
+        <strong>Bordereaux transporteur</strong>
+        <small>Le bordereau du livreur choisi, pret a coller sur le colis.</small>
+      </button>
+    </div>
+
+    <a class="lien-historique" href="{{ url_for('admin_commandes', impression='oui') }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7v3l4-4-4-4v3zm-1 5v5l4 2 .75-1.23L13.5 12.2V8H12z"/></svg>
+      Historique d'impression
+    </a>
+  </form>
+</dialog>
+
+<!-- ============ Fenetre : modification groupee ============ -->
+<dialog class="fenetre" id="fenetreEdition">
+  <form method="post" action="{{ url_for('admin_commandes_modifier_groupe') }}" id="formEditionGroupe">
+    <div class="entete-fenetre">
+      <h3>Modifier plusieurs commandes</h3>
+      <button type="button" class="fermer-fenetre" aria-label="Fermer">&times;</button>
+    </div>
+
+    <p class="resume-selection"><strong class="nb-choisies">0</strong> commande(s) selectionnee(s)</p>
+    <div class="pastilles-selection"></div>
+
+    <div class="grille-2">
+      <div>
+        <label>Statut</label>
+        <select name="statut">
+          <option value="">-- Ne pas changer --</option>
+          {% for code, libelle in [('nouvelle','Nouvelle'), ('a_confirmer','A confirmer'),
+                                   ('confirmee','Confirmee'), ('preparation','Preparation'),
+                                   ('expediee','Expediee'), ('livree','Livree'),
+                                   ('annulee','Annulee'), ('injoignable','Client injoignable'),
+                                   ('retour','Retour')] %}
+          <option value="{{ code }}">{{ libelle }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Societe de livraison</label>
+        <select name="transporteur">
+          <option value="">-- Ne pas changer --</option>
+          {% for t in transporteurs_liste %}
+          <option value="{{ t.nom }}">{{ t.nom }}</option>
+          {% endfor %}
+          <option value="aucun">Retirer le transporteur</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Note interne a ajouter</label>
+    <textarea name="note_privee" rows="3"
+              placeholder="Ajoutee a la suite des notes existantes, jamais visible par le client"></textarea>
+
+    <div class="pied-fenetre">
+      <button type="button" class="btn btn-secondaire fermer-fenetre">Annuler</button>
+      <button type="submit" class="btn btn-rouge">Appliquer</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="{{ url_for('static', filename='js/selection-commandes.js') }}"></script>
+
+{% endblock %}

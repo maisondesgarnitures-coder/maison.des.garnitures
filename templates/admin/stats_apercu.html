@@ -1,0 +1,38 @@
+{% extends "admin/_stats_base.html" %}
+{% import "admin/_stats_macros.html" as m %}
+{% block entete %}Statistiques - Apercu{% endblock %}
+{% block contenu_stats %}
+
+{{ m.cartes_indicateurs(ind) }}
+
+<div class="cartes-stats">
+  <div class="carte-stat">
+    <div class="valeur">{{ "%.2f"|format(ind.encaisse) }} TND</div>
+    <div class="label">Encaisse (commandes livrees)</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ "%.2f"|format(ind.panier_moyen) }} TND</div>
+    <div class="label">Panier moyen livre</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.taux_confirmation }}%</div>
+    <div class="label">Taux de confirmation</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.taux_livraison }}%</div>
+    <div class="label">Taux de livraison reussie</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.taux_retour }}%</div>
+    <div class="label">Taux de retour</div>
+  </div>
+</div>
+
+{{ m.graphique(serie, 'nb', 'Commandes recues par jour', 'var(--bleu)') }}
+{{ m.graphique(serie, 'ca', "Chiffre d'affaires encaisse par jour (TND)", 'var(--vert)') }}
+
+<p class="note-stats">
+  Le chiffre d'affaires ne compte que les commandes <strong>livrees</strong> : en paiement
+  a la livraison, une commande confirmee n'est pas encore un encaissement.
+</p>
+{% endblock %}

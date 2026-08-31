@@ -1,0 +1,131 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Tableau de bord{% endblock %}
+{% block entete %}Tableau de bord{% endblock %}
+{% block contenu_admin %}
+<div class="cartes-revenus">
+  <div class="carte-revenu">
+    <div class="intitule-revenu">Encaisse aujourd'hui</div>
+    <div class="montant-revenu">{{ "%.2f"|format(revenus.jour) }} <small>TND</small></div>
+    <div class="detail-revenu">{{ revenus.nb_jour }} commande(s) livree(s)</div>
+  </div>
+  <div class="carte-revenu">
+    <div class="intitule-revenu">Cette semaine</div>
+    <div class="montant-revenu">{{ "%.2f"|format(revenus.semaine) }} <small>TND</small></div>
+    <div class="detail-revenu">{{ revenus.nb_semaine }} commande(s) livree(s)</div>
+  </div>
+  <div class="carte-revenu">
+    <div class="intitule-revenu">Ce mois</div>
+    <div class="montant-revenu">{{ "%.2f"|format(revenus.mois) }} <small>TND</small></div>
+    <div class="detail-revenu">
+      Benefice {{ "%.2f"|format(revenus.marge_mois) }} TND
+    </div>
+  </div>
+  <div class="carte-revenu principale">
+    <div class="intitule-revenu">Chiffre d'affaires total</div>
+    <div class="montant-revenu">{{ "%.2f"|format(revenus.total) }} <small>TND</small></div>
+    <div class="detail-revenu">
+      Benefice {{ "%.2f"|format(revenus.marge_totale) }} TND
+      &middot; {{ revenus.nb_total }} commande(s)
+    </div>
+  </div>
+</div>
+
+<p class="note-revenus">
+  Seules les commandes <strong>livrees</strong> comptent : en paiement a la livraison,
+  une commande annulee ou retournee n'a rien rapporte.
+  {% if revenus.nb_en_route %}
+  <br>En cours de route : <strong>{{ "%.2f"|format(revenus.en_route) }} TND</strong>
+  sur {{ revenus.nb_en_route }} commande(s) confirmee(s) mais pas encore livree(s).
+  {% endif %}
+</p>
+
+<div class="cartes-stats">
+  <div class="carte-stat">
+    <div class="valeur">{{ total_produits }}</div>
+    <div class="label">Produits au total</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ commandes_nouvelles }}</div>
+    <div class="label">Nouvelles commandes</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ commandes_a_confirmer }}</div>
+    <div class="label">A confirmer</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ commandes_confirmees }}</div>
+    <div class="label">Confirmees</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ "%.2f"|format(ventes_totales) }} TND</div>
+    <div class="label">Toutes commandes confondues</div>
+  </div>
+</div>
+
+<h3>Dernieres commandes</h3>
+<table class="table-admin">
+  <tr><th>Numero</th><th>Client</th><th>Telephone</th><th>Adresse</th><th>Total</th><th>Statut</th><th>Date</th></tr>
+  {% for c in dernieres_commandes %}
+  <tr>
+    <td><a href="{{ url_for('admin_commande_detail', commande_id=c.id) }}">{{ c.numero }}</a></td>
+    <td>{{ c.nom_client }}</td>
+    <td>{{ c.telephone }}</td>
+    <td class="col-adresse">
+      {% if c.gouvernorat %}<strong>{{ c.gouvernorat }}</strong>{% endif %}
+      {% if c.adresse %}<span class="detail-adresse">{{ c.adresse }}</span>{% endif %}
+      {% if not c.gouvernorat and not c.adresse %}
+        <span class="sans-livreur">non renseignee</span>
+      {% endif %}
+    </td>
+    <td>{{ "%.2f"|format(c.total) }} TND</td>
+    <td><span class="badge-statut statut-{{ c.statut }}">{{ c.statut }}</span></td>
+    <td>{{ c.date_creation.strftime("%d/%m/%Y %H:%M") }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% if produits_rupture %}
+<h3 style="margin-top:24px;">Produits en rupture de stock</h3>
+<table class="table-admin">
+  <tr>
+    <th></th><th>Nom</th><th>Reference</th><th>Categorie</th>
+    <th class="num">Entrant</th><th>Vente</th><th>Action</th>
+  </tr>
+  {% for p in produits_rupture %}
+  <tr>
+    <td class="cellule-vignette">
+      <a href="{{ url_for('admin_produit_modifier', produit_id=p.id) }}" data-ouvre-panneau
+         class="vignette-admin" title="{{ p.galerie|length }} photo(s)">
+        {% if p.image %}
+          <img src="{{ url_for('static', filename='img/produits/' + p.image) }}" alt="" loading="lazy">
+        {% else %}
+          <span class="sans-photo">&mdash;</span>
+        {% endif %}
+      </a>
+    </td>
+    <td><a href="{{ url_for('admin_produit_modifier', produit_id=p.id) }}" data-ouvre-panneau>{{ p.nom }}</a></td>
+    <td>{{ p.reference or "-" }}</td>
+    <td>{{ p.categorie.nom if p.categorie else "-" }}</td>
+    <td class="num">
+      {% if p.stock_entrant %}<strong class="bon">+{{ p.stock_entrant }}</strong>{% else %}-{% endif %}
+    </td>
+    <td>
+      {% if p.vente_en_rupture %}
+        <span class="badge-statut statut-preparation">Sur commande</span>
+      {% else %}
+        <span class="badge-statut statut-annulee">Bloquee</span>
+      {% endif %}
+    </td>
+    <td>
+      <a href="{{ url_for('admin_produit_modifier', produit_id=p.id) }}" data-ouvre-panneau class="btn btn-secondaire btn-petit">Reapprovisionner</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="note-stats">
+  <strong>Entrant</strong> : la quantite que tu as commandee a ton fournisseur.
+  <strong>Vente</strong> : « Sur commande » signifie que le client peut quand meme commander
+  et que tu l'appelles pour le delai ; « Bloquee » signifie que le produit n'est pas achetable.
+</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,261 @@
+/* =====================================================================
+   Theme sombre de la boutique — noir, orange, rouge.
+
+   Cette feuille se charge APRES style.css et boutique.css : elle ne
+   remplace rien, elle recouvre. Pour revenir au theme clair, il suffit de
+   retirer sa ligne <link> dans templates/base.html.
+
+   L'administration n'est pas concernee : elle a son propre gabarit, qui ne
+   charge que style.css.
+   ===================================================================== */
+
+:root {
+  /* Les surfaces s'inversent : le fond devient le plus sombre, les cartes
+     se detachent en gris tres fonce. */
+  --fond:         #0B0C0E;
+  --surface:      #141619;
+  --trait:        #24272C;
+  --trait-fort:   #33373E;
+  --texte:        #F2F3F5;
+  --texte-doux:   #99A1AC;
+
+  /* L'accent passe de rouge a orange : c'est lui qui porte les boutons,
+     les prix et les titres. Le rouge reste pour les alertes. */
+  --rouge:        #FF5A1F;
+  --rouge-vif:    #FF7A45;
+  --rouge-sombre: #D6410E;
+  --ambre:        #F0A82C;
+  --erreur:       #E5484D;
+  --vert:         #2ED47A;
+
+  /* Les trois noirs servaient d'accents sombres sur fond clair ; sur fond
+     noir ils deviennent les etages de relief. */
+  --encre:        #0B0C0E;
+  --encre-2:      #141619;
+  --encre-3:      #1C2026;
+
+  /* Une ombre noire ne se voit pas sur du noir : on l'echange contre une
+     ombre plus dense et un contour clair. */
+  --ombre-1: 0 1px 2px rgba(0,0,0,.5);
+  --ombre-2: 0 6px 20px -6px rgba(0,0,0,.65);
+  --ombre-3: 0 22px 48px -18px rgba(0,0,0,.8);
+
+  /* style.css a son propre jeu de couleurs, plus ancien, qui sert encore a
+     43 fonds. Il faut le retourner aussi, sinon des pans entiers restent
+     blancs. L'administration n'est pas touchee : elle ne charge pas cette
+     feuille. */
+  --blanc:            #141619;
+  --bordure:          #24272C;
+  --texte-secondaire: #99A1AC;
+  --ombre: 0 6px 20px -6px rgba(0,0,0,.65);
+  --rayon: 10px;
+
+  /* « noir » designe 25 fois une couleur de texte contre 10 fois un fond :
+     on l'eclaircit, et les fonds concernes sont repris juste dessous. */
+  --noir: #F2F3F5;
+}
+
+/* Les cinq endroits ou « noir » servait de fond, et qui doivent le rester. */
+.bandeau-haut,
+header.site-header,
+footer.site-footer { background: var(--encre-2); }
+.puce-compte,
+.indicateur-ordre { background: var(--encre-3); color: var(--texte); }
+
+/* ------------------------------------------------------------ Fond general */
+body { background: var(--fond); color: var(--texte); }
+
+/* ------------------------------------------- Surfaces restees en dur clair */
+.carte-produit,
+.panneau-achat,
+.puce-sous-categorie,
+.carte-categorie,
+.bloc-avis,
+.cadre-formulaire,
+.carte-offre,
+.grille-paliers,
+.encart-livraison,
+.tableau-suivi,
+.texte-categorie,
+.zone-recherche,
+.carte-info {
+  background: var(--surface);
+  border-color: var(--trait);
+  color: var(--texte);
+}
+
+/* La barre de recherche et les champs : un champ blanc sur fond noir
+   eblouit, et le texte saisi doit rester lisible. */
+input[type="text"], input[type="search"], input[type="tel"], input[type="email"],
+input[type="number"], input[type="url"], input[type="password"], select, textarea {
+  background: #101215;
+  border-color: var(--trait-fort);
+  color: var(--texte);
+}
+input::placeholder, textarea::placeholder { color: #6B727C; }
+select option { background: #101215; color: var(--texte); }
+
+/* ------------------------------------------------------------- Boutons */
+.btn-rouge, .btn-rouge:hover { color: #14100D; }   /* orange vif : texte fonce */
+.btn-secondaire {
+  background: transparent;
+  border: 1px solid var(--trait-fort);
+  color: var(--texte);
+}
+.btn-secondaire:hover { border-color: var(--rouge); color: var(--rouge); }
+.btn-indispo {
+  background: #1A1D22; color: #6B727C; border-color: var(--trait);
+}
+
+/* ------------------------------------------------------------- Prix */
+.prix { color: var(--rouge); }
+.prix-barre { color: #6B727C; }
+
+/* --------------------------------------------------- Entete et pied */
+/* Ils etaient deja sombres : on les decolle du fond par un trait. */
+.bandeau-haut { border-bottom: 1px solid var(--trait); }
+.entete-collant .barre-principale,
+header.site-header { background: var(--encre-2); border-bottom: 1px solid var(--trait); }
+footer.site-footer { background: var(--encre-2); border-top: 1px solid var(--trait); }
+
+/* ------------------------------------------------------- Photos produit */
+/* Sur fond noir, une photo detouree sur blanc fait un pave lumineux. On lui
+   donne un cadre clair volontaire plutot qu'un bord qui bave. */
+.image-produit, .image-principale, .vignette img {
+  background: #FFFFFF;
+}
+
+/* --------------------------------------------------------- Badges */
+.badge-promo { background: var(--rouge); color: #14100D; }
+.badge-rupture { background: rgba(11,12,14,.86); color: #E7E9EC; border: 1px solid var(--trait-fort); }
+.badge-nouveau { background: var(--vert); color: #06120C; }
+
+/* ------------------------------------------------------- Fils et titres */
+.fil-ariane, .fil-ariane a { color: var(--texte-doux); }
+.fil-ariane strong { color: var(--texte); }
+.section-titre, h1, h2, h3 { color: var(--texte); }
+
+/* --------------------------------------------------------- Tableaux */
+table th { background: var(--encre-3); color: var(--texte); }
+table td { border-color: var(--trait); }
+
+/* ------------------------------------------------------------ Messages */
+.message.succes { background: #0F2419; border-color: var(--vert); color: #8FE9BC; }
+.message.erreur { background: #2A1113; border-color: var(--erreur); color: #FFB4B7; }
+
+
+/* ------------------------------------------- Corrections de contraste */
+/* « Voir les 96 produits » : ce bouton a un fond blanc de style.css, plus
+   specifique que ma regle generale sur les boutons secondaires. */
+.zone-voir-plus .btn,
+.zone-voir-plus .btn-secondaire {
+  background: transparent;
+  border: 1px solid var(--trait-fort);
+  color: var(--texte);
+}
+.zone-voir-plus .btn:hover { border-color: var(--rouge); color: var(--rouge); }
+
+/* Le badge de rupture se pose sur la photo, qui est blanche : son fond doit
+   etre opaque, sinon le texte se noie dans le gris. */
+.badge-rupture { background: #14161A; color: #E7E9EC; }
+
+/* Le sélecteur de langue écrivait en « blanc » sur l'entête sombre : ce jeton
+   désigne désormais une surface foncée, il faut lui rendre un texte clair. */
+.choix-langue a { color: var(--texte-doux); border-color: var(--trait-fort); }
+.choix-langue a.actif { color: var(--texte); background: var(--encre-3); }
+.choix-langue a:hover { color: var(--rouge); }
+.bandeau-haut, .bandeau-haut a, .bandeau-haut span { color: rgba(255,255,255,.78); }
+
+/* Compteur de quantité : les deux boutons étaient noirs sur fond clair. */
+.compteur-quantite button, button.moins, button.plus {
+  background: var(--encre-3);
+  color: var(--texte);
+  border-color: var(--trait-fort);
+}
+.compteur-quantite button:hover, button.moins:hover, button.plus:hover {
+  background: var(--rouge); color: #14100D; border-color: var(--rouge);
+}
+
+/* =====================================================================
+   Accents orange — nom, menu, survols, position des badges
+   ===================================================================== */
+
+/* Le nom en capitales, dernier mot en orange, comme le modèle. */
+.nom-boutique, footer.site-footer h4 {
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-weight: 800;
+}
+.accent-nom { color: var(--rouge); font-weight: 800; }
+.nom-boutique .accroche-logo {
+  text-transform: none; letter-spacing: .02em; font-weight: 500;
+  color: var(--texte-doux);
+}
+
+/* « Tous nos produits » : l'écriture en orange, pas la pastille entière. */
+/* Le selecteur reprend celui de boutique.css — nav + a + deux classes —
+   sinon la couleur blanche d'origine l'emporte. */
+nav.menu-categories a.lien-catalogue {
+  background: transparent;
+  color: var(--rouge);
+  font-weight: 800;
+}
+nav.menu-categories a.lien-catalogue:hover {
+  background: transparent; color: var(--rouge-vif);
+}
+
+/* Le reste du menu s'éclaire à l'approche de la souris. */
+.menu-categories a { transition: color var(--transition); }
+.menu-categories a:not(.lien-catalogue):hover { color: var(--rouge); }
+
+/* Rayons et articles : le texte et le cadre prennent l'orange au survol. */
+.puce-sous-categorie, .carte-categorie, .carte-produit {
+  transition: border-color var(--transition), color var(--transition),
+              transform var(--transition);
+}
+.puce-sous-categorie:hover,
+.carte-categorie:hover,
+.carte-produit:hover {
+  border-color: var(--rouge);
+}
+.puce-sous-categorie:hover span,
+.carte-categorie:hover span,
+.carte-produit:hover h3 a { color: var(--rouge); }
+
+/* La promotion revient dans le coin haut, à gauche. La feuille d'origine
+   la ramenait au centre en écrasant son placement par « left: auto ». */
+.badge-promo, .badge-rupture {
+  inset-inline-start: 11px;
+  inset-inline-end: auto;
+}
+
+
+/* Cartes « Nos catégories » : au survol, le nom et le cadre passent à
+   l'orange, comme les entrées du menu. Elles n'avaient aucune bordure au
+   repos : on lui en donne une discrète, sinon il n'y a rien à colorer. */
+.carte-categorie, .carte-categorie.avec-image {
+  border: 1px solid var(--trait);
+}
+.carte-categorie:hover, .carte-categorie.avec-image:hover {
+  border-color: var(--rouge);
+  color: var(--rouge);
+}
+/* Le nom seulement : la pastille du compte garde son fond et son texte. */
+.carte-categorie:hover > span:not(.compte-categorie) { color: var(--rouge); }
+
+/* Le bouton de recherche : une loupe orange, sans fond. */
+.recherche-header button {
+  background: transparent;
+  border: 0;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.recherche-header button .loupe-bouton {
+  width: 20px; height: 20px; fill: var(--rouge);
+  transition: fill var(--transition), transform var(--transition);
+}
+.recherche-header button:hover .loupe-bouton {
+  fill: var(--rouge-vif); transform: scale(1.1);
+}

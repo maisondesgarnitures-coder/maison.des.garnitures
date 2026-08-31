@@ -1,0 +1,41 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Statistiques{% endblock %}
+{% block contenu_admin %}
+
+<nav class="sous-menu-stats">
+  <a href="{{ url_for('admin_statistiques', periode=periode_cle, depuis=depuis, jusqua=jusqua) }}"
+     class="{{ 'actif' if page_stats == 'apercu' }}">Apercu</a>
+  <a href="{{ url_for('admin_stats_marketing', periode=periode_cle, depuis=depuis, jusqua=jusqua) }}"
+     class="{{ 'actif' if page_stats == 'marketing' }}">Marketing</a>
+  <a href="{{ url_for('admin_stats_commandes', periode=periode_cle, depuis=depuis, jusqua=jusqua) }}"
+     class="{{ 'actif' if page_stats == 'commandes' }}">Commandes</a>
+  <a href="{{ url_for('admin_stats_produits', periode=periode_cle, depuis=depuis, jusqua=jusqua) }}"
+     class="{{ 'actif' if page_stats == 'produits' }}">Produits</a>
+  <a href="{{ url_for('admin_stats_equipe', periode=periode_cle, depuis=depuis, jusqua=jusqua) }}"
+     class="{{ 'actif' if page_stats == 'equipe' }}">Equipe</a>
+  <a href="{{ url_for('admin_stats_livraison', periode=periode_cle, depuis=depuis, jusqua=jusqua) }}"
+     class="{{ 'actif' if page_stats == 'livraison' }}">Livraison</a>
+  <a href="{{ url_for('admin_stats_regions', periode=periode_cle, depuis=depuis, jusqua=jusqua) }}"
+     class="{{ 'actif' if page_stats == 'regions' }}">Regions</a>
+</nav>
+
+<form method="get" class="barre-periode">
+  <div class="raccourcis-periode">
+    {% for cle, infos in periodes.items() %}
+      <button type="submit" name="periode" value="{{ cle }}"
+              class="{{ 'actif' if periode_cle == cle }}">{{ infos[0] }}</button>
+    {% endfor %}
+  </div>
+  <div class="dates-periode">
+    <label>Du <input type="date" name="depuis" value="{{ depuis }}"></label>
+    <label>au <input type="date" name="jusqua" value="{{ jusqua }}"></label>
+    <button type="submit" class="btn btn-secondaire btn-petit">Appliquer</button>
+  </div>
+</form>
+
+<p class="rappel-periode">
+  {{ ind.total }} commande(s) recue(s) sur la periode : <strong>{{ periode_libelle }}</strong>
+</p>
+
+{% block contenu_stats %}{% endblock %}
+{% endblock %}

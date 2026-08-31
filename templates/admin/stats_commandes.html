@@ -1,0 +1,55 @@
+{% extends "admin/_stats_base.html" %}
+{% import "admin/_stats_macros.html" as m %}
+{% block entete %}Statistiques - Commandes{% endblock %}
+{% block contenu_stats %}
+
+{{ m.cartes_indicateurs(ind) }}
+
+<h3>Entonnoir : ou en sont les commandes</h3>
+{% if not ind.total %}
+  <p class="vide">Aucune commande sur la periode.</p>
+{% else %}
+<table class="table-admin">
+  <tr><th>Etape</th><th class="num">Commandes</th><th class="num">Part</th>
+      <th class="num">Valeur</th><th class="num">Marge</th><th>Repartition</th></tr>
+  {% for r in repartition %}
+  <tr>
+    <td><span class="badge-statut statut-{{ r.statut }}">{{ r.libelle }}</span></td>
+    <td class="num">{{ r.nb }}</td>
+    <td class="num">{{ r.part }}%</td>
+    <td class="num">{{ "%.2f"|format(r.valeur) }} TND</td>
+    <td class="num">{{ "%.2f"|format(r.marge) }} TND</td>
+    <td style="width:220px;">
+      <div class="jauge"><span style="width:{{ r.part }}%"></span></div>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<div class="cartes-stats" style="margin-top:24px;">
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.taux_confirmation }}%</div>
+    <div class="label">Taux de confirmation</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.taux_livraison }}%</div>
+    <div class="label">Taux de livraison</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.taux_retour }}%</div>
+    <div class="label">Taux de retour</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ "%.2f"|format(ind.panier_moyen) }} TND</div>
+    <div class="label">Panier moyen livre</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ "%.2f"|format(ind.perte_retours) }} TND</div>
+    <div class="label">Marge perdue sur retours</div>
+  </div>
+</div>
+
+{{ m.graphique(serie, 'nb', 'Commandes recues par jour', 'var(--bleu)') }}
+{{ m.graphique(serie, 'ca', "Encaisse par jour (commandes livrees, TND)", 'var(--vert)') }}
+{% endblock %}

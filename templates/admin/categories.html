@@ -1,0 +1,225 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Categories{% endblock %}
+{% block entete %}Gestion des categories{% endblock %}
+{% block contenu_admin %}
+
+<div class="barre-categories">
+  <form method="get" class="recherche-categories">
+    <input type="text" name="q" value="{{ recherche }}" placeholder="Rechercher une categorie...">
+    <button type="submit" class="btn btn-secondaire btn-petit">Rechercher</button>
+    {% if recherche %}<a href="{{ url_for('admin_categories') }}" class="btn btn-secondaire btn-petit">Tout voir</a>{% endif %}
+  </form>
+  <button type="button" class="btn btn-rouge" id="basculerAjout">+ Ajouter une categorie</button>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="bloc-ajout-categorie" id="blocAjout" hidden>
+  <div class="grille-4">
+    <div>
+      <label>Nom de la categorie *</label>
+      <input type="text" name="nom" required placeholder="Ex: Charnieres">
+    </div>
+    <div>
+      <label>Rattacher a</label>
+      <select name="parent_id">
+        <option value="">-- Categorie principale --</option>
+        {% for r in racines %}
+        <option value="{{ r.id }}">{{ "— " * r.niveau }}{{ r.nom }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Banniere</label>
+      <input type="file" name="image" accept="image/*">
+    </div>
+    <div style="display:flex; align-items:flex-end;">
+      <button type="submit" class="btn btn-rouge" style="width:100%;">Creer</button>
+    </div>
+  </div>
+</form>
+
+{# On descend un etage a la fois : le fil d'Ariane sert a remonter. #}
+<div class="bascule-vue">
+  <a href="{{ url_for('admin_categories') }}"
+     class="btn btn-petit {{ 'btn-rouge' if not arbre else 'btn-secondaire' }}">
+    Navigation par etage
+  </a>
+  <a href="{{ url_for('admin_categories', vue='arbre') }}"
+     class="btn btn-petit {{ 'btn-rouge' if arbre else 'btn-secondaire' }}">
+    Arborescence complete
+  </a>
+</div>
+
+{% if courante or fil %}
+<nav class="fil-admin">
+  <a href="{{ url_for('admin_categories') }}">Toutes les categories</a>
+  {% for etape in fil %}
+    <span aria-hidden="true">&rsaquo;</span>
+    {% if loop.last %}<strong>{{ etape.nom }}</strong>
+    {% else %}<a href="{{ url_for('admin_categories', dans=etape.id) }}">{{ etape.nom }}</a>{% endif %}
+  {% endfor %}
+</nav>
+{% endif %}
+
+{% if produits %}
+<div class="enveloppe-table">
+<table class="table-admin">
+  <tr><th></th><th>Article</th><th>Reference</th><th class="num">Prix</th>
+      <th class="num">Stock</th><th>Actions</th></tr>
+  {% for p in produits %}
+  <tr>
+    <td class="cellule-vignette">
+      {% if p.image %}
+      <img class="vignette-article"
+           src="{{ url_for('static', filename='img/produits/' + p.image) }}" alt="" loading="lazy">
+      {% endif %}
+    </td>
+    <td>{{ p.nom }}</td>
+    <td><small>{{ p.reference or "—" }}</small></td>
+    <td class="num">{{ "%.2f"|format(p.prix_affiche) }} TND</td>
+    <td class="num">{{ p.stock }}</td>
+    <td>
+      <a href="{{ url_for('admin_produit_modifier', produit_id=p.id) }}" data-ouvre-panneau
+         class="btn btn-secondaire btn-petit">Modifier</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endif %}
+
+{% if not lignes %}
+  {% if not produits %}
+  <p class="vide">
+    {% if courante %}« {{ courante.nom }} » ne contient ni sous-categorie ni article.
+    {% else %}Aucune categorie{{ " pour cette recherche" if recherche }}.{% endif %}
+  </p>
+  {% endif %}
+{% else %}
+<div class="enveloppe-table">
+<table class="table-admin table-categories table-reordonnable" data-reordonner="categories">
+  <tr>
+    <th>Ordre</th><th>Banniere</th><th>Nom</th><th>Type</th>
+    <th>Contenu</th><th class="num">Valeur du stock</th><th>Statut</th><th>Publicite</th><th>Actions</th>
+  </tr>
+  {% for c in lignes %}
+  <tr data-id="{{ c.id }}" class="niveau-{{ c.niveau }}{{ ' ligne-enfant' if c.est_sous_categorie }}{{ ' ligne-masquee' if not c.actif }}">
+    <td class="cellule-ordre">
+      <span class="poignee" title="Glisser pour deplacer">&#10495;</span>
+      <form method="post" action="{{ url_for('admin_categorie_deplacer', categorie_id=c.id, sens='haut') }}">
+        <button type="submit" class="fleche" title="Monter">&#9650;</button>
+      </form>
+      <form method="post" action="{{ url_for('admin_categorie_deplacer', categorie_id=c.id, sens='bas') }}">
+        <button type="submit" class="fleche" title="Descendre">&#9660;</button>
+      </form>
+    </td>
+
+    <td class="cellule-vignette">
+      <a href="{{ url_for('admin_categorie_modifier', categorie_id=c.id) }}" data-ouvre-panneau class="banniere-categorie">
+        {% if c.image %}
+          <img src="{{ url_for('static', filename='img/produits/' + c.image) }}" alt="" loading="lazy">
+        {% else %}
+          <span class="sans-photo">+</span>
+        {% endif %}
+      </a>
+    </td>
+
+    <td>
+      {% if arbre and c.niveau %}
+      <span class="marque-enfant" style="margin-inline-start:{{ (c.niveau - 1) * 20 }}px;">&#8627;</span>
+      {% endif %}
+      <a href="{{ url_for('admin_categories', dans=c.id) }}" class="lien-descendre">
+        <strong>{{ c.nom }}</strong>
+      </a>
+      {% if c.enfants %}
+        <br><small class="liste-rayons">
+          {% for e in c.enfants %}<span>{{ e.nom }}</span>{% endfor %}
+        </small>
+      {% elif c.nb_produits_total %}
+        <br><small>{{ c.nb_produits_total }} article(s)</small>
+      {% endif %}
+    </td>
+
+    <td>{{ ["Categorie", "Sous-categorie", "Sous-sous-categorie", "Dernier cran"][c.niveau] }}</td>
+
+    <td class="cellule-produits">
+      {% set visibles = c.produits_visibles %}
+      {% if visibles %}
+        <span class="puce-produit">{{ visibles[0].nom|truncate(52) }}</span>
+        {% if visibles|length > 1 %}<span class="puce-compte">+{{ visibles|length - 1 }}</span>{% endif %}
+      {% else %}
+        <span class="aide-inline">Aucun produit</span>
+      {% endif %}
+      {% if c.enfants and c.nb_produits_total > visibles|length %}
+        <br><small>{{ c.nb_produits_total }} avec les sous-categories</small>
+      {% endif %}
+    </td>
+
+    <td class="num">{{ "%.0f"|format(c.valeur_stock) }} TND</td>
+
+    <td>
+      <form method="post" action="{{ url_for('admin_categorie_basculer', categorie_id=c.id) }}">
+        <button type="submit" class="badge-statut {{ 'statut-livree' if c.actif else 'statut-annulee' }} bouton-badge"
+                title="Cliquer pour {{ 'masquer' if c.actif else 'afficher' }}">
+          {{ "Affichee" if c.actif else "Masquee" }}
+        </button>
+      </form>
+    </td>
+
+    <td>
+      {% if visibles %}
+      <a class="lien-pub" title="Copier le lien a mettre dans ta publicite Meta"
+         href="{{ url_for('voir_categorie', slug=c.slug, _external=True) }}?utm_source=facebook&amp;utm_medium=cpc&amp;utm_campaign={{ '{{campaign.name}}' }}&amp;utm_content={{ '{{adset.name}}' }}&amp;utm_term={{ '{{ad.name}}' }}"
+         data-copier="1">Lien pub</a>
+      {% else %}-{% endif %}
+    </td>
+
+    <td>
+      <div class="actions-categorie">
+        <a href="{{ url_for('voir_categorie', slug=c.slug) }}" target="_blank" class="btn btn-secondaire btn-petit">Voir</a>
+        <a href="{{ url_for('admin_categorie_modifier', categorie_id=c.id) }}" data-ouvre-panneau class="btn btn-secondaire btn-petit">Modifier</a>
+        <form method="post" action="{{ url_for('admin_categorie_supprimer', categorie_id=c.id) }}"
+              onsubmit="return confirm('Supprimer « {{ c.nom }} » ? Les produits ne seront pas supprimes, ils perdront simplement leur categorie.');">
+          <button type="submit" class="btn btn-petit" style="background:var(--erreur); color:white;">Suppr.</button>
+        </form>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+
+<p class="note-stats">
+  Le <strong>lien pub</strong> contient deja les parametres d'URL Meta : colle-le dans ta
+  publicite et les commandes issues de cette categorie remonteront automatiquement dans
+  <a href="{{ url_for('admin_stats_marketing') }}">Statistiques &gt; Marketing</a>.
+  {% if not pixel %}<br>Pense a renseigner ton Pixel dans <a href="{{ url_for('admin_parametres') }}">Parametres</a>.{% endif %}
+</p>
+{% endif %}
+
+
+{% endblock %}
+
+{% block scripts_page %}
+<script src="{{ url_for('static', filename='js/reordonner.js') }}"></script>
+<script>
+var bascule = document.getElementById('basculerAjout');
+if (bascule) bascule.addEventListener('click', function () {
+  var bloc = document.getElementById('blocAjout');
+  bloc.hidden = !bloc.hidden;
+  if (!bloc.hidden) bloc.querySelector('input[name="nom"]').focus();
+});
+
+// Le lien publicitaire se copie au clic plutot que de s'ouvrir
+document.querySelectorAll('[data-copier]').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    e.preventDefault();
+    var texte = this.href;
+    navigator.clipboard.writeText(texte).then(function () {
+      var ancien = a.textContent;
+      a.textContent = 'Copie !';
+      setTimeout(function () { a.textContent = ancien; }, 1600);
+    }).catch(function () { window.prompt('Copie ce lien :', texte); });
+  });
+});
+</script>
+{% endblock %}

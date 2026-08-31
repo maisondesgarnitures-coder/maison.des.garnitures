@@ -1,0 +1,119 @@
+{% extends gabarit_admin %}
+{% block titre %}{{ "Modifier" if u.id else "Nouvel" }} utilisateur{% endblock %}
+{% block entete %}{{ "Modifier l'utilisateur" if u.id else "Nouvel utilisateur" }}{% endblock %}
+{% block contenu_admin %}
+
+<form method="post" class="form-utilisateur" data-formulaire-principal
+      action="{{ url_for('admin_utilisateur_modifier', utilisateur_id=u.id) if u.id
+                else url_for('admin_utilisateur_nouveau') }}">
+
+  <div class="entete-utilisateur">
+    <strong>{{ u.nom_affiche if u.id else "Nouvel utilisateur" }}</strong>
+    <div class="actions-utilisateur">
+      <label class="interrupteur" title="Compte actif">
+        <input type="checkbox" name="actif" {% if u.actif %}checked{% endif %}>
+        <span class="glissiere"></span>
+      </label>
+      {% if not panneau %}
+      <button type="submit" class="btn btn-rouge">Enregistrer</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <section class="bloc-config">
+    <h3>Identifiants</h3>
+    <div class="grille-config">
+      <div>
+        <label for="champ-email">Adresse e-mail <span class="obligatoire">*</span></label>
+        <input type="email" name="email" id="champ-email" value="{{ u.email }}" required
+               autocomplete="off" placeholder="prenom@maisondesgarnitures.tn">
+        <p class="aide">C'est avec elle qu'il se connecte.</p>
+      </div>
+      <div>
+        <label for="champ-tel">Telephone</label>
+        <input type="tel" name="telephone" id="champ-tel" value="{{ u.telephone or '' }}"
+               placeholder="Ex : 20123456">
+      </div>
+      <div>
+        <label for="champ-prenom">Prenom</label>
+        <input type="text" name="prenom" id="champ-prenom" value="{{ u.prenom or '' }}"
+               placeholder="Prenom">
+      </div>
+      <div>
+        <label for="champ-nom">Nom <span class="obligatoire">*</span></label>
+        <input type="text" name="nom" id="champ-nom" value="{{ u.nom }}" required placeholder="Nom">
+      </div>
+      <div>
+        <label for="champ-mdp">Mot de passe {% if not u.id %}<span class="obligatoire">*</span>{% endif %}</label>
+        <div class="champ-secret">
+          <input type="password" name="mot_de_passe" id="champ-mdp" autocomplete="new-password"
+                 placeholder="{{ 'Laisser vide pour ne pas le changer' if u.id else '8 caracteres minimum' }}"
+                 {% if not u.id %}required minlength="8"{% else %}minlength="8"{% endif %}>
+          <button type="button" class="oeil-secret" data-voir="champ-mdp" aria-label="Afficher le mot de passe">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c-5 0-9 4.5-9 7s4 7 9 7 9-4.5 9-7-4-7-9-7zm0 11.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div>
+        <label for="champ-role">Role</label>
+        <select name="role" id="champ-role" data-droits-role>
+          <option value="commandes" {% if u.role == 'commandes' %}selected{% endif %}>Gestion des commandes</option>
+          <option value="livraison" {% if u.role == 'livraison' %}selected{% endif %}>Gestion de la livraison</option>
+          <option value="proprietaire" {% if u.role == 'proprietaire' %}selected{% endif %}>Administrateur principal</option>
+        </select>
+        <p class="aide">Changer de role recoche la grille ci-dessous ; tu peux ensuite l'ajuster.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloc-config">
+    <div class="titre-droits">
+      <h3>Droits</h3>
+      <label class="case-simple"><input type="checkbox" id="toutCocherDroits"> Tout</label>
+    </div>
+
+    <div class="tableau-droits">
+      <table class="table-admin">
+        <tr>
+          <th>Rubrique</th>
+          {% for code, libelle in actions %}<th class="num-droit">{{ libelle }}</th>{% endfor %}
+          <th class="num-droit">Tout</th>
+        </tr>
+        {% for cle, libelle, possibles in rubriques %}
+        <tr data-rubrique="{{ cle }}">
+          <td>{{ libelle }}</td>
+          {% for code, _ in actions %}
+          <td class="num-droit">
+            {% if code in possibles %}
+            <input type="checkbox" name="droit_{{ cle }}_{{ code }}" value="1"
+                   data-action="{{ code }}"
+                   {% if code in (u.droits.get(cle) or []) %}checked{% endif %}>
+            {% endif %}
+          </td>
+          {% endfor %}
+          <td class="num-droit"><input type="checkbox" class="tout-la-ligne"></td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <p class="aide" style="padding:0 18px 14px;">
+      L'administrateur principal passe partout, quelle que soit la grille.
+      Une page fermee renvoie une erreur d'acces, meme si son adresse est connue.
+    </p>
+  </section>
+
+  <div class="pied-config">
+    {% if panneau %}
+    <button type="button" class="btn btn-secondaire fermer-panneau">Annuler</button>
+    {% else %}
+    <a href="{{ url_for('admin_utilisateurs') }}" class="btn btn-secondaire">Retour</a>
+    {% endif %}
+    <button type="submit" class="btn btn-rouge">Enregistrer</button>
+  </div>
+</form>
+
+<script>
+var DROITS_PAR_ROLE = {{ droits_role|tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/droits-utilisateur.js') }}"></script>
+{% endblock %}

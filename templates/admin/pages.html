@@ -1,0 +1,36 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Pages d'information{% endblock %}
+{% block entete %}Pages d'information{% endblock %}
+{% block contenu_admin %}
+
+<p class="note-stats">
+  Ces pages apparaissent dans le pied de page de la boutique. Relis-les et adapte-les :
+  ce sont des documents qui engagent ta boutique, notamment les conditions de vente
+  et la politique de retour.
+</p>
+
+<table class="table-admin">
+  <tr><th>Page</th><th>Adresse</th><th>Longueur</th><th>Arabe</th><th>Statut</th><th>Actions</th></tr>
+  {% for p in pages %}
+  <tr class="{{ 'ligne-masquee' if not p.actif }}">
+    <td><strong>{{ p.titre_fr }}</strong></td>
+    <td><code>/page/{{ p.slug }}</code></td>
+    <td>{{ (p.contenu_fr or "")|length }} car.</td>
+    <td>{{ "Oui" if p.contenu_ar else "Non" }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin_page_basculer', page_id=p.id) }}">
+        <button type="submit" class="badge-statut {{ 'statut-livree' if p.actif else 'statut-annulee' }} bouton-badge">
+          {{ "Affichee" if p.actif else "Masquee" }}
+        </button>
+      </form>
+    </td>
+    <td>
+      <div class="actions-categorie">
+        <a href="{{ url_for('voir_page', slug=p.slug) }}" target="_blank" class="btn btn-secondaire btn-petit">Voir</a>
+        <a href="{{ url_for('admin_page_modifier', page_id=p.id) }}" data-ouvre-panneau class="btn btn-secondaire btn-petit">Modifier</a>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

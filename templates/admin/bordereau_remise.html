@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Bordereau de remise &mdash; {{ colis }} colis</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 18px; font-family: 'Segoe UI', Arial, sans-serif;
+           color: #000; background: #f1f2f4; font-size: 13px; }
+    .feuille { width: 210mm; margin: 0 auto; padding: 12mm; background: #fff;
+               box-shadow: 0 2px 12px rgba(0,0,0,.14); }
+    .barre-outils { max-width: 210mm; margin: 0 auto 14px; display: flex; gap: 8px; }
+    .barre-outils a, .barre-outils button {
+      font: inherit; padding: 9px 16px; border-radius: 7px;
+      border: 1px solid #d3d8df; background: #fff; color: #12141a;
+      cursor: pointer; text-decoration: none; }
+    .barre-outils .principal { background: #d21f35; border-color: #d21f35; color: #fff; font-weight: 600; }
+
+    h1 { font-size: 19px; text-align: center; margin: 0 0 4px; }
+    .sous-titre { text-align: center; color: #5c6573; margin-bottom: 16px; }
+    .entete-remise { display: flex; justify-content: space-between; gap: 16px;
+                     border: 1px solid #000; padding: 10px 12px; margin-bottom: 14px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #000; padding: 7px 9px; text-align: left; font-size: 12px; }
+    th { background: #f0f1f3; }
+    .num { text-align: center; white-space: nowrap; }
+    tfoot td { font-weight: 700; }
+    .signatures { display: flex; gap: 14px; margin-top: 18px; }
+    .signature { flex: 1; border: 1px solid #000; padding: 10px; min-height: 76px; }
+    .signature strong { display: block; margin-bottom: 4px; }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .barre-outils { display: none; }
+      .feuille { width: auto; margin: 0; padding: 8mm; box-shadow: none; }
+      @page { size: A4; margin: 8mm; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="barre-outils">
+  <button type="button" class="principal" onclick="window.print()">Imprimer</button>
+  <a href="{{ url_for('admin_commandes') }}">Retour aux commandes</a>
+</div>
+
+<div class="feuille">
+  <h1>BORDEREAU DE REMISE</h1>
+  <p class="sous-titre">{{ colis }} colis remis au transporteur &mdash; {{ aujourdhui.strftime("%d/%m/%Y a %H:%M") }}</p>
+
+  <div class="entete-remise">
+    <div>
+      <strong>Expediteur</strong><br>
+      {{ params.raison_sociale or params.nom_boutique if params else "Maison des Garnitures" }}<br>
+      {{ params.adresse if params else "" }}<br>
+      {{ params.telephone if params else "" }}
+      {% if params and params.matricule_fiscal %}
+      <br>MF : {{ params.matricule_fiscal }}
+      {% endif %}
+      {% if params and params.registre_commerce %}
+      <br>RC : {{ params.registre_commerce }}
+      {% endif %}
+    </div>
+    <div>
+      <strong>Transporteur</strong><br>
+      {{ commandes[0].transporteur or "&mdash;" }}<br><br>
+      <strong>Nombre de colis :</strong> {{ colis }}
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:26px;">#</th>
+        <th>Commande</th>
+        <th>Destinataire</th>
+        <th>Telephone</th>
+        <th>Ville</th>
+        <th>Suivi</th>
+        <th class="num">Montant</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in commandes %}
+      <tr>
+        <td class="num">{{ loop.index }}</td>
+        <td>{{ c.numero }}</td>
+        <td>{{ c.nom_client }}</td>
+        <td>{{ c.telephone }}</td>
+        <td>{{ c.ville }}{% if c.gouvernorat %}, {{ c.gouvernorat }}{% endif %}</td>
+        <td>{{ c.numero_suivi or "&mdash;"|safe }}</td>
+        <td class="num">{{ "%.2f"|format(c.total) }} DT</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="6" style="text-align:right;">Total a encaisser</td>
+        <td class="num">{{ "%.2f"|format(total) }} DT</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="signatures">
+    <div class="signature"><strong>Signature de l'expediteur</strong></div>
+    <div class="signature"><strong>Nom et signature du livreur</strong></div>
+  </div>
+</div>
+</body>
+</html>

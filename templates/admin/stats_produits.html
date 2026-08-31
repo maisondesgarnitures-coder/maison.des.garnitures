@@ -1,0 +1,43 @@
+{% extends "admin/_stats_base.html" %}
+{% import "admin/_stats_macros.html" as m %}
+{% block entete %}Statistiques - Produits{% endblock %}
+{% block contenu_stats %}
+
+<div class="cartes-stats">
+  <div class="carte-stat">
+    <div class="valeur">{{ total_articles }}</div>
+    <div class="label">Articles vendus (hors commandes refusees)</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ classement|length }}</div>
+    <div class="label">References differentes vendues</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ "%.2f"|format(ind.marge_livree) }} TND</div>
+    <div class="label">Benefice sur les commandes livrees</div>
+  </div>
+</div>
+
+<h3>Classement des ventes</h3>
+{% if not classement %}
+  <p class="vide">Aucune vente sur la periode.</p>
+{% else %}
+<table class="table-admin">
+  <tr><th>#</th><th>Produit</th><th class="num">Quantite</th>
+      <th class="num">Dont livrees</th><th class="num">Chiffre d'affaires</th></tr>
+  {% for e in classement %}
+  <tr>
+    <td>{{ loop.index }}</td>
+    <td>
+      {% if e.produit_id %}
+        <a href="{{ url_for('admin_produit_modifier', produit_id=e.produit_id) }}" data-ouvre-panneau>{{ e.nom }}</a>
+      {% else %}{{ e.nom }}{% endif %}
+    </td>
+    <td class="num">{{ e.quantite }}</td>
+    <td class="num">{{ e.livre }}</td>
+    <td class="num"><strong>{{ "%.2f"|format(e.ca) }} TND</strong></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

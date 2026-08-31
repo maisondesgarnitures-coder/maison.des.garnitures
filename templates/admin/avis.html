@@ -1,0 +1,66 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Avis clients{% endblock %}
+{% block entete %}Avis clients{% endblock %}
+{% block contenu_admin %}
+
+<p style="color:var(--texte-secondaire); margin-top:0;">
+  Aucun avis n'apparait sur la boutique avant ta validation. Les avis marques
+  <strong>achat verifie</strong> proviennent d'un numero ayant reellement recu ce produit.
+</p>
+
+<h3>En attente de validation ({{ en_attente|length }})</h3>
+{% if not en_attente %}
+  <p style="color:var(--texte-secondaire);">Rien a moderer.</p>
+{% else %}
+<table class="table-admin">
+  <tr><th>Date</th><th>Produit</th><th>Client</th><th>Note</th><th>Commentaire</th><th>Actions</th></tr>
+  {% for a in en_attente %}
+  <tr>
+    <td>{{ a.date_creation.strftime("%d/%m/%Y %H:%M") }}</td>
+    <td style="font-size:12px;">{{ a.produit.nom if a.produit else "-" }}</td>
+    <td>
+      {{ a.nom_client }}
+      {% if a.achat_verifie %}<br><small style="color:var(--vert);">✓ achat verifie</small>{% endif %}
+      {% if a.telephone %}<br><small>{{ a.telephone }}</small>{% endif %}
+    </td>
+    <td>{{ a.note }}/5</td>
+    <td style="font-size:12px; max-width:280px;">{{ a.commentaire or "-" }}</td>
+    <td>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <form method="post" action="{{ url_for('admin_avis_action', avis_id=a.id, action='approuver') }}">
+          <button type="submit" class="btn btn-vert btn-petit" style="width:100%;">Publier</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_avis_action', avis_id=a.id, action='supprimer') }}"
+              onsubmit="return confirm('Supprimer definitivement cet avis ?');">
+          <button type="submit" class="btn btn-secondaire btn-petit" style="width:100%;">Supprimer</button>
+        </form>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<h3 style="margin-top:28px;">Publies sur la boutique ({{ publies|length }})</h3>
+{% if not publies %}
+  <p style="color:var(--texte-secondaire);">Aucun avis publie pour le moment.</p>
+{% else %}
+<table class="table-admin">
+  <tr><th>Date</th><th>Produit</th><th>Client</th><th>Note</th><th>Commentaire</th><th>Actions</th></tr>
+  {% for a in publies %}
+  <tr>
+    <td>{{ a.date_creation.strftime("%d/%m/%Y") }}</td>
+    <td style="font-size:12px;">{{ a.produit.nom if a.produit else "-" }}</td>
+    <td>{{ a.nom_client }}{% if a.achat_verifie %}<br><small style="color:var(--vert);">✓ verifie</small>{% endif %}</td>
+    <td>{{ a.note }}/5</td>
+    <td style="font-size:12px; max-width:280px;">{{ a.commentaire or "-" }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin_avis_action', avis_id=a.id, action='masquer') }}">
+        <button type="submit" class="btn btn-secondaire btn-petit">Retirer</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

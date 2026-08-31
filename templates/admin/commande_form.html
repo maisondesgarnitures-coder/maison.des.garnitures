@@ -1,0 +1,208 @@
+{% extends gabarit_admin %}
+{% block titre %}Modifier {{ commande.numero }}{% endblock %}
+{% block entete %}Commande {{ commande.numero }}{% endblock %}
+{% block contenu_admin %}
+
+<form method="post" class="editeur-commande" data-formulaire-principal
+      action="{{ url_for('admin_commande_modifier', commande_id=commande.id) }}">
+
+  <div class="entete-editeur">
+    <div class="titre-editeur">
+      <span class="badge-statut statut-{{ commande.statut }}">{{ commande.statut }}</span>
+      <span class="date-editeur">{{ commande.date_creation.strftime("%d/%m/%Y %H:%M") }}</span>
+    </div>
+    <div class="boutons-editeur">
+      <a href="{{ url_for('admin_bon_livraison', commande_id=commande.id) }}" target="_blank"
+         class="btn btn-bleu btn-petit">Bon de livraison</a>
+      <a href="{{ url_for('admin_commande_detail', commande_id=commande.id) }}"
+         class="btn btn-secondaire btn-petit">Fiche detaillee</a>
+      <button type="submit" name="rester" value="1" class="btn btn-secondaire btn-petit">
+        Enregistrer et rester
+      </button>
+      {% if not panneau %}
+      <button type="submit" class="btn btn-rouge">Enregistrer</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ================= Details de la commande ================= -->
+  <section class="bloc-editeur">
+    <h3>Details de la commande</h3>
+    <div class="grille-2">
+      <div>
+        <label>Statut</label>
+        <select name="statut" data-statut-colore>
+          {% for code, libelle in statuts_commande %}
+          <option value="{{ code }}" {% if commande.statut == code %}selected{% endif %}>{{ libelle }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Societe de livraison</label>
+        <select name="transporteur" data-avec-logo>
+          <option value="">-- Aucun transporteur --</option>
+          {% for t in transporteurs_objets %}
+          <option value="{{ t.nom }}" {% if commande.transporteur == t.nom %}selected{% endif %}
+                  data-initiales="{{ t.initiales }}" data-couleur="{{ t.couleur }}"
+                  {% if t.logo %}data-logo="{{ url_for('static', filename='img/produits/' + t.logo) }}"{% endif %}>
+            {{ t.nom }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <label>Numero de suivi</label>
+    <input type="text" name="numero_suivi" value="{{ commande.numero_suivi or '' }}"
+           placeholder="Numero fourni par le transporteur">
+
+    <label>Note interne</label>
+    <textarea name="note_privee" rows="2"
+              placeholder="Visible seulement ici, jamais par le client">{{ commande.note_privee or '' }}</textarea>
+  </section>
+
+  <!-- ================= Client ================= -->
+  <section class="bloc-editeur">
+    <h3>Coordonnees du client</h3>
+    <div class="grille-2">
+      <div>
+        <label>Nom complet *</label>
+        <input type="text" name="nom_client" value="{{ commande.nom_client }}" required>
+      </div>
+      <div>
+        <label>Telephone *</label>
+        <input type="tel" name="telephone" value="{{ commande.telephone }}" required>
+      </div>
+      <div>
+        <label>Second telephone</label>
+        <input type="tel" name="telephone2" value="{{ commande.telephone2 or '' }}"
+               placeholder="Facultatif">
+      </div>
+      <div>
+        <label>E-mail</label>
+        <input type="email" name="email" value="{{ commande.email or '' }}" placeholder="Facultatif">
+      </div>
+      <div>
+        <label>Gouvernorat</label>
+        <select name="gouvernorat" id="selectGouvernorat"></select>
+      </div>
+      <div>
+        <label>Ville / Delegation</label>
+        <select name="ville" id="selectVille"></select>
+      </div>
+    </div>
+
+    <label>Adresse</label>
+    <input type="text" name="adresse" value="{{ commande.adresse or '' }}">
+
+    <label>Commentaire du client</label>
+    <textarea name="commentaire" rows="2">{{ commande.commentaire or '' }}</textarea>
+  </section>
+
+  <!-- ================= Articles ================= -->
+  <section class="bloc-editeur">
+    <h3>Articles</h3>
+    <table class="table-admin table-articles">
+      <tr>
+        <th></th><th>Produit</th>
+        <th style="width:110px;">Quantite</th>
+        <th style="width:130px;">Prix unitaire</th>
+        <th style="width:110px;" class="num">Sous-total</th>
+        <th style="width:80px;">Retirer</th>
+      </tr>
+      {% for ligne in commande.lignes %}
+      {% set produit = produits_par_id.get(ligne.produit_id) %}
+      <tr>
+        <td class="col-articles">
+          <span class="vignette-commande">
+            {% if produit and produit.image %}
+              <img src="{{ url_for('static', filename='img/produits/' + produit.image) }}" alt="">
+            {% else %}<span class="sans-photo">&mdash;</span>{% endif %}
+          </span>
+        </td>
+        <td>
+          {{ ligne.nom_produit }}
+          <br><small class="ref-produit-ligne">
+            {% if produit %}ID {{ produit.id }}{% endif %}
+            {%- if produit and produit.reference %} &middot; {{ produit.reference }}{% endif %}
+          </small>
+        </td>
+        <td><input type="number" name="quantite_{{ ligne.id }}" value="{{ ligne.quantite }}"
+                   min="1" step="1" class="champ-ligne"></td>
+        <td><input type="number" name="prix_{{ ligne.id }}" value="{{ '%.3f'|format(ligne.prix_unitaire or 0) }}"
+                   min="0" step="0.001" class="champ-ligne"></td>
+        <td class="num">{{ "%.2f"|format((ligne.prix_unitaire or 0) * (ligne.quantite or 0)) }} TND</td>
+        <td style="text-align:center;">
+          <label class="case-simple" title="Retirer cet article">
+            <input type="checkbox" name="retirer_{{ ligne.id }}">
+          </label>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <div class="ajout-article">
+      <div>
+        <label>Ajouter un produit</label>
+        <select name="ajouter_produit" data-choix-produit>
+          <option value="">-- Choisir un produit --</option>
+          {% for p in produits %}
+          <option value="{{ p.id }}"
+                  data-ref="{{ p.reference or '' }}"
+                  data-prix="{{ '%.2f'|format(p.prix_affiche) }}"
+                  data-stock="{{ p.stock_total }}"
+                  {% if p.image %}data-photo="{{ url_for('static', filename='img/produits/' + p.image) }}"{% endif %}>{{ p.nom }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Quantite</label>
+        <input type="number" name="ajouter_quantite" value="1" min="1" step="1">
+      </div>
+    </div>
+    <p class="aide">
+      Le stock suit automatiquement : augmenter une quantite le diminue, retirer un article le rend.
+      Une commande deja livree ne touche plus au stock.
+    </p>
+  </section>
+
+  <!-- ================= Totaux ================= -->
+  <section class="bloc-editeur">
+    <h3>Livraison et total</h3>
+    <div class="grille-2">
+      <div>
+        <label>Frais de livraison (TND)</label>
+        <input type="number" name="frais_livraison" min="0" step="0.001"
+               value="{{ '%.3f'|format(commande.frais_livraison or 0) }}">
+      </div>
+      <div>
+        <label>Reduction appliquee</label>
+        <input type="text" value="{{ '%.3f'|format(commande.montant_reduction or 0) }} TND{% if commande.code_promo_utilise %} ({{ commande.code_promo_utilise }}){% endif %}" disabled>
+      </div>
+    </div>
+
+    <div class="total-editeur">
+      <span>Total actuel</span>
+      <strong>{{ "%.2f"|format(commande.total) }} TND</strong>
+    </div>
+    <p class="aide">Le total se recalcule a l'enregistrement, d'apres les articles et la livraison.</p>
+  </section>
+
+  <div class="pied-editeur">
+    {% if panneau %}
+    <button type="button" class="btn btn-secondaire fermer-panneau">Annuler</button>
+    {% else %}
+    <a href="{{ url_for('admin_commandes') }}" class="btn btn-secondaire">Annuler</a>
+    {% endif %}
+    <button type="submit" class="btn btn-rouge btn-large">Enregistrer et revenir a la liste</button>
+  </div>
+</form>
+
+<script>
+var GOUVERNORATS = {{ gouvernorats_json|tojson }};
+var GOUV_ACTUEL = {{ (commande.gouvernorat or '')|tojson }};
+var VILLE_ACTUELLE = {{ (commande.ville or '')|tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/gouvernorats-admin.js') }}"></script>
+<script src="{{ url_for('static', filename='js/choix-produit.js') }}"></script>
+{% endblock %}

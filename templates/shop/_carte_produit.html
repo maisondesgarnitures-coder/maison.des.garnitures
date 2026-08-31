@@ -1,0 +1,32 @@
+{# Carte produit reutilisee par l'accueil, le catalogue et les categories. #}
+{% set barre = p.prix_barre_vitrine %}
+{% set remise = ((barre - p.prix_vitrine) / barre * 100) | round | int if barre else 0 %}
+<div class="carte-produit{% if p.en_rupture %} est-en-rupture{% endif %}{% if p.en_promo %} est-en-promo{% endif %}">
+  <a href="{{ url_for('voir_produit', produit_id=p.id) }}" class="image-produit">
+    {% if p.en_promo %}<span class="badge-promo">{% if remise %}-{{ remise }} %{% else %}{{ t('promo') }}{% endif %}</span>{% endif %}
+    {% if p.en_rupture %}<span class="badge-rupture">{{ t('rupture_stock') }}</span>{% endif %}
+    {# Coin oppose a la promo : une nouveaute peut aussi etre en solde. #}
+    {% if p.id in (ids_nouveautes or []) %}<span class="badge-nouveau">{{ t('nouveau') }}</span>{% endif %}
+    {% if p.image %}
+      <img src="{{ url_for('static', filename='img/produits/' + p.image) }}" alt="{{ intitule(p) }}" loading="lazy">
+    {% else %}
+      <span>{{ t('photo_produit') }}</span>
+    {% endif %}
+  </a>
+  <div class="contenu">
+    <h3><a href="{{ url_for('voir_produit', produit_id=p.id) }}">{{ intitule(p)|cotes_groupees }}</a></h3>
+    <div class="ligne-prix">
+      <span class="prix">{{ "%.2f"|format(p.prix_vitrine) }} TND</span>
+      {% if barre %}<span class="prix-barre">{{ "%.2f"|format(barre) }} TND</span>{% endif %}
+    </div>
+    {% if not p.commandable %}
+      <button type="button" class="btn btn-petit btn-indispo" disabled>{{ t('rupture_stock') }}</button>
+    {% else %}
+      {# On envoie vers la fiche : options, paliers de prix et quantite s'y
+         choisissent. Un ajout direct depuis la liste les sauterait. #}
+      <a href="{{ url_for('voir_produit', produit_id=p.id) }}" class="btn btn-rouge btn-petit lien-fiche">
+        {{ t('voir_produit') }}
+      </a>
+    {% endif %}
+  </div>
+</div>

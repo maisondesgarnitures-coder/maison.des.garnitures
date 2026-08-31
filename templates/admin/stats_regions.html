@@ -1,0 +1,100 @@
+{% extends "admin/_stats_base.html" %}
+{% import "admin/_stats_macros.html" as m %}
+{% block entete %}Statistiques - Regions{% endblock %}
+{% block contenu_stats %}
+
+{% if zones %}
+<div class="bloc-graphique">
+  <h3>Taux de livraison par gouvernorat</h3>
+  <div class="carte-conteneur">
+    <svg viewBox="0 0 {{ carte.largeur }} {{ carte.hauteur }}" class="carte-tunisie"
+         role="img" aria-label="Taux de livraison par gouvernorat">
+      {% for z in zones %}
+      <path d="{{ z.trace }}" fill="{{ z.couleur }}" stroke="#fff" stroke-width="1.2"
+            class="zone{% if z.sans_donnee %} sans-donnee{% endif %}"
+            data-nom="{{ z.nom }}" data-nb="{{ z.nb }}" data-livrees="{{ z.livrees }}"
+            data-taux="{{ z.taux }}" data-encaisse="{{ '%.2f'|format(z.encaisse) }}">
+        <title>{{ z.nom }}{% if z.sans_donnee %} : aucune commande{% else %} : {{ z.nb }} commande(s), {{ z.taux }} % livrees{% endif %}</title>
+      </path>
+      {% endfor %}
+    </svg>
+
+    <div class="legende-carte">
+      <span><i style="background:#1e8449"></i> 80 a 100 %</span>
+      <span><i style="background:#7cb342"></i> 60 a 80 %</span>
+      <span><i style="background:#e0a800"></i> 40 a 60 %</span>
+      <span><i style="background:#e07b39"></i> 20 a 40 %</span>
+      <span><i style="background:#c0392b"></i> moins de 20 %</span>
+      <span><i style="background:#e9ebee"></i> aucune commande</span>
+    </div>
+
+    <div class="infobulle-carte" id="infobulleCarte" hidden></div>
+  </div>
+  <p class="credit-carte">Fond de carte : {{ carte.attribution }}</p>
+</div>
+
+{% if hors_carte %}
+<p class="note-stats">
+  Non localises sur la carte : {{ hors_carte|join(", ") }}.
+</p>
+{% endif %}
+{% endif %}
+
+<h3>Repartition par gouvernorat</h3>
+{% if not regions %}
+  <p class="vide">Aucune commande sur la periode.</p>
+{% else %}
+<table class="table-admin">
+  <tr><th>Gouvernorat</th><th class="num">Commandes</th><th class="num">Part</th>
+      <th class="num">Livrees</th><th class="num">Taux de livraison</th>
+      <th class="num">Encaisse</th><th class="num">Benefice</th><th>Poids</th></tr>
+  {% for r in regions %}
+  <tr>
+    <td><strong>{{ r.valeur }}</strong></td>
+    <td class="num">{{ r.nb }}</td>
+    <td class="num">{{ r.part }}%</td>
+    <td class="num">{{ r.livrees }}</td>
+    <td class="num">
+      <span class="{{ 'bon' if r.taux_livraison >= 80 else 'moyen' if r.taux_livraison >= 60 else 'faible' }}">
+        {{ r.taux_livraison }}%
+      </span>
+    </td>
+    <td class="num">{{ "%.2f"|format(r.encaisse) }} TND</td>
+    <td class="num"><strong>{{ "%.2f"|format(r.marge) }} TND</strong></td>
+    <td style="width:180px;"><div class="jauge"><span style="width:{{ r.part }}%"></span></div></td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="note-stats">
+  Un gouvernorat avec beaucoup de commandes mais un faible taux de livraison
+  te coute de l'argent : c'est la que les frais de retour s'accumulent.
+</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts_page %}
+<script>
+(function () {
+  var bulle = document.getElementById('infobulleCarte');
+  if (!bulle) return;
+  var conteneur = bulle.parentElement;
+
+  document.querySelectorAll('.carte-tunisie .zone').forEach(function (zone) {
+    zone.addEventListener('mousemove', function (e) {
+      var d = this.dataset;
+      bulle.innerHTML = '<strong>' + d.nom + '</strong><br>' +
+        (d.nb === '0'
+          ? 'Aucune commande sur la periode'
+          : d.nb + ' commande(s) &middot; ' + d.livrees + ' livree(s)<br>' +
+            'Taux de livraison : <strong>' + d.taux + ' %</strong><br>' +
+            'Encaisse : <strong>' + d.encaisse + ' TND</strong>');
+      var cadre = conteneur.getBoundingClientRect();
+      bulle.style.left = (e.clientX - cadre.left + 14) + 'px';
+      bulle.style.top = (e.clientY - cadre.top + 14) + 'px';
+      bulle.hidden = false;
+    });
+    zone.addEventListener('mouseleave', function () { bulle.hidden = true; });
+  });
+})();
+</script>
+{% endblock %}

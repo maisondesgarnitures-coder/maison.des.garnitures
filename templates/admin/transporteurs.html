@@ -1,0 +1,118 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Transporteurs{% endblock %}
+{% block entete %}Transporteurs{% endblock %}
+{% block contenu_admin %}
+
+<p class="aide-reordonner">
+  <strong>Configure</strong> s'allume quand tous les identifiants obligatoires du
+  transporteur sont remplis. <strong>Etiquettes</strong> demande en plus que son
+  API soit branchee de notre cote &mdash; aujourd'hui : First Delivery.
+  <strong>Suivi</strong> s'allume des que tu renseignes son lien de suivi public.
+</p>
+
+<form method="post" enctype="multipart/form-data">
+
+  <div class="grille-transporteurs">
+    {% for t in transporteurs %}
+    <div class="carte-transporteur {{ 'inactif' if not t.actif }}">
+
+      <div class="visuel-transporteur">
+        {% if t.logo %}
+          <img src="{{ url_for('static', filename='img/produits/' + t.logo) }}" alt="{{ t.nom }}">
+        {% else %}
+          <span class="pastille-livreur grande" style="background: {{ t.couleur }};">{{ t.initiales }}</span>
+        {% endif %}
+      </div>
+
+      <div class="corps-transporteur">
+        <div class="ligne-titre-transporteur">
+          <strong>{{ t.nom }}</strong>
+          <label class="interrupteur" title="Activer ou desactiver">
+            <input type="checkbox" name="actif_{{ t.id }}" {% if t.actif %}checked{% endif %}>
+            <span class="glissiere"></span>
+          </label>
+        </div>
+
+        {% set a_etiquettes = t.sait_etiqueter %}
+        <div class="capacites">
+          <span class="capacite {{ 'ok' if t.est_configure }}">
+            {% if t.est_configure %}&#10003;{% else %}&times;{% endif %} Configure
+          </span>
+          <span class="capacite {{ 'ok' if a_etiquettes }}">
+            {% if a_etiquettes %}&#10003;{% else %}&times;{% endif %} Etiquettes
+          </span>
+          <span class="capacite {{ 'ok' if t.url_suivi }}">
+            {% if t.url_suivi %}&#10003;{% else %}&times;{% endif %} Suivi
+          </span>
+        </div>
+
+        {% if t.champs_manquants %}
+        <p class="manque-config">Il manque : {{ t.champs_manquants|join(', ') }}.</p>
+        {% elif not t.est_configure %}
+        <p class="manque-config">Aucun identifiant enregistre.</p>
+        {% elif t.nom not in avec_api %}
+        <p class="manque-config">Pret, mais son API n'est pas encore branchee :
+          expedition manuelle et notre bon de livraison.</p>
+        {% endif %}
+
+        <div class="liens-transporteur">
+          <a href="{{ url_for('admin_transporteur_configurer', transporteur_id=t.id) }}" data-ouvre-panneau
+             class="btn btn-secondaire btn-petit">Configurer</a>
+          <button type="submit" class="btn btn-petit btn-supprimer"
+                  formnovalidate formmethod="post"
+                  formaction="{{ url_for('admin_transporteur_supprimer', transporteur_id=t.id) }}"
+                  data-confirmer="Supprimer le transporteur {{ t.nom }} ?"
+                  data-confirmer-suite="Les commandes qui l'utilisent bloqueront la suppression.">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Carte d'ajout -->
+    <div class="carte-transporteur carte-ajout-transporteur">
+      <div class="visuel-transporteur"><span class="signe-plus">+</span></div>
+      <div class="corps-transporteur">
+        <strong>Ajouter un transporteur</strong>
+        <label>Nom</label>
+        <input type="text" name="nouveau_nom" placeholder="Ex : Rapid Poste">
+        <label>Lien de suivi (facultatif)</label>
+        <input type="text" name="nouveau_url" placeholder="https://exemple.tn/suivi?code={code}">
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-rouge" style="margin-top:18px;">Enregistrer</button>
+</form>
+
+<div class="actions-hors-formulaire">
+  <a href="{{ url_for('admin_tester_first_delivery') }}" class="btn btn-secondaire btn-petit">
+    Tester la connexion First Delivery
+  </a>
+  <span class="aide">Lecture seule : recupere la liste de leurs localites, ne cree aucune expedition.</span>
+</div>
+
+<h3 style="margin-top:30px;">Les trois niveaux d'integration</h3>
+<table class="table-admin">
+  <tr><th>Niveau</th><th>Ce que tu obtiens</th><th>Ce qu'il faut</th></tr>
+  <tr>
+    <td><strong>Manuel</strong></td>
+    <td>Tu saisis le numero de suivi a la main sur la commande.</td>
+    <td>Rien.</td>
+  </tr>
+  <tr>
+    <td><strong>Suivi</strong></td>
+    <td>Le numero devient cliquable, pour toi et pour le client sur la page Suivi.</td>
+    <td>L'adresse publique de suivi du transporteur.</td>
+  </tr>
+  <tr>
+    <td><strong>Etiquettes</strong></td>
+    <td>Un bouton cree l'expedition, recupere le code a barres et le bordereau,
+        et va chercher le statut tout seul.</td>
+    <td>La cle d'API et la documentation du transporteur.
+        <em>Actif aujourd'hui : First Delivery.</em></td>
+  </tr>
+</table>
+
+{% endblock %}

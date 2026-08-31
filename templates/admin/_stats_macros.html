@@ -1,0 +1,78 @@
+{% macro cartes_indicateurs(ind) %}
+<div class="cartes-indicateurs">
+  <div class="carte-indicateur bleu">
+    <div class="chiffre">{{ ind.attente }}</div>
+    <div class="intitule">A confirmer</div>
+    <div class="montant">{{ "%.2f"|format(ind.attente_valeur) }} TND</div>
+  </div>
+  <div class="carte-indicateur vert">
+    <div class="chiffre">{{ ind.confirmees }}</div>
+    <div class="intitule">Confirmees</div>
+    <div class="montant">{{ "%.2f"|format(ind.confirmees_valeur) }} TND</div>
+  </div>
+  <div class="carte-indicateur rouge">
+    <div class="chiffre">{{ ind.refusees }}</div>
+    <div class="intitule">Annulees / injoignables</div>
+    <div class="montant">{{ "%.2f"|format(ind.refusees_valeur) }} TND</div>
+  </div>
+  <div class="carte-indicateur violet">
+    <div class="chiffre">{{ ind.total }}</div>
+    <div class="intitule">Total des commandes</div>
+    <div class="montant">{{ "%.2f"|format(ind.total_valeur) }} TND</div>
+  </div>
+  <div class="carte-indicateur vert-fonce">
+    <div class="chiffre">{{ ind.livrees }}</div>
+    <div class="intitule">Livrees</div>
+    <div class="montant">{{ "%.2f"|format(ind.encaisse) }} TND encaisses</div>
+  </div>
+  <div class="carte-indicateur orange">
+    <div class="chiffre">{{ ind.retours }}</div>
+    <div class="intitule">Retours</div>
+    <div class="montant">{{ "%.2f"|format(ind.retours_valeur) }} TND</div>
+  </div>
+  <div class="carte-indicateur marge">
+    <div class="chiffre">{{ "%.0f"|format(ind.marge_livree) }} <small>TND</small></div>
+    <div class="intitule">Benefice realise</div>
+    <div class="montant">{{ "%.2f"|format(ind.marge_attendue) }} TND attendus</div>
+  </div>
+</div>
+{% endmacro %}
+
+
+{% macro graphique(serie, cle, titre, couleur) %}
+{% set valeurs = serie | map(attribute=cle) | list %}
+{% set maximum = valeurs | max if valeurs else 0 %}
+{% set maximum = maximum if maximum and maximum > 0 else 1 %}
+{% set pas = 900 / (serie | length if serie | length > 1 else 1) %}
+<div class="bloc-graphique">
+  <h3>{{ titre }}</h3>
+  {% if not serie %}
+    <p class="vide">Aucune donnee sur la periode.</p>
+  {% else %}
+  <svg viewBox="0 0 940 240" preserveAspectRatio="none" class="graphique" role="img"
+       aria-label="{{ titre }}">
+    <!-- lignes de reperage horizontales -->
+    {% for i in range(5) %}
+      {% set y = 20 + i * 45 %}
+      <line x1="40" y1="{{ y }}" x2="930" y2="{{ y }}" stroke="#e6e8eb" stroke-width="1"/>
+      <text x="34" y="{{ y + 4 }}" text-anchor="end" font-size="11" fill="#8a9099">
+        {{ (maximum * (4 - i) / 4) | round(0, 'common') | int }}
+      </text>
+    {% endfor %}
+
+    {% for point in serie %}
+      {% set hauteur = (point[cle] / maximum * 180) if maximum else 0 %}
+      {% set largeur = pas * 0.6 if pas * 0.6 < 40 else 40 %}
+      {% set x = 40 + loop.index0 * pas + (pas - largeur) / 2 %}
+      <rect x="{{ x }}" y="{{ 200 - hauteur }}" width="{{ largeur }}" height="{{ hauteur if hauteur > 0 else 0 }}"
+            fill="{{ couleur }}" rx="2">
+        <title>{{ point.label }} : {{ point[cle] }}</title>
+      </rect>
+      {% if serie | length <= 32 or loop.index0 % 3 == 0 %}
+      <text x="{{ x + largeur / 2 }}" y="222" text-anchor="middle" font-size="10" fill="#8a9099">{{ point.label }}</text>
+      {% endif %}
+    {% endfor %}
+  </svg>
+  {% endif %}
+</div>
+{% endmacro %}

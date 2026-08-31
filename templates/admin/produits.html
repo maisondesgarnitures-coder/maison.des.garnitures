@@ -1,0 +1,139 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Produits{% endblock %}
+{% block entete %}Gestion des produits{% endblock %}
+{% block contenu_admin %}
+<div style="margin-bottom:16px; display:flex; gap:10px;">
+  <a href="{{ url_for('admin_produit_nouveau') }}" data-ouvre-panneau class="btn btn-rouge">+ Nouveau produit</a>
+  <a href="{{ url_for('admin_produits_import') }}" class="btn btn-bleu">Importer depuis Excel/CSV</a>
+</div>
+<div class="cartes-stock">
+  <div class="carte-stock">
+    <div class="entete-stock">
+      <span class="icone-stock bleu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 6.5v11L12 22l9-4.5v-11L12 2zm0 2.2 6.5 3.3L12 10.8 5.5 7.5 12 4.2zM5 9.2l6 3v7.3l-6-3V9.2zm8 10.3v-7.3l6-3v7.3l-6 3z"/></svg>
+      </span>
+      <div>
+        <div class="valeur-stock">{{ stock.unites }}</div>
+        <div class="label-stock">Articles en stock</div>
+      </div>
+    </div>
+    <div class="pied-stock">
+      <span>Valeur d'achat</span>
+      <strong>{{ "%.2f"|format(stock.valeur_achat) }} TND</strong>
+    </div>
+  </div>
+
+  <div class="carte-stock">
+    <div class="entete-stock">
+      <span class="icone-stock rouge">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 6.5v11L12 22l9-4.5v-11L12 2zm3.5 6.6L13.4 12l2.1 3.4-1.3.8L12 12.8l-2.2 3.4-1.3-.8L10.6 12 8.5 8.6l1.3-.8L12 11.2l2.2-3.4 1.3.8z"/></svg>
+      </span>
+      <div>
+        <div class="valeur-stock">{{ stock.unites_abimees }}</div>
+        <div class="label-stock">Articles abimes</div>
+      </div>
+    </div>
+    <div class="pied-stock">
+      <span>Perte</span>
+      <strong>{{ "%.2f"|format(stock.valeur_abimee) }} TND</strong>
+    </div>
+  </div>
+
+  <div class="carte-stock revenu">
+    <div class="label-revenu">Revenu estime</div>
+    <div class="montant-revenu-stock">{{ "%.2f"|format(stock.revenu_estime) }} <small>TND</small></div>
+    <div class="pied-revenu">
+      Benefice potentiel <strong>{{ "%.2f"|format(stock.benefice_estime) }} TND</strong>
+      &middot; marge {{ stock.marge_pourcent }} %
+    </div>
+  </div>
+</div>
+
+{% if stock.sans_cout %}
+<p class="alerte-stock">
+  <strong>{{ stock.sans_cout|length }} produit(s)</strong> en stock n'ont pas de prix d'achat renseigne :
+  la valeur du stock est donc sous-estimee et leur marge affichee est fausse.
+</p>
+{% endif %}
+
+<form method="get" class="barre-filtres">
+  <div class="champ-filtre">
+    <label for="filtreRecherche">Rechercher</label>
+    <input type="text" name="q" id="filtreRecherche" value="{{ recherche or '' }}"
+           placeholder="Nom ou reference du produit...">
+  </div>
+  <div class="champ-filtre">
+    <label for="filtreCategorie">Categorie</label>
+    <select name="categorie" id="filtreCategorie">
+      <option value="">Toutes les categories</option>
+      {% for c in categories_filtre %}
+      {# Le chemin complet leve l'ambiguite : cinq categories s'appellent CMT. #}
+      <option value="{{ c.id }}" {% if categorie_active == c.id %}selected{% endif %}>
+        {{ c.chemin | map(attribute='nom') | join(' \u203a ') }} ({{ c.nb_produits_total }}){% if not c.actif %} &mdash; masquee{% endif %}
+      </option>
+      {% endfor %}
+      <option value="sans" {% if categorie_active == 'sans' %}selected{% endif %}>Sans categorie</option>
+    </select>
+  </div>
+  <div class="champ-filtre">
+    <label for="filtreStatut">Statut</label>
+    <select name="statut" id="filtreStatut">
+      <option value="">Tous</option>
+      <option value="actif" {% if statut_actif == 'actif' %}selected{% endif %}>Visibles</option>
+      <option value="masque" {% if statut_actif == 'masque' %}selected{% endif %}>Masques</option>
+      <option value="rupture" {% if statut_actif == 'rupture' %}selected{% endif %}>En rupture</option>
+      <option value="promo" {% if statut_actif == 'promo' %}selected{% endif %}>En promotion</option>
+    </select>
+  </div>
+  <div class="boutons-filtre">
+    <button type="submit" class="btn btn-secondaire">Filtrer</button>
+    {% if recherche or categorie_active or statut_actif %}
+    <a href="{{ url_for('admin_produits') }}" class="btn btn-secondaire">Effacer</a>
+    {% endif %}
+  </div>
+</form>
+
+<p class="resultat-filtre">
+  <strong>{{ produits|length }}</strong> produit(s) affiche(s) sur {{ total_produits }}
+  {%- if recherche or categorie_active or statut_actif %} &middot; filtre actif{% endif %}
+</p>
+
+<p class="aide-reordonner">{% if not (recherche or categorie_active or statut_actif) %}Attrape la poignee &#10495; a gauche pour reordonner tes produits a l'interieur de leur rayon. L'ordre choisi est celui de la boutique et il est enregistre automatiquement.{% else %}Le reordonnancement est desactive tant qu'un filtre est actif : efface le filtre pour deplacer tes produits.{% endif %}</p>
+<table class="table-admin table-reordonnable" {% if not (recherche or categorie_active or statut_actif) %}data-reordonner="produits"{% endif %}>
+  <tr>
+    <th></th><th></th><th class="col-id">ID</th><th>Nom</th>
+    {% if not rayons %}<th>Categorie</th>{% endif %}
+    <th>Prix</th><th>Stock</th><th>Actif</th><th>Actions</th>
+  </tr>
+  {% if rayons %}
+    {# Une ligne de titre par rayon, ses articles rassembles dessous : on
+       range un produit la ou le client le trouvera. #}
+    {% for groupe in rayons %}
+      {% set rayon_id = groupe.categorie.id if groupe.categorie else 0 %}
+      <tr class="ligne-rayon">
+        <td colspan="8">
+          {% if groupe.categorie %}
+          <a href="{{ url_for('admin_categories', dans=groupe.categorie.id) }}">
+            {%- for etape in groupe.chemin %}
+              {%- if not loop.first %}<span class="separateur-rayon">&rsaquo;</span>{% endif -%}
+              {{ etape.nom }}
+            {%- endfor %}
+          </a>
+          {% if not groupe.categorie.actif %}<span class="rayon-masque">masque</span>{% endif %}
+          {% else %}
+          <span class="rayon-orphelin">Sans categorie</span>
+          {% endif %}
+          <em>{{ groupe.produits|length }}</em>
+        </td>
+      </tr>
+      {% for p in groupe.produits %}{% include "admin/_ligne_produit.html" %}{% endfor %}
+    {% endfor %}
+  {% else %}
+    {% for p in produits %}{% include "admin/_ligne_produit.html" %}{% endfor %}
+  {% endif %}
+</table>
+{% endblock %}
+
+{% block scripts_page %}
+<script src="{{ url_for('static', filename='js/reordonner.js') }}"></script>
+{% endblock %}

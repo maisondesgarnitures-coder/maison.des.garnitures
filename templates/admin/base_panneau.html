@@ -1,0 +1,10 @@
+{# Gabarit nu : la page part seule dans le panneau lateral, sans le cadre
+   d'administration qui l'entoure d'habitude. #}
+<div class="entete-panneau">
+  <button type="button" class="fermer-panneau" aria-label="Fermer">&times;</button>
+  <strong class="titre-panneau">{% block entete %}{% endblock %}</strong>
+  <button type="button" class="btn btn-rouge" id="enregistrerPanneau">Enregistrer</button>
+</div>
+
+{% block contenu_admin %}{% endblock %}
+{% block scripts_page %}{% endblock %}

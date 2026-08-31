@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titre %}Administration{% endblock %} - Maison des Garnitures</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="logo-admin">
+      <img src="{{ url_for('static', filename='img/logo.jpeg') }}" alt="Logo">
+      <span>Maison des Garnitures</span>
+    </div>
+
+    <nav class="menu-admin">
+      {% set ici = request.endpoint or '' %}
+
+      <a href="{{ url_for('admin_dashboard') }}" class="{{ 'actif' if ici == 'admin_dashboard' }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V3H4v10zm0 8h6v-6H4v6zm10 0h6V11h-6v10zm0-18v6h6V3h-6z"/></svg>
+        <span>Tableau de bord</span>
+      </a>
+
+      {% set g_commandes = ici in ('admin_commandes', 'admin_commande_detail',
+                                   'admin_commande_modifier', 'admin_paniers_abandonnes') %}
+      <details class="groupe-menu" {% if g_commandes %}open{% endif %}>
+        <summary class="{{ 'actif' if g_commandes }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7.2 14.8l.9-1.8h7.5a2 2 0 0 0 1.8-1.1l3.2-6.1L18.9 5l-3.2 6H8.5L4.3 2H1v2h2l3.6 7.6-1.4 2.4A2 2 0 0 0 7 17h12v-2H7.4a.2.2 0 0 1-.2-.2z"/></svg>
+          <span>Commandes</span>
+          <em class="chevron"></em>
+        </summary>
+        <a href="{{ url_for('admin_commandes') }}" class="{{ 'actif' if ici.startswith('admin_commande') }}">Commandes</a>
+        {% if utilisateur.peut('paniers') %}
+        <a href="{{ url_for('admin_paniers_abandonnes') }}" class="{{ 'actif' if ici == 'admin_paniers_abandonnes' }}">Paniers abandonnes</a>
+        {% endif %}
+      </details>
+
+      {% if utilisateur.peut('produits') or utilisateur.peut('categories')
+            or utilisateur.peut('promotions') %}
+      {% set g_produits = ici.startswith('admin_produit') or ici.startswith('admin_categorie')
+                          or ici.startswith('admin_promotion') %}
+      <details class="groupe-menu" {% if g_produits %}open{% endif %}>
+        <summary class="{{ 'actif' if g_produits }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8zm-9 2.8L5.8 7.3 12 3.8l6.2 3.5L12 10.8zM5 9.6l6 3.4v6.2l-6-3.4V9.6zm8 9.6V13l6-3.4v6.2l-6 3.4z"/></svg>
+          <span>Produits</span>
+          <em class="chevron"></em>
+        </summary>
+        <a href="{{ url_for('admin_produits') }}" class="{{ 'actif' if ici.startswith('admin_produit') }}">Produits</a>
+        <a href="{{ url_for('admin_categories') }}" class="{{ 'actif' if ici.startswith('admin_categorie') }}">Categories</a>
+        <a href="{{ url_for('admin_promotions') }}" class="{{ 'actif' if ici.startswith('admin_promotion') }}">Codes promo</a>
+      </details>
+      {% endif %}
+
+      {% if utilisateur.peut('statistiques') %}
+      {% set g_stats = ici.startswith('admin_stat') %}
+      <details class="groupe-menu" {% if g_stats %}open{% endif %}>
+        <summary class="{{ 'actif' if g_stats }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 18.5l6-6 4 4L22 6.9 20.6 5.5l-7.1 8.1-4-4L2 17l1.5 1.5z"/></svg>
+          <span>Statistiques</span>
+          <em class="chevron"></em>
+        </summary>
+        <a href="{{ url_for('admin_statistiques') }}" class="{{ 'actif' if ici == 'admin_statistiques' }}">Apercu</a>
+        <a href="{{ url_for('admin_stats_commandes') }}" class="{{ 'actif' if ici == 'admin_stats_commandes' }}">Commandes</a>
+        <a href="{{ url_for('admin_stats_produits') }}" class="{{ 'actif' if ici == 'admin_stats_produits' }}">Produits</a>
+        <a href="{{ url_for('admin_stats_regions') }}" class="{{ 'actif' if ici == 'admin_stats_regions' }}">Regions</a>
+        <a href="{{ url_for('admin_stats_marketing') }}" class="{{ 'actif' if ici == 'admin_stats_marketing' }}">Marketing</a>
+        <a href="{{ url_for('admin_stats_livraison') }}" class="{{ 'actif' if ici == 'admin_stats_livraison' }}">Livraison</a>
+        <a href="{{ url_for('admin_stats_equipe') }}" class="{{ 'actif' if ici == 'admin_stats_equipe' }}">Equipe</a>
+      </details>
+      {% endif %}
+
+      {% if utilisateur.peut('avis') %}
+      <a href="{{ url_for('admin_avis') }}" class="{{ 'actif' if ici.startswith('admin_avis') }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.3l-6.2 3.7 1.6-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.4 4.8 1.6 7z"/></svg>
+        <span>Avis clients</span>
+      </a>
+      {% endif %}
+
+      {% if utilisateur.peut('equipe') %}
+      <a href="{{ url_for('admin_utilisateurs') }}" class="{{ 'actif' if ici.startswith('admin_utilisateur') }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-8 0a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-2.7 0-8 1.3-8 4v3h10v-3c0-1 .4-1.9 1.1-2.6C9.4 13.1 8.6 13 8 13zm8 0c-.6 0-1.4.1-2.2.3.9.8 1.4 1.8 1.4 2.9v2.8h8.8V16c0-2.7-5.3-3-8-3z"/></svg>
+        <span>Equipe</span>
+      </a>
+      {% endif %}
+
+      {% if utilisateur.peut('boutique') %}
+      {% set g_boutique = ici in ('admin_parametres', 'admin_pages', 'admin_page_modifier') %}
+      <details class="groupe-menu" {% if g_boutique %}open{% endif %}>
+        <summary class="{{ 'actif' if g_boutique }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16l1.5 5A3 3 0 0 1 19 12.5V20H5v-7.5A3 3 0 0 1 2.5 9L4 4zm3 10v4h4v-4H7zm6 0v4h4v-4h-4z"/></svg>
+          <span>Boutique</span>
+          <em class="chevron"></em>
+        </summary>
+        <a href="{{ url_for('admin_parametres') }}" class="{{ 'actif' if ici == 'admin_parametres' }}">Parametres</a>
+        <a href="{{ url_for('admin_pages') }}" class="{{ 'actif' if ici.startswith('admin_page') }}">Pages d'information</a>
+      </details>
+      {% endif %}
+
+      {% if utilisateur.peut('transporteurs') %}
+      {% set g_integrations = ici.startswith('admin_transporteur') %}
+      <details class="groupe-menu" {% if g_integrations %}open{% endif %}>
+        <summary class="{{ 'actif' if g_integrations }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10h-1V7a2 2 0 0 0-2-2h-3V4a2.5 2.5 0 0 0-5 0v1H6a2 2 0 0 0-2 2v3.2h1.3a2.4 2.4 0 0 1 0 4.8H4V19a2 2 0 0 0 2 2h3.2v-1.3a2.4 2.4 0 0 1 4.8 0V21h3a2 2 0 0 0 2-2v-3h1a2.5 2.5 0 0 0 0-5z"/></svg>
+          <span>Integrations</span>
+          <em class="chevron"></em>
+        </summary>
+        <a href="{{ url_for('admin_transporteurs') }}" class="{{ 'actif' if ici.startswith('admin_transporteur') }}">Livraison</a>
+      </details>
+      {% endif %}
+
+      <div class="separateur-menu"></div>
+
+      <a href="{{ url_for('accueil') }}" target="_blank">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.6l-9.8 9.8 1.4 1.4L19 6.4V10h2V3h-7zM5 5h5V3H3v18h18v-7h-2v5H5V5z"/></svg>
+        <span>Voir la boutique</span>
+      </a>
+      <a href="{{ url_for('admin_logout') }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 13v-2H7V8l-5 4 5 4v-3h9zM20 3h-8v2h8v14h-8v2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg>
+        <span>Deconnexion</span>
+      </a>
+    </nav>
+  </aside>
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1 style="margin:0; font-size:20px;">{% block entete %}{% endblock %}</h1>
+      <div class="outils-topbar">
+        <div class="cloche-alertes">
+          <button type="button" id="boutonAlertes"
+                  class="bouton-alertes{% if alertes_non_lues %} a-du-neuf{% endif %}"
+                  title="Alertes de stock">
+            &#9888;
+            {% if produits_alerte %}<span class="pastille">{{ produits_alerte|length }}</span>{% endif %}
+          </button>
+
+          <div class="panneau-alertes" id="panneauAlertes" hidden>
+            <div class="entete-alertes">
+              <strong>Alertes de stock</strong>
+              {% if produits_alerte %}
+              <form method="post" action="{{ url_for('admin_alertes_lues') }}">
+                <button type="submit" class="lien-marquer">Marquer comme lu</button>
+              </form>
+              {% endif %}
+            </div>
+
+            {% if not produits_alerte %}
+              <p class="alertes-vide">Aucun produit sous le seuil de {{ seuil_alerte }} unite(s).</p>
+            {% else %}
+            <ul class="liste-alertes">
+              {% for p in produits_alerte %}
+              <li>
+                <a href="{{ url_for('admin_produit_modifier', produit_id=p.id) }}" data-ouvre-panneau>
+                  <span class="visuel-alerte">
+                    {% if p.image %}<img src="{{ url_for('static', filename='img/produits/' + p.image) }}" alt="" loading="lazy">{% endif %}
+                  </span>
+                  <span class="texte-alerte">
+                    <strong>{{ p.nom }}</strong>
+                    <em>{{ p.reference or "" }}</em>
+                  </span>
+                  <span class="reste {{ 'epuise' if p.stock <= 0 else '' }}">
+                    {{ p.stock }} {{ "restant" if p.stock == 1 else "restants" }}
+                  </span>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+
+        <span>{{ utilisateur.nom }}</span>
+        <span class="role-badge">{{ utilisateur.role }}</span>
+      </div>
+    </div>
+
+    {% if mot_de_passe_usine %}
+    <div class="alerte-securite">
+      <strong>Mot de passe d'usine encore actif.</strong>
+      Il est ecrit dans le code du projet : n'importe qui le connaissant peut
+      ouvrir ton administration. Change-le avant la mise en ligne &mdash;
+      <a href="{{ url_for('admin_utilisateurs') }}">Equipe</a>, puis modifie ton compte.
+    </div>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for categorie, message in messages %}
+        <div class="flash {{ categorie }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    {% block contenu_admin %}{% endblock %}
+  </main>
+</div>
+{% block scripts_page %}{% endblock %}
+
+<script>
+(function () {
+  var bouton = document.getElementById('boutonAlertes');
+  var panneau = document.getElementById('panneauAlertes');
+  if (!bouton || !panneau) return;
+
+  bouton.addEventListener('click', function (e) {
+    e.stopPropagation();
+    panneau.hidden = !panneau.hidden;
+  });
+  // Un clic ailleurs referme, mais pas un clic dans le panneau lui-meme.
+  panneau.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.addEventListener('click', function () { panneau.hidden = true; });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') panneau.hidden = true;
+  });
+})();
+</script>
+{# Panneau lateral : toute page d'edition peut y etre ouverte. #}
+<div class="voile-panneau" id="voilePanneau" hidden></div>
+<aside class="panneau-lateral" id="panneauEdition" hidden aria-label="Panneau d'edition">
+  {# La barre du haut est deplacee ici a l'ouverture : hors de la zone qui
+     defile, elle reste visible quoi qu'il arrive. #}
+  <div class="tete-panneau"></div>
+  <div class="corps-panneau"></div>
+</aside>
+
+  <script src="{{ url_for('static', filename='js/confirmation.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/select-statut.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/gouvernorats-admin.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/choix-produit.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/panneau-edition.js') }}"></script>
+</body>
+</html>

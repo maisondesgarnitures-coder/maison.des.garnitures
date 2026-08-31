@@ -1,0 +1,46 @@
+{% extends gabarit_admin %}
+{% block titre %}{{ page.titre_fr }}{% endblock %}
+{% block entete %}{{ page.titre_fr }}{% endblock %}
+{% block contenu_admin %}
+
+<form method="post" class="form-produit" data-formulaire-principal
+      action="{{ url_for('admin_page_modifier', page_id=page.id) }}">
+  <section class="bloc-produit">
+    <div class="grille-2">
+      <div>
+        <label>Titre en francais *</label>
+        <input type="text" name="titre_fr" required value="{{ page.titre_fr }}">
+      </div>
+      <div>
+        <label>Titre en arabe</label>
+        <input type="text" name="titre_ar" value="{{ page.titre_ar or '' }}" dir="rtl">
+      </div>
+    </div>
+    <p class="aide">Adresse publique : <code>/page/{{ page.slug }}</code></p>
+    <div class="cases-produit">
+      <label><input type="checkbox" name="actif" {% if page.actif %}checked{% endif %}> Afficher dans le pied de page</label>
+    </div>
+  </section>
+
+  <section class="bloc-produit">
+    <h3>Contenu en francais</h3>
+    <p class="aide">
+      La mise en forme HTML est conservee : &lt;h3&gt; pour un sous-titre,
+      &lt;p&gt; pour un paragraphe, &lt;ul&gt;&lt;li&gt; pour une liste.
+      Les scripts sont automatiquement retires.
+    </p>
+    <textarea name="contenu_fr" rows="22">{{ page.contenu_fr or '' }}</textarea>
+  </section>
+
+  <section class="bloc-produit">
+    <h3>Contenu en arabe</h3>
+    <p class="aide">Laisse vide pour afficher le texte francais aux visiteurs arabophones.</p>
+    <textarea name="contenu_ar" rows="22" dir="rtl">{{ page.contenu_ar or '' }}</textarea>
+  </section>
+
+  <div class="barre-actions">
+    <button type="submit" class="btn btn-rouge btn-large">Enregistrer</button>
+    <a href="{{ url_for('admin_pages') }}" class="btn btn-secondaire">Annuler</a>
+  </div>
+</form>
+{% endblock %}

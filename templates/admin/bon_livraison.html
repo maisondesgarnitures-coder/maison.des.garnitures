@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bon de livraison {{ reference }}</title>
+  <style>
+    /* Feuille autonome : le bon s'imprime seul, sans la mise en page de l'admin. */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 18px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #000; background: #f1f2f4;
+      font-size: 13px;
+    }
+    .feuille {
+      width: 148mm;              /* A5 : deux bons par page A4 */
+      min-height: 200mm;
+      margin: 0 auto; padding: 10mm;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0,0,0,.14);
+    }
+    .barre-outils {
+      max-width: 148mm; margin: 0 auto 14px;
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .barre-outils a, .barre-outils button {
+      font: inherit; padding: 9px 16px; border-radius: 7px;
+      border: 1px solid #d3d8df; background: #fff; color: #12141a;
+      cursor: pointer; text-decoration: none;
+    }
+    .barre-outils .principal { background: #d21f35; border-color: #d21f35; color: #fff; font-weight: 600; }
+
+    .date-bon { text-align: center; font-weight: 700; margin-bottom: 10px; }
+    .entete-bon { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .titre-bon {
+      flex: 1; border: 2px solid #000; padding: 10px 12px;
+      text-align: center; font-weight: 700; font-size: 15px;
+    }
+    .entete-bon svg { flex: 0 0 auto; }
+
+    table.cadre { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    table.cadre td, table.cadre th { border: 1px solid #000; padding: 8px 10px; vertical-align: top; }
+    table.cadre th { text-align: center; font-weight: 700; }
+    .mention-legale { font-size: 10.5px; line-height: 1.35; }
+
+    .bloc-code { text-align: center; margin: 14px 0; }
+    .trajet { text-align: center; font-size: 16px; font-weight: 700; margin: 12px 0; }
+    .trajet .fleche { font-weight: 400; letter-spacing: 1px; }
+    .tva { text-align: center; font-weight: 700; margin: 8px 0 12px; }
+    .instructions { border: 1px solid #000; padding: 10px; min-height: 68px; width: 62%; }
+    .bas-bon { display: flex; gap: 12px; align-items: flex-start; }
+    .signature { flex: 1; border: 1px solid #000; padding: 10px; min-height: 68px; text-align: center; }
+    .num { text-align: center; white-space: nowrap; }
+    .paiement {
+      margin-top: 12px; border: 2px solid #000; padding: 10px;
+      text-align: center; font-size: 15px; font-weight: 700;
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .barre-outils { display: none; }
+      .feuille { width: auto; min-height: 0; margin: 0; padding: 6mm; box-shadow: none; }
+      @page { size: A5; margin: 6mm; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="barre-outils">
+  <button type="button" class="principal" onclick="window.print()">Imprimer</button>
+  <a href="{{ url_for('admin_commande_detail', commande_id=commande.id) }}">Retour a la commande</a>
+  <a href="{{ url_for('admin_commandes') }}">Liste des commandes</a>
+</div>
+
+<div class="feuille">
+
+  <div class="date-bon">Date : {{ commande.date_creation.strftime("%d/%m/%Y") }}</div>
+
+  <div class="entete-bon">
+    <div class="titre-bon">BON DE LIVRAISON N&deg; {{ reference }}</div>
+    {{ code_barre|safe }}
+  </div>
+
+  <!-- ============ Expediteur ============ -->
+  <table class="cadre">
+    <tr>
+      <td style="width:52%;">
+        <strong>Nom de l'expediteur :</strong>
+        {{ params.raison_sociale or params.nom_boutique if params else "Maison des Garnitures" }}
+        <br><br>
+        <strong>Adresse :</strong> {{ params.adresse or "—" if params else "—" }}
+      </td>
+      <td>
+        <strong>Telephone :</strong> {{ params.telephone if params else "" }}
+        <br><br>
+        {% if params and params.matricule_fiscal %}
+          <strong>Matricule Fiscal / CIN :</strong> {{ params.matricule_fiscal }}
+          <div class="mention-legale">
+            (conformement a la circulaire de la presidence du gouvernement
+            n&deg; 2019-8 du 25/02/2019)
+          </div>
+        {% else %}
+          <strong>Matricule Fiscal / CIN :</strong> &mdash;
+          <div class="mention-legale">
+            A renseigner dans Parametres : la circulaire n&deg; 2019-8 du 25/02/2019
+            l'exige sur les bons de livraison.
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+
+  <div class="bloc-code">{{ code_barre_large|safe }}</div>
+
+  <div class="trajet">
+    {{ params.adresse or params.nom_boutique if params else "Expediteur" }}
+    <span class="fleche">&gt;&gt; ---- Dispatch ---- &gt;&gt;</span>
+    {{ commande.gouvernorat }}
+  </div>
+
+  <!-- ============ Destinataire ============ -->
+  <table class="cadre">
+    <tr>
+      <td style="width:52%;">
+        <strong>NOM DE DESTINATAIRE :</strong> {{ commande.nom_client }}
+        <br><br>
+        <strong>Telephone :</strong> <span dir="ltr">{{ commande.telephone }}</span>
+      </td>
+      <td>
+        <strong>ADRESSE :</strong>
+        {{ commande.adresse or "—" }}
+        {% if commande.ville %}<br>{{ commande.ville }}, {{ commande.gouvernorat }}{% endif %}
+      </td>
+    </tr>
+  </table>
+
+  <!-- ============ Contenu du colis ============ -->
+  <table class="cadre">
+    <tr>
+      <th>Designation &mdash; Contenu du colis</th>
+      <th style="width:70px;">Quantite</th>
+      <th style="width:96px;">Montant TTC</th>
+    </tr>
+    {% for ligne in commande.lignes %}
+    {% set produit = produits_par_id.get(ligne.produit_id) %}
+    <tr>
+      <td>
+        {{ ligne.nom_produit }}
+        {% if produit and produit.reference %}<br>({{ produit.reference }}){% endif %}
+      </td>
+      <td class="num">{{ ligne.quantite }}</td>
+      <td class="num">{{ "%.2f"|format(ligne.prix_unitaire * ligne.quantite) }} DT</td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td style="text-align:right;"><strong>Frais de livraison</strong></td>
+      <td class="num">&mdash;</td>
+      <td class="num">{{ "%.2f"|format(commande.frais_livraison or 0) }} DT</td>
+    </tr>
+  </table>
+
+  {% if taux_tva %}
+  <div class="tva">Dont TVA {{ "%g"|format(taux_tva) }} % : {{ "%.3f"|format(tva) }} DT</div>
+  {% endif %}
+
+  <div class="paiement">
+    A ENCAISSER A LA LIVRAISON : {{ "%.2f"|format(commande.total) }} DT
+  </div>
+
+  <div class="bas-bon" style="margin-top:12px;">
+    <div class="instructions">
+      <strong>Instructions diverses :</strong>
+      {% if commande.commentaire %}<div style="margin-top:6px;">{{ commande.commentaire }}</div>{% endif %}
+    </div>
+    <div class="signature">
+      <strong>Signature du client</strong>
+    </div>
+  </div>
+
+  {% if commande.transporteur %}
+  <div style="margin-top:10px; font-size:12px;">
+    <strong>Transporteur :</strong> {{ commande.transporteur }}
+    {% if commande.numero_suivi %} &mdash; suivi {{ commande.numero_suivi }}{% endif %}
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>

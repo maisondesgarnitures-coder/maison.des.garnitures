@@ -1,0 +1,69 @@
+{% extends "admin/_stats_base.html" %}
+{% import "admin/_stats_macros.html" as m %}
+{% block entete %}Statistiques - Marketing{% endblock %}
+{% block contenu_stats %}
+
+{{ m.cartes_indicateurs(ind) }}
+
+<div class="encart-info">
+  <strong>{{ nb_attribuees }} commande(s) sur {{ ind.total }} ({{ part_attribuee }} %)</strong>
+  portent une provenance publicitaire.
+  {% if part_attribuee < 100 %}
+  Pour attribuer les autres, ajoute les parametres d'URL a tes publicites Meta :
+  <code>utm_source=facebook&amp;utm_medium=cpc&amp;utm_campaign={{ '{{campaign.name}}' }}&amp;utm_content={{ '{{adset.name}}' }}&amp;utm_term={{ '{{ad.name}}' }}</code>
+  (Gestionnaire de publicites &gt; niveau Annonce &gt; Suivi &gt; Parametres d'URL).
+  {% endif %}
+</div>
+
+<h3>Par campagne, ensemble de publicites et annonce</h3>
+{% if not campagnes %}
+  <p class="vide">Aucune commande sur la periode.</p>
+{% else %}
+<table class="table-admin">
+  <tr>
+    <th>Campagne</th><th>Ensemble de pubs</th><th>Annonce</th>
+    <th class="num">Commandes</th><th class="num">Livrees</th>
+    <th class="num">Confirmation</th><th class="num">Encaisse</th><th class="num">Benefice</th>
+  </tr>
+  {% for c in campagnes %}
+  <tr>
+    <td>{{ c.campagne }}</td>
+    <td>{{ c.adset }}</td>
+    <td>{{ c.annonce }}</td>
+    <td class="num">{{ c.nb }}</td>
+    <td class="num">{{ c.livrees }}</td>
+    <td class="num">{{ c.taux_confirmation }}%</td>
+    <td class="num">{{ "%.2f"|format(c.encaisse) }} TND</td>
+    <td class="num"><strong class="{{ 'bon' if c.marge > 0 else 'faible' }}">{{ "%.2f"|format(c.marge) }} TND</strong></td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="note-stats">
+  Le benefice est ce qui reste apres le prix d'achat des articles reellement livres.
+  C'est lui, pas le chiffre d'affaires, qu'il faut comparer a ton budget publicitaire
+  pour savoir si une campagne est rentable.
+</p>
+{% endif %}
+
+<h3 style="margin-top:26px;">Par source de trafic</h3>
+{% if not sources %}
+  <p class="vide">Aucune donnee.</p>
+{% else %}
+<table class="table-admin">
+  <tr><th>Source</th><th class="num">Commandes</th><th class="num">Part</th>
+      <th class="num">Livrees</th><th class="num">Encaisse</th><th class="num">Benefice</th></tr>
+  {% for s in sources %}
+  <tr>
+    <td>{{ s.valeur }}</td>
+    <td class="num">{{ s.nb }}</td>
+    <td class="num">{{ s.part }}%</td>
+    <td class="num">{{ s.livrees }}</td>
+    <td class="num">{{ "%.2f"|format(s.encaisse) }} TND</td>
+    <td class="num"><strong>{{ "%.2f"|format(s.marge) }} TND</strong></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{{ m.graphique(serie, 'nb', 'Commandes par jour', 'var(--bleu)') }}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Importer des produits{% endblock %}
+{% block entete %}Importer des produits{% endblock %}
+{% block contenu_admin %}
+<div class="form-admin">
+  <p style="margin-top:0;">
+    Depose ici l'export de ta boutique <strong>Converty</strong>, Shopify, WooCommerce, ou
+    n'importe quel fichier Excel/CSV. Les colonnes sont reconnues automatiquement, en
+    francais, anglais ou arabe : tu n'as rien a renommer.
+  </p>
+
+  <div style="background:#f0f1f3; border-radius:6px; padding:12px; font-size:13px; margin-bottom:16px;">
+    <strong>Colonnes reconnues :</strong> nom / name / titre &middot; reference / sku / code &middot;
+    categorie / category / collection &middot; prix / price &middot; prix promo / sale price &middot;
+    stock / quantite / inventory &middot; description &middot; couleur / color &middot;
+    dimensions / taille &middot; image / photo / image url
+    <br><br>
+    Formats acceptes : <strong>.xlsx</strong>, <strong>.csv</strong> (virgule, point-virgule ou tabulation).
+    Les produits existants sont mis a jour d'apres leur reference, jamais dupliques.
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    <label>Fichier de produits</label>
+    <input type="file" name="fichier_csv" accept=".csv,.xlsx,.xlsm" required>
+
+    <label style="display:flex; align-items:center; gap:8px; margin-top:16px; font-weight:400;">
+      <input type="checkbox" name="telecharger_images" value="1" checked style="width:auto;">
+      Telecharger aussi les photos depuis les liens du fichier
+    </label>
+    <p style="font-size:12px; color:var(--texte-secondaire); margin:4px 0 0;">
+      A decocher si l'import est lent : les images se rapatrient une par une.
+    </p>
+
+    <button type="submit" class="btn btn-rouge" style="margin-top:16px;">Importer les produits</button>
+  </form>
+
+  <p style="font-size:13px; color:var(--texte-secondaire); margin-top:20px;">
+    Un modele vide est disponible dans le dossier de l'application :
+    <code>modele_import_produits.csv</code>
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block titre %}{{ categorie.meta_titre or (intitule(categorie) ~ ' - ' ~ (parametres.nom_boutique if parametres else 'Maison des Garnitures')) }}{% endblock %}
+{% block description %}{{ categorie.meta_description or (categorie.description or intitule(categorie))|striptags|truncate(160) }}{% endblock %}
+{% block contenu %}
+{% if categorie.image and not categorie.est_sous_categorie %}
+<div class="banniere-categorie-boutique">
+  <img src="{{ url_for('static', filename='img/produits/' + categorie.image) }}" alt="{{ intitule(categorie) }}">
+  <span class="titre-banniere">{{ intitule(categorie) }}</span>
+</div>
+{% endif %}
+
+<div class="conteneur">
+  {# Fil d'Ariane : sur trois niveaux, il faut pouvoir remonter. #}
+  {% if fil and fil|length > 1 %}
+  <nav class="fil-ariane" aria-label="{{ intitule(categorie) }}">
+    <a href="{{ url_for('catalogue') }}">{{ t('tous_produits') }}</a>
+    {% for etape in fil %}
+      <span aria-hidden="true">›</span>
+      {% if loop.last %}
+        <strong>{{ intitule(etape) }}</strong>
+      {% else %}
+        <a href="{{ url_for('voir_categorie', slug=etape.slug) }}">{{ intitule(etape) }}</a>
+      {% endif %}
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  {% if categorie.est_sous_categorie or not categorie.image %}
+  <h1 class="section-titre" style="padding:0;">{{ intitule(categorie) }}</h1>
+  {% endif %}
+
+  {% if categorie.description %}
+  <p class="texte-categorie">{{ categorie.description }}</p>
+  {% endif %}
+
+  {% if sous_categories %}
+  <div class="sous-categories">
+    {% for sc in sous_categories %}
+    <a href="{{ url_for('voir_categorie', slug=sc.slug) }}" class="puce-sous-categorie">
+      {% if sc.image %}
+        <img src="{{ url_for('static', filename='img/produits/' + sc.image) }}"
+             alt="{{ intitule(sc) }}" loading="lazy">
+      {% else %}
+        <span class="sans-image" aria-hidden="true">+</span>
+      {% endif %}
+      <span>{{ intitule(sc) }}</span>
+      <em>{{ sc.nb_produits_total }} {{ t('article_un') if sc.nb_produits_total == 1 else t('article_plusieurs') }}</em>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if masquer_produits %}
+    {# Les articles se decouvrent en ouvrant un rayon. #}
+  {% elif produits %}
+    {% include "shop/_bloc_catalogue.html" %}
+  {% else %}
+    <p>{{ t('categorie_vide') }}</p>
+  {% endif %}
+</div>
+
+
+{% endblock %}
+
+{% block scripts_page %}
+<script>var TXT_CHARGEMENT = {{ t('chargement')|tojson }};</script>
+<script src="{{ url_for('static', filename='js/voir-plus.js') }}"></script>
+{% endblock %}

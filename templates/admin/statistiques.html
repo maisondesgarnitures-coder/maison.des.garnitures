@@ -1,0 +1,95 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Statistiques{% endblock %}
+{% block entete %}Statistiques et repartition par region{% endblock %}
+{% block contenu_admin %}
+
+<div class="cartes-stats">
+  <div class="carte-stat">
+    <div class="valeur">{{ total_commandes_toutes }}</div>
+    <div class="label">Commandes au total</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ taux_livraison }}%</div>
+    <div class="label">Taux de livraison reussie</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ taux_retour }}%</div>
+    <div class="label">Taux de retour</div>
+  </div>
+</div>
+
+<h3>Commandes sur les 10 derniers jours</h3>
+<div style="background:var(--blanc); border:1px solid var(--bordure); border-radius:var(--rayon); padding:20px; box-shadow:var(--ombre); margin-bottom:30px;">
+  <canvas id="graphiqueCommandes" height="90"></canvas>
+</div>
+
+<h3>Repartition des commandes par gouvernorat</h3>
+<table class="table-admin">
+  <tr><th>Gouvernorat</th><th>Nombre de commandes</th><th>Part du total</th><th>Chiffre d'affaires</th></tr>
+  {% for s in stats_gouvernorats %}
+  <tr>
+    <td>{{ s.gouvernorat }}</td>
+    <td>{{ s.nb_commandes }}</td>
+    <td>
+      <div style="background:var(--bordure); border-radius:4px; height:8px; width:150px; display:inline-block; vertical-align:middle; margin-right:8px;">
+        <div style="background:var(--rouge); height:8px; border-radius:4px; width:{{ s.pourcentage }}%;"></div>
+      </div>
+      {{ s.pourcentage }}%
+    </td>
+    <td>{{ "%.2f"|format(s.ca) }} TND</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<script>
+const ctx = document.getElementById('graphiqueCommandes').getContext('2d');
+const labels = {{ labels_jours | tojson }};
+const valeurs = {{ valeurs_jours | tojson }};
+
+const largeur = ctx.canvas.width = ctx.canvas.offsetWidth;
+const hauteur = ctx.canvas.height = 260;
+const maxVal = Math.max(...valeurs, 1);
+const marge = 40;
+const pasX = (largeur - marge * 2) / (labels.length - 1 || 1);
+
+ctx.clearRect(0, 0, largeur, hauteur);
+ctx.strokeStyle = "#E5E7EB";
+ctx.lineWidth = 1;
+for (let i = 0; i <= 4; i++) {
+  const y = hauteur - marge - (i * (hauteur - marge * 1.5) / 4);
+  ctx.beginPath();
+  ctx.moveTo(marge, y);
+  ctx.lineTo(largeur - 10, y);
+  ctx.stroke();
+  ctx.fillStyle = "#5F6673";
+  ctx.font = "11px Arial";
+  ctx.fillText(Math.round(i * maxVal / 4), 5, y + 4);
+}
+
+ctx.beginPath();
+ctx.strokeStyle = "#C81D35";
+ctx.lineWidth = 2.5;
+valeurs.forEach((v, i) => {
+  const x = marge + i * pasX;
+  const y = hauteur - marge - (v / maxVal) * (hauteur - marge * 1.5);
+  if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+});
+ctx.stroke();
+
+valeurs.forEach((v, i) => {
+  const x = marge + i * pasX;
+  const y = hauteur - marge - (v / maxVal) * (hauteur - marge * 1.5);
+  ctx.beginPath();
+  ctx.arc(x, y, 4, 0, 2 * Math.PI);
+  ctx.fillStyle = "#C81D35";
+  ctx.fill();
+
+  ctx.fillStyle = "#101114";
+  ctx.font = "10px Arial";
+  ctx.save();
+  ctx.translate(x, hauteur - 15);
+  ctx.fillText(labels[i].slice(5), -15, 0);
+  ctx.restore();
+});
+</script>
+{% endblock %}

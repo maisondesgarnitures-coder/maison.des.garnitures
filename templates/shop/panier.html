@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block titre %}Mon panier - Maison des Garnitures{% endblock %}
+{% block contenu %}
+<div class="conteneur">
+  <h1 class="section-titre" style="padding:0;">{{ t('mon_panier') }}</h1>
+  {% if articles %}
+    {% for a in articles %}
+    <div class="ligne-panier">
+      <div class="infos-ligne-panier">
+        {% if a.image %}
+        <img src="{{ url_for('static', filename='img/produits/' + a.image) }}" alt="" class="vignette-panier">
+        {% endif %}
+        <div>
+          <strong>{{ a.nom_affiche }}</strong>
+          {% if a.lot %}<span class="etiquette-lot">{{ a.lot.nom }}{% if a.lot.etiquette %} - {{ a.lot.etiquette }}{% endif %}</span>{% endif %}
+          <br>
+          <span style="color:var(--texte-secondaire);">
+            {{ "%.2f"|format(a.unitaire) }} TND x {{ a.quantite }}{% if a.lot %} lot(s) de {{ a.lot.quantite }}{% endif %}
+          </span>
+          {% if a.economie %}
+          <br><span class="economie-ligne">{{ t('economisez') }} {{ "%.2f"|format(a.economie) }} TND</span>
+          {% endif %}
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <form method="post" action="{{ url_for('maj_panier', cle=a.cle) }}">
+          <input type="number" name="quantite" value="{{ a.quantite }}" min="0" style="width:60px; padding:6px;">
+          <button type="submit" class="btn btn-secondaire btn-petit">{{ t('maj') }}</button>
+        </form>
+        <strong>{{ "%.2f"|format(a.sous_total) }} TND</strong>
+        <a href="{{ url_for('supprimer_panier', cle=a.cle) }}" class="btn btn-petit" style="background:var(--erreur); color:white;">{{ t('supprimer') }}</a>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div style="max-width:400px; margin:20px 0; background:var(--blanc); border:1px solid var(--bordure); border-radius:8px; padding:16px;">
+      {% if promo_active %}
+        <p style="margin:0 0 10px; color:var(--vert); font-weight:600;">{{ t('code_applique') }} : {{ promo_active.code }}</p>
+        <a href="{{ url_for('retirer_code_promo') }}" class="btn btn-secondaire btn-petit">{{ t('retirer_code') }}</a>
+      {% else %}
+        <form method="post" action="{{ url_for('appliquer_code_promo') }}" style="display:flex; gap:8px;">
+          <input type="text" name="code_promo" placeholder="{{ t('avez_code_promo') }}" style="flex:1; padding:10px; border:1px solid var(--bordure); border-radius:6px; text-transform:uppercase;">
+          <button type="submit" class="btn btn-rouge">{{ t('appliquer') }}</button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div style="max-width:400px;">
+      {% if economies %}
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px; color:var(--vert);">
+        <span>{{ t('economisez') }}</span>
+        <span>- {{ "%.2f"|format(economies) }} TND</span>
+      </div>
+      {% endif %}
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px;">
+        <span>{{ t('sous_total') }}</span>
+        <span>{{ "%.2f"|format(total) }} TND</span>
+      </div>
+      {% if reduction and reduction > 0 %}
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px; color:var(--vert);">
+        <span>{{ t('reduction') }} {{ promo_active.code }}</span>
+        <span>- {{ "%.2f"|format(reduction) }} TND</span>
+      </div>
+      {% endif %}
+      <div class="recap-total">
+        <span>{{ t('total') }}</span>
+        <span>{{ "%.2f"|format(total_final if total_final is defined else total) }} TND</span>
+      </div>
+    </div>
+
+    {% include "shop/_suggestions.html" %}
+
+    <a href="{{ url_for('commander') }}" class="btn btn-rouge btn-large" style="margin-top:20px; display:block; max-width:400px;">{{ t('passer_commande') }}</a>
+  {% else %}
+    <p>{{ t('panier_vide') }}</p>
+    <a href="{{ url_for('accueil') }}" class="btn btn-rouge">{{ t('voir_produits') }}</a>
+  {% endif %}
+</div>
+{% endblock %}

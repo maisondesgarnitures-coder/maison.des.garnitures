@@ -1,0 +1,48 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Codes promo{% endblock %}
+{% block entete %}Codes promo{% endblock %}
+{% block contenu_admin %}
+<div style="margin-bottom:16px;">
+  <a href="{{ url_for('admin_promotion_nouvelle') }}" data-ouvre-panneau class="btn btn-rouge">+ Nouvelle promotion</a>
+</div>
+
+{% if promotions %}
+<table class="table-admin">
+  <tr>
+    <th>Titre</th><th>Code</th><th>Type</th><th>Valeur</th>
+    <th>Periode</th><th>Utilisation</th><th>Statut</th><th>Actions</th>
+  </tr>
+  {% for p in promotions %}
+  <tr>
+    <td>{{ p.titre }}</td>
+    <td><strong>{{ p.code }}</strong></td>
+    <td>{{ "Pourcentage" if p.type_reduction == "pourcentage" else "Montant fixe" }}</td>
+    <td>{% if p.type_reduction == "pourcentage" %}{{ p.valeur }}%{% else %}{{ "%.2f"|format(p.valeur) }} TND{% endif %}</td>
+    <td>
+      {% if p.date_debut %}{{ p.date_debut.strftime("%d/%m/%Y") }}{% else %}-{% endif %}
+      &rarr;
+      {% if p.date_fin %}{{ p.date_fin.strftime("%d/%m/%Y") }}{% else %}Illimitee{% endif %}
+    </td>
+    <td>{{ p.utilisation_actuelle }} / {{ p.utilisation_max if p.utilisation_max else "illimite" }}</td>
+    <td>
+      {% if p.actif %}
+      <span class="badge-statut statut-livree">Actif</span>
+      {% else %}
+      <span class="badge-statut statut-annulee">Inactif</span>
+      {% endif %}
+    </td>
+    <td>
+      <form method="post" action="{{ url_for('admin_promotion_toggle', promo_id=p.id) }}" style="display:inline;">
+        <button type="submit" class="btn btn-secondaire btn-petit">{{ "Desactiver" if p.actif else "Activer" }}</button>
+      </form>
+      <form method="post" action="{{ url_for('admin_promotion_supprimer', promo_id=p.id) }}" style="display:inline;" onsubmit="return confirm('Supprimer cette promotion ?');">
+        <button type="submit" class="btn btn-petit" style="background:var(--erreur); color:white;">Suppr.</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p style="color:var(--texte-secondaire); text-align:center; padding:40px 0;">Aucune promotion pour le moment. Cree ton premier code pour donner une raison a tes clients de valider leur commande.</p>
+{% endif %}
+{% endblock %}

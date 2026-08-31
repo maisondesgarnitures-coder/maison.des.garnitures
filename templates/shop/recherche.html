@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block titre %}Recherche - Maison des Garnitures{% endblock %}
+{% block contenu %}
+<div class="conteneur">
+  <h1 class="section-titre" style="padding:0;">{{ t('resultats_pour') }} "{{ requete }}"</h1>
+  {% if produits %}
+    {% include "shop/_bloc_catalogue.html" %}
+  {% else %}
+    <p>{{ t('aucun_resultat') }}</p>
+  {% endif %}
+</div>
+
+
+{% endblock %}
+
+{% block scripts_page %}
+<script>var TXT_CHARGEMENT = {{ t('chargement')|tojson }};</script>
+<script src="{{ url_for('static', filename='js/voir-plus.js') }}"></script>
+{% endblock %}

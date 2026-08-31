@@ -1,0 +1,46 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Bordereaux a imprimer{% endblock %}
+{% block entete %}Bordereaux a imprimer{% endblock %}
+{% block contenu_admin %}
+
+<p class="aide-reordonner">
+  Chaque bordereau s'ouvre dans son propre onglet : ils viennent du site du
+  transporteur, on ne peut pas les reunir sur une seule page.
+</p>
+
+<div class="liste-bordereaux">
+  {% for c in avec_bordereau %}
+  <a href="{{ c.lien_bordereau }}" target="_blank" rel="noopener" class="carte-bordereau">
+    <strong>{{ c.numero }}</strong>
+    <span>{{ c.nom_client }} &mdash; {{ c.ville }}</span>
+    <small>{{ c.transporteur }}{% if c.numero_suivi %} &middot; {{ c.numero_suivi }}{% endif %}</small>
+  </a>
+  {% endfor %}
+</div>
+
+<button type="button" class="btn btn-rouge" id="ouvrirTout" style="margin-top:16px;">
+  Ouvrir les {{ avec_bordereau|length }} bordereaux
+</button>
+
+{% if sans_bordereau %}
+<h3 style="margin-top:26px;">Sans bordereau transporteur</h3>
+<p class="aide">Pour celles-ci, c'est notre bon de livraison qui sert.</p>
+<a class="btn btn-secondaire" target="_blank"
+   href="{{ url_for('admin_bons_groupes', ids=sans_bordereau|map(attribute='id')|join(',')) }}">
+  Imprimer {{ sans_bordereau|length }} bon(s) de livraison
+</a>
+{% endif %}
+
+<p style="margin-top:22px;">
+  <a href="{{ url_for('admin_commandes') }}">Retour aux commandes</a>
+</p>
+
+<script>
+document.getElementById('ouvrirTout').addEventListener('click', function () {
+  // Ouverture declenchee par un clic : les navigateurs l'autorisent alors.
+  document.querySelectorAll('.carte-bordereau').forEach(function (lien, i) {
+    setTimeout(function () { window.open(lien.href, '_blank'); }, i * 350);
+  });
+});
+</script>
+{% endblock %}

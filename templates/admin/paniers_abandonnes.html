@@ -1,0 +1,58 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Paniers abandonnes{% endblock %}
+{% block entete %}Paniers abandonnes{% endblock %}
+{% block contenu_admin %}
+
+<p style="color:var(--texte-secondaire); margin-top:0;">
+  Ces clients ont saisi leur numero puis n'ont pas valide. Un message WhatsApp
+  rattrape une bonne partie d'entre eux : le texte est deja pret, tu n'as qu'a envoyer.
+  <strong>{{ total_actifs }}</strong> panier(s) a relancer.
+</p>
+
+{% if not lignes %}
+  <p style="color:var(--texte-secondaire);">Aucun panier abandonne pour le moment.</p>
+{% else %}
+<table class="table-admin">
+  <tr>
+    <th>Date</th><th>Client</th><th>Telephone</th><th>Region</th>
+    <th>Articles</th><th>Total</th><th>Statut</th><th>Actions</th>
+  </tr>
+  {% for l in lignes %}
+  <tr>
+    <td>{{ l.panier.date_maj.strftime("%d/%m/%Y %H:%M") if l.panier.date_maj else "-" }}</td>
+    <td>{{ l.panier.nom_client or "-" }}</td>
+    <td>{{ l.panier.telephone }}</td>
+    <td>{{ l.panier.gouvernorat or "-" }}{% if l.panier.ville %}, {{ l.panier.ville }}{% endif %}</td>
+    <td style="font-size:12px;">
+      {% for a in l.articles %}{{ a.nom }} x{{ a.quantite }}<br>{% endfor %}
+    </td>
+    <td><strong>{{ "%.2f"|format(l.panier.total or 0) }} TND</strong></td>
+    <td>
+      <span class="badge-statut statut-{{ l.panier.statut }}">{{ l.panier.statut }}</span>
+      {% if l.panier.nb_relances %}<br><small>{{ l.panier.nb_relances }} relance(s)</small>{% endif %}
+      {% if l.panier.commande_numero %}<br><small>{{ l.panier.commande_numero }}</small>{% endif %}
+    </td>
+    <td>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        {% if l.lien_whatsapp and l.panier.statut != 'recupere' %}
+          <a href="{{ l.lien_whatsapp }}" target="_blank" class="btn btn-vert btn-petit">Relancer sur WhatsApp</a>
+        {% endif %}
+        {% if l.panier.statut != 'recupere' %}
+        <form method="post" action="{{ url_for('admin_panier_abandonne_marquer', panier_id=l.panier.id) }}">
+          <input type="hidden" name="action" value="{{ 'actif' if l.panier.statut == 'relance' else 'relance' }}">
+          <button type="submit" class="btn btn-secondaire btn-petit" style="width:100%;">
+            {{ "Remettre a relancer" if l.panier.statut == 'relance' else "Marquer relance" }}
+          </button>
+        </form>
+        <form method="post" action="{{ url_for('admin_panier_abandonne_marquer', panier_id=l.panier.id) }}">
+          <input type="hidden" name="action" value="abandon">
+          <button type="submit" class="btn btn-secondaire btn-petit" style="width:100%;">Perdu</button>
+        </form>
+        {% endif %}
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

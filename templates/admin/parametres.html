@@ -1,0 +1,126 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Parametres{% endblock %}
+{% block entete %}Parametres de la boutique{% endblock %}
+{% block contenu_admin %}
+<form method="post" class="form-admin">
+  <label>Nom de la boutique</label>
+  <input type="text" name="nom_boutique" value="{{ params.nom_boutique }}">
+
+  <label>Telephone</label>
+  <input type="text" name="telephone" value="{{ params.telephone }}">
+
+  <label>Numero WhatsApp (format international sans +, ex: 21620123456)</label>
+  <input type="text" name="whatsapp" value="{{ params.whatsapp }}">
+
+  <label>Adresse</label>
+  <input type="text" name="adresse" value="{{ params.adresse }}">
+
+  <label>Page Facebook</label>
+  <input type="text" name="facebook" value="{{ params.facebook }}">
+
+  <label>Page Instagram</label>
+  <input type="text" name="instagram" value="{{ params.instagram }}">
+
+  <label>Compte TikTok</label>
+  <input type="text" name="tiktok" value="{{ params.tiktok }}">
+
+  <label>Adresse e-mail</label>
+  <input type="email" name="email" value="{{ params.email or '' }}" placeholder="contact@exemple.com">
+
+  <label>Frais de livraison par defaut (TND)</label>
+  <input type="number" step="0.01" name="frais_livraison_defaut" value="{{ params.frais_livraison_defaut }}">
+
+  <label>Seuil d'alerte de stock</label>
+  <p style="font-size:12px; color:var(--texte-secondaire); margin:0 0 6px;">
+    Un produit passe en alerte des que son stock descend a cette valeur ou en dessous.
+  </p>
+  <input type="number" min="0" name="seuil_alerte_stock" value="{{ params.seuil_alerte_stock if params.seuil_alerte_stock is not none else 1 }}">
+
+  <label>Livraison gratuite a partir de (TND)</label>
+  <input type="number" step="0.01" name="montant_livraison_gratuite" value="{{ params.montant_livraison_gratuite }}">
+
+  <hr style="margin:24px 0; border:none; border-top:1px solid var(--bordure);">
+  <h3 style="margin:0 0 4px;">Facebook Ads / Meta</h3>
+  <p style="font-size:13px; color:var(--texte-secondaire); margin:0 0 16px;">
+    Le Pixel seul ne suffit plus : les bloqueurs de pub et iOS font perdre une grande partie
+    des evenements. Ajoute aussi le token Conversions API pour que le serveur envoie les memes
+    evenements en parallele. Les deux sont dedupliques automatiquement.
+  </p>
+
+  <label>ID du Pixel Meta</label>
+  <input type="text" name="pixel_meta_id" value="{{ params.pixel_meta_id }}" placeholder="Ex: 1234567890123456">
+
+  <label style="margin-top:16px;">Google Analytics 4 &mdash; identifiant de mesure</label>
+  <input type="text" name="google_analytics_id" value="{{ params.google_analytics_id or '' }}"
+         placeholder="Ex: G-XXXXXXXXXX">
+  <p class="aide">Laisse vide et rien n'est charge : aucun script inutile chez tes clients.</p>
+
+  <label style="margin-top:16px;">Google Search Console &mdash; code de verification</label>
+  <input type="text" name="google_verification" value="{{ params.google_verification or '' }}"
+         placeholder="Colle ici le contenu de la balise fournie par Google">
+  <p class="aide">Ton sitemap est deja en ligne sur <code>/sitemap.xml</code>.</p>
+
+  <label style="margin-top:16px;">Microsoft Clarity &mdash; identifiant du projet</label>
+  <input type="text" name="clarity_id" value="{{ params.clarity_id or '' }}" placeholder="Ex: abcd1234ef">
+  <p class="aide">Gratuit et sans limite : montre ou les visiteurs abandonnent le formulaire de commande.</p>
+
+  <label>Token Conversions API <span style="font-weight:400; color:var(--texte-secondaire);">(Gestionnaire d'evenements &gt; Parametres &gt; Generer un token)</span></label>
+  <input type="password" name="meta_capi_token" value="{{ params.meta_capi_token or '' }}" placeholder="Colle ici le token d'acces">
+
+  <label>Code d'evenement test <span style="font-weight:400; color:var(--texte-secondaire);">(optionnel, a vider une fois les tests finis)</span></label>
+  <input type="text" name="meta_test_event_code" value="{{ params.meta_test_event_code or '' }}" placeholder="Ex: TEST12345">
+
+  <p style="font-size:13px; color:var(--texte-secondaire);">
+    Flux catalogue produits a coller dans Meta Commerce Manager :
+    <a href="{{ url_for('flux_catalogue', _external=True) }}" target="_blank">{{ url_for('flux_catalogue', _external=True) }}</a>
+  </p>
+  <hr style="margin:24px 0; border:none; border-top:1px solid var(--bordure);">
+
+  <h3 style="margin:0 0 4px;">Informations legales et facturation</h3>
+  <p style="font-size:13px; color:var(--texte-secondaire); margin:0 0 16px;">
+    Ces informations apparaissent sur les factures. Le matricule fiscal est obligatoire
+    sur une facture tunisienne. Fais valider la presentation par ton comptable.
+  </p>
+
+  <label>Raison sociale <span style="font-weight:400; color:var(--texte-secondaire);">(si differente du nom commercial)</span></label>
+  <input type="text" name="raison_sociale" value="{{ params.raison_sociale or '' }}">
+
+  <label>Matricule fiscal (MF)</label>
+  <input type="text" name="matricule_fiscal" value="{{ params.matricule_fiscal or '' }}" placeholder="Ex: 1234567/A/M/000">
+
+  <label>Registre de commerce (RC)</label>
+  <input type="text" name="registre_commerce" value="{{ params.registre_commerce or '' }}">
+
+  <label>Taux de TVA (%)</label>
+  <input type="number" step="0.1" name="taux_tva" value="{{ params.taux_tva if params.taux_tva is not none else 19 }}">
+
+  <label>Droit de timbre (TND par facture)</label>
+  <input type="number" step="0.001" name="timbre_fiscal" value="{{ params.timbre_fiscal if params.timbre_fiscal is not none else 1.0 }}">
+
+  <hr style="margin:24px 0; border:none; border-top:1px solid var(--bordure);">
+
+  <h3 style="margin:0 0 4px;">Messages WhatsApp</h3>
+  <p style="font-size:13px; color:var(--texte-secondaire); margin:0 0 16px;">
+    Ces textes sont pre-remplis quand tu cliques sur un bouton WhatsApp depuis une commande
+    ou un panier abandonne. Champs remplaces automatiquement :
+    <code>{client}</code> <code>{boutique}</code> <code>{numero}</code> <code>{total}</code>
+    <code>{produits}</code> <code>{transporteur}</code> <code>{suivi}</code>
+  </p>
+
+  <label>Confirmation de commande</label>
+  <textarea name="modele_whatsapp_confirmation" rows="5">{{ params.modele_whatsapp_confirmation or '' }}</textarea>
+
+  <label>Annonce d'expedition</label>
+  <textarea name="modele_whatsapp_expedition" rows="4">{{ params.modele_whatsapp_expedition or '' }}</textarea>
+
+  <label>Relance panier abandonne</label>
+  <textarea name="modele_whatsapp_relance" rows="5">{{ params.modele_whatsapp_relance or '' }}</textarea>
+
+  <hr style="margin:24px 0; border:none; border-top:1px solid var(--bordure);">
+
+  <label>Texte du bandeau en haut du site</label>
+  <input type="text" name="texte_bandeau" value="{{ params.texte_bandeau }}">
+
+  <button type="submit" class="btn btn-rouge" style="margin-top:16px;">Enregistrer les parametres</button>
+</form>
+{% endblock %}

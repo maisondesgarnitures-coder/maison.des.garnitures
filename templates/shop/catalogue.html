@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block titre %}{{ t('tous_produits') }} - {{ parametres.nom_boutique if parametres else "Maison des Garnitures" }}{% endblock %}
+{% block contenu %}
+<div class="conteneur">
+  <h1 class="section-titre" style="padding:0;">{{ t('tous_produits') }}</h1>
+
+  {% if rayons %}
+    {# Groupe par rayon : le catalogue reprend l'organisation du magasin. #}
+    <form method="get" class="tri-catalogue">
+      <label for="triRayons">{{ t('trier_par') }}</label>
+      <select name="tri" id="triRayons" onchange="this.form.submit()">
+        {% for cle, (libelle, _) in tris.items() %}
+        <option value="{{ cle }}" {% if cle == tri %}selected{% endif %}>{{ libelle }}</option>
+        {% endfor %}
+      </select>
+    </form>
+
+    {% for groupe in rayons %}
+    <section class="rayon-catalogue">
+      <h2 class="titre-rayon">
+        {% if groupe.categorie %}
+          <a href="{{ url_for('voir_categorie', slug=groupe.categorie.slug) }}">
+            {% for etape in groupe.chemin %}{% if not loop.first %}<span class="separateur-rayon">›</span>{% endif %}{{ intitule(etape) }}{% endfor %}
+          </a>
+        {% else %}
+          {{ t('autres') if t('autres') != 'autres' else 'Divers' }}
+        {% endif %}
+        <em>{{ groupe.produits|length }}</em>
+      </h2>
+      <div class="grille-produits">
+        {% for p in groupe.produits %}
+          {% include "shop/_carte_produit.html" %}
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+  {% else %}
+    {% include "shop/_bloc_catalogue.html" %}
+  {% endif %}
+</div>
+
+
+{% endblock %}
+
+{% block scripts_page %}
+<script>var TXT_CHARGEMENT = {{ t('chargement')|tojson }};</script>
+<script src="{{ url_for('static', filename='js/voir-plus.js') }}"></script>
+{% endblock %}

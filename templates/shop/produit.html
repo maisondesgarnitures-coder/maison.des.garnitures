@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+{% block titre %}{{ (produit.meta_titre if langue != 'ar' else none)
+   or (intitule(produit) ~ ' - ' ~ (parametres.nom_boutique if parametres else 'Maison des Garnitures')) }}{% endblock %}
+{% block description %}{{ (produit.meta_description if langue != 'ar' else none)
+   or (intitule(produit) ~ ' - ' ~ t('livraison_cod')) }}{% endblock %}
+{% block meta_partage %}
+<meta property="og:type" content="product">
+<meta property="og:title" content="{{ produit.meta_titre or intitule(produit) }}">
+<meta property="og:description" content="{{ (produit.meta_description if langue != 'ar' else none)
+   or (intitule(produit) ~ ' - ' ~ t('livraison_cod')) }}">
+<meta property="og:url" content="{{ request.base_url }}">
+{% if produit.image %}<meta property="og:image" content="{{ url_for('static', filename='img/produits/' + produit.image, _external=True) }}">{% endif %}
+<meta property="product:price:amount" content="{{ '%.3f'|format(produit.prix_vitrine) }}">
+<meta property="product:price:currency" content="TND">
+{% endblock %}
+{% block classe_body %}page-produit{% if produit.commandable %} a-barre-achat{% endif %}{% endblock %}
+{% block contenu %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ intitule(produit)|tojson }},
+  "sku": {{ (produit.reference or produit.id|string)|tojson }},
+  "description": {{ (produit.description or intitule(produit))|striptags|tojson }},
+  {% if produit.image %}"image": {{ url_for('static', filename='img/produits/' + produit.image, _external=True)|tojson }},{% endif %}
+  "offers": {
+    "@type": "Offer",
+    "price": {{ '%.3f'|format(produit.prix_vitrine) }},
+    "priceCurrency": "TND",
+    "availability": "https://schema.org/{{ 'InStock' if produit.stock > 0 else 'OutOfStock' }}",
+    "url": {{ request.base_url|tojson }}
+  }{% if produit.avis_publies %},
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ produit.note_moyenne }},
+    "reviewCount": {{ produit.avis_publies|length }}
+  }{% endif %}
+}
+</script>
+
+<div class="conteneur">
+  <div class="fiche-achat">
+
+    <!-- ================= Galerie ================= -->
+    <div class="colonne-galerie">
+      <div class="galerie-produit{% if produit.en_rupture %} est-en-rupture{% endif %}">
+        {% set lien_video = video_integree(produit.video_url) %}
+        {% set a_video = produit.video or lien_video %}
+        {% if produit.galerie|length > 1 or a_video %}
+        <div class="vignettes-verticales">
+          {% if a_video %}
+          <button type="button" class="vignette vignette-video" data-video="1"
+                  title="{{ t('voir_video') }}" aria-label="{{ t('voir_video') }}">
+            {% if produit.galerie %}
+            <img src="{{ url_for('static', filename='img/produits/' + produit.galerie[0]) }}" alt="">
+            {% endif %}
+            <span class="badge-lecture" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </span>
+          </button>
+          {% endif %}
+          {% for photo in produit.galerie %}
+          <button type="button" class="vignette{% if loop.first %} active{% endif %}"
+                  data-photo="{{ url_for('static', filename='img/produits/' + photo) }}"
+                  title="{{ t('voir_photo') }} {{ loop.index }}">
+            <img src="{{ url_for('static', filename='img/produits/' + photo) }}"
+                 alt="{{ intitule(produit) }} {{ loop.index }}" loading="lazy">
+          </button>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if a_video %}
+        {# TikTok et les Shorts sont verticaux : le cadre suit leur format. #}
+        <div class="cadre-video{% if produit.video_est_verticale %} verticale{% endif %}"
+             id="cadreVideo" hidden>
+          {% if produit.video %}
+          <video controls preload="none" playsinline
+                 {% if produit.galerie %}poster="{{ url_for('static', filename='img/produits/' + produit.galerie[0]) }}"{% endif %}>
+            <source src="{{ url_for('static', filename='img/produits/' + produit.video) }}">
+          </video>
+          {% else %}
+          <iframe src="{{ lien_video }}" title="{{ t('voir_video') }}" loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                  allowfullscreen></iframe>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="image-principale">
+          {% if produit.galerie %}
+            <img id="photoPrincipale" src="{{ url_for('static', filename='img/produits/' + produit.galerie[0]) }}" alt="{{ intitule(produit) }}">
+            {% if produit.en_rupture and not produit.vente_en_rupture %}
+              <span class="voile-rupture">{{ t('rupture_stock') }}</span>
+            {% endif %}
+          {% else %}
+            <span>{{ t('photo_produit') }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= Panneau d'achat, colle en haut ================= -->
+    <aside class="colonne-achat">
+      <div class="panneau-achat">
+        <h1>{{ intitule(produit) }}</h1>
+
+        {% if produit.reference or produit.avis_publies %}
+        <div class="ligne-meta">
+          {% if produit.avis_publies %}
+          <a href="#avis" class="resume-note">
+            <span class="etoiles">{% for i in range(1, 6) %}{{ "★" if i <= produit.note_moyenne|round(0,'common')|int else "☆" }}{% endfor %}</span>
+            <strong>{{ produit.note_moyenne }}</strong>
+            <span>({{ produit.avis_publies|length }})</span>
+          </a>
+          {% endif %}
+          {% if produit.reference %}<span class="ref-produit">{{ t('reference') }} : {{ produit.reference }}</span>{% endif %}
+        </div>
+        {% endif %}
+
+        {# Prix barre et badge se mettent a jour au changement de variante. #}
+        <div class="bloc-prix">
+          <span class="prix" id="prixAffiche">{{ "%.2f"|format(produit.prix_vitrine) }} TND</span>
+          <span class="prix-barre" id="prixBarre"{% if not produit.en_promo %} hidden{% endif %}>
+            {{ "%.2f"|format(produit.prix_barre_vitrine or 0) }} TND</span>
+          <span class="badge-remise" id="badgeRemise" data-mot="{{ t('remise') }}"{% if not produit.en_promo %} hidden{% endif %}>
+            -{{ ((produit.prix_barre_vitrine - produit.prix_vitrine) / produit.prix_barre_vitrine * 100) | round | int if produit.en_promo else 0 }} % {{ t('remise') }}</span>
+        </div>
+
+        {% if produit.stock > 0 %}
+          {# La quantite reste une information interne : le client voit seulement
+             que le produit est disponible. #}
+          <p class="stock-ok">{{ t('en_stock') }}</p>
+        {% elif produit.vente_en_rupture %}
+          <div class="bloc-precommande">
+            <strong>{{ t('precommande') }}</strong>
+            <p>{{ t('precommande_detail') }}</p>
+          </div>
+        {% else %}
+          <div class="bloc-rupture">
+            <strong>{{ t('indisponible') }}</strong>
+            <p>{{ t('prevenir_dispo') }}</p>
+          </div>
+        {% endif %}
+
+        {% if seuil_gratuit and produit.prix_livraison is none %}
+        <div class="jauge-livraison" id="jaugeLivraison"
+             data-seuil="{{ '%.3f'|format(seuil_gratuit) }}">
+          <div class="barre"><span id="barreLivraison"></span></div>
+          <p id="texteLivraison"></p>
+        </div>
+        {% endif %}
+
+        {% if produit.commandable %}
+        <form method="post" id="formAchat" class="formulaire-achat"
+              action="{{ url_for('acheter_direct', produit_id=produit.id) }}"
+              data-ref="{{ produit.reference or produit.id }}" data-nom="{{ intitule(produit) }}"
+              data-prix="{{ '%.3f'|format(produit.prix_affiche) }}"
+              data-panier="{{ url_for('ajouter_panier', produit_id=produit.id) }}">
+
+          <div class="champs-achat">
+
+          <input type="hidden" name="variante_id" id="varianteChoisie">
+
+          {% if produit.lots %}
+          <div class="offres-produit">
+            <h3>{{ t('choisir_offre') }}</h3>
+            {% for l in produit.lots %}
+            <label class="carte-offre {{ 'choisie' if l.par_defaut }}">
+              <input type="radio" name="lot_id" value="{{ l.id }}"
+                     data-prix="{{ '%.3f'|format(l.prix) }}" {% if l.par_defaut %}checked{% endif %}>
+              {% if l.image %}<img src="{{ url_for('static', filename='img/produits/' + l.image) }}" alt="" class="visuel-offre">{% endif %}
+              <span class="texte-offre">
+                <strong>{{ l.nom }}</strong>
+                {% if l.etiquette %}<em>{{ l.etiquette }}</em>{% endif %}
+              </span>
+              <span class="prix-offre">
+                {% if l.prix_barre or l.economie %}<s>{{ "%.2f"|format(l.prix_barre or (produit.prix_affiche * l.quantite)) }} TND</s>{% endif %}
+                <b>{{ "%.2f"|format(l.prix) }} TND</b>
+              </span>
+              {% if l.pourcentage %}<span class="badge-offre badge-{{ l.couleur_badge }}">-{{ l.pourcentage }} %</span>{% endif %}
+            </label>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {% if produit.a_variantes %}
+          <div class="choix-options">
+            {% for o in produit.options %}
+            <div class="groupe-option" data-option="{{ o.nom }}">
+              <span class="intitule-option">{{ o.nom }}</span>
+              <div class="valeurs-option {{ 'pastilles' if o.type == 'couleur' }}">
+                {% for v in o.valeurs %}
+                <button type="button" class="valeur-option" data-valeur="{{ v.valeur }}"
+                        {% if o.type == 'couleur' and v.couleur_hex %}style="--pastille: {{ v.couleur_hex }}"{% endif %}
+                        title="{{ v.valeur }}">{% if o.type != 'couleur' %}{{ v.valeur }}{% endif %}</button>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+            <p class="etat-variante" id="etatVariante"></p>
+          </div>
+          {% endif %}
+
+          {% if produit.paliers %}
+          <div class="grille-paliers">
+            <span class="intitule-paliers">{{ t('prix_degressif') }}</span>
+            <table>
+              <tr>
+                <td>1 &ndash; {{ produit.paliers[0].quantite_min - 1 }}</td>
+                <td><strong>{{ "%.3f"|format(produit.prix_affiche) }} TND</strong></td>
+              </tr>
+              {% for pal in produit.paliers %}
+              <tr data-min="{{ pal.quantite_min }}" data-prix="{{ '%.3f'|format(pal.prix) }}">
+                <td>
+                  {{ pal.quantite_min }}
+                  {%- if not loop.last %} &ndash; {{ produit.paliers[loop.index].quantite_min - 1 }}
+                  {%- else %} {{ t('et_plus') }}{% endif %}
+                </td>
+                <td><strong>{{ "%.3f"|format(pal.prix) }} TND</strong></td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+          {% endif %}
+
+          {% if produit.remise_lot %}
+          <div class="offre-lot">
+            {{ t('economisez') }} : a partir de <strong>{{ produit.remise_lot.quantite }}</strong>,
+            {% if produit.remise_lot.type == 'pourcentage' %}<strong>-{{ "%g"|format(produit.remise_lot.valeur) }} %</strong>
+            {% else %}<strong>-{{ "%.2f"|format(produit.remise_lot.valeur) }} TND</strong>{% endif %}
+          </div>
+          {% endif %}
+
+          <label>{{ t('nom_complet') }} *</label>
+          <input type="text" name="nom_client" required autocomplete="name" placeholder="{{ t('nom_complet') }}">
+
+          <label>{{ t('telephone') }} *</label>
+          <input type="tel" name="telephone" required autocomplete="tel" placeholder="Ex: 20123456">
+
+          <label>{{ t('gouvernorat') }} *</label>
+          <select name="gouvernorat" id="selectGouvernorat" required>
+            <option value="">{{ t('choisir_gouvernorat') }}</option>
+          </select>
+
+          <label>{{ t('adresse_complete') }}</label>
+          <input type="text" name="adresse" placeholder="{{ t('adresse_exemple') }}">
+
+          </div>
+
+          <div class="pied-achat">
+          <div class="recap-achat">
+            <div><span>{{ t('sous_total') }}</span><span id="sousTotal">{{ "%.2f"|format(produit.prix_vitrine) }} TND</span></div>
+            <div><span>{{ t('frais_livraison') }}</span><span id="fraisLivraison">{{ "%.2f"|format(frais_livraison) }} TND</span></div>
+            <div class="total"><span>{{ t('total_a_payer') }}</span><span id="totalAchat">{{ "%.2f"|format(produit.prix_vitrine + frais_livraison) }} TND</span></div>
+          </div>
+
+          <div class="ligne-achat">
+            <div class="compteur-quantite">
+              <button type="button" class="moins" aria-label="-">&minus;</button>
+              <input type="number" name="quantite" id="champQuantite" value="1" min="1" inputmode="numeric" aria-label="{{ t('quantite') }}">
+              <button type="button" class="plus" aria-label="+">+</button>
+            </div>
+            <button type="submit" class="btn btn-rouge btn-large bouton-acheter">{{ t('acheter_maintenant') }}</button>
+          </div>
+
+          <button type="button" class="btn btn-secondaire bouton-panier" id="boutonPanier">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM6.2 6h14.35a1 1 0 0 1 .97 1.25l-1.9 7.3a1.6 1.6 0 0 1-1.55 1.2H8.1a1.6 1.6 0 0 1-1.56-1.27L4.32 3.4H2.2a1 1 0 1 1 0-2h2.93a1 1 0 0 1 .98.79L6.2 6z"/></svg>
+            {{ t('ajouter_panier') }}
+          </button>
+          </div>
+        </form>
+        {% endif %}
+      </div>
+    </aside>
+
+    <!-- ============ Details : sous la galerie, dans la meme grille ============ -->
+    <div class="colonne-details">
+    <section class="details-produit">
+    <h2 class="section-titre" style="padding:0;">{{ t('caracteristiques') }}</h2>
+    {% if produit.couleur or produit.dimensions %}
+    <ul class="liste-caracteristiques">
+      {% if produit.reference %}<li><span>{{ t('reference') }}</span><strong>{{ produit.reference }}</strong></li>{% endif %}
+      {% if produit.couleur %}<li><span>{{ t('couleur') }}</span><strong>{{ produit.couleur }}</strong></li>{% endif %}
+      {% if produit.dimensions %}<li><span>{{ t('dimensions') }}</span><strong>{{ produit.dimensions }}</strong></li>{% endif %}
+      {% if produit.categorie %}<li><span>{{ t('nos_categories') }}</span><strong>{{ intitule(produit.categorie) }}</strong></li>{% endif %}
+    </ul>
+    {% endif %}
+    <div class="description-produit">{{ produit.description|safe }}</div>
+  </section>
+
+  <section class="section-avis" id="avis">
+    <h2 class="section-titre" style="padding:0;">{{ t('avis') }}</h2>
+
+    {% if avis %}
+      {% for a in avis %}
+      <div class="avis">
+        <div class="avis-entete">
+          <span class="etoiles">{% for i in range(1, 6) %}{{ "★" if i <= a.note else "☆" }}{% endfor %}</span>
+          <strong>{{ a.nom_client }}</strong>
+          {% if a.achat_verifie %}<span class="badge-verifie">✓ {{ t('achat_verifie') }}</span>{% endif %}
+          <span class="avis-date">{{ a.date_creation.strftime("%d/%m/%Y") }}</span>
+        </div>
+        {% if a.commentaire %}<p>{{ a.commentaire }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--texte-secondaire);">{{ t('aucun_avis') }}</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('deposer_avis', produit_id=produit.id) }}" class="formulaire-avis">
+      <h3>{{ t('laisser_avis') }}</h3>
+      <label>{{ t('votre_note') }} *</label>
+      <div class="choix-note">
+        {% for i in [5, 4, 3, 2, 1] %}
+        <input type="radio" name="note" id="note{{ i }}" value="{{ i }}" {% if i == 5 %}checked{% endif %}>
+        <label for="note{{ i }}" title="{{ i }}/5">★</label>
+        {% endfor %}
+      </div>
+      <label>{{ t('votre_nom') }} *</label>
+      <input type="text" name="nom_client" required maxlength="150">
+      <label>{{ t('telephone_facultatif') }}</label>
+      <input type="tel" name="telephone" placeholder="Ex: 20123456">
+      <label>{{ t('votre_commentaire') }}</label>
+      <textarea name="commentaire" rows="3" maxlength="2000"></textarea>
+      <button type="submit" class="btn btn-rouge" style="margin-top:14px;">{{ t('envoyer_avis') }}</button>
+    </form>
+    </section>
+    </div>
+  </div>
+
+  {% if produit.commandable %}
+  <div class="barre-achat-mobile">
+    <span class="prix">{{ "%.2f"|format(produit.prix_vitrine) }} TND</span>
+    <button type="button" class="btn btn-rouge" id="allerAuFormulaire">{{ t('acheter_maintenant') }}</button>
+  </div>
+  {% endif %}
+
+  {% if produits_associes %}
+  <h2 class="section-titre" style="padding:0;">{{ t('produits_similaires') }}</h2>
+  <div class="grille-produits">
+    {% for p in produits_associes %}
+      {% include "shop/_carte_produit.html" %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+{% if produit.a_variantes %}
+<script type="application/json" id="donneesVariantes">
+[
+{%- for v in produit.variantes -%}
+{"id": {{ v.id }}, "valeurs": {{ v.valeurs | tojson }}, "stock": {{ v.stock or 0 }},
+ "prix": {{ '%.3f'|format(v.prix_effectif) }},
+ "barre": {{ '%.3f'|format(v.prix if v.prix and v.prix > v.prix_effectif else 0) }},
+ "image": {{ (v.image or '')|tojson }}}{{ "," if not loop.last }}
+{%- endfor -%}
+]
+</script>
+{% endif %}
+
+
+{% endblock %}
+
+{% block scripts_page %}
+<script>
+var GOUVERNORATS = {{ gouvernorats_json|tojson }};
+var PRIX_BASE = {{ '%.3f'|format(produit.prix_vitrine) }};
+var FRAIS_LIVRAISON = {{ '%.3f'|format(frais_livraison) }};
+var SEUIL_GRATUIT = {{ '%.3f'|format(seuil_gratuit or 0) }};
+var PORT_FIXE = {{ 'true' if produit.prix_livraison is not none else 'false' }};
+var ETIQUETTE_EPUISE = {{ t('epuise')|tojson }};
+var ETIQUETTE_STOCK = {{ t('en_stock')|tojson }};
+var PRECOMMANDE = {{ 'true' if produit.vente_en_rupture else 'false' }};
+var TXT_RESTE = {{ t('livraison_gratuite_a')|tojson }};
+var PALIERS = [{% for pal in produit.paliers %}{"min": {{ pal.quantite_min }}, "prix": {{ '%.3f'|format(pal.prix) }}}{{ "," if not loop.last }}{% endfor %}];
+var TXT_GRATUIT = {{ t('livraison_gratuite_atteinte')|tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/fiche-produit.js') }}"></script>
+{% endblock %}

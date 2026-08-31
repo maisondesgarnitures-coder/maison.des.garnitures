@@ -1,0 +1,9 @@
+.env
+.cle_secrete
+.jeton_ngrok
+*.db
+__pycache__/
+*.pyc
+
+# Binaire ngrok depose a la main, jamais versionne
+ngrok.exe

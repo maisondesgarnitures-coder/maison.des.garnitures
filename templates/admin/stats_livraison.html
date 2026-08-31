@@ -1,0 +1,59 @@
+{% extends "admin/_stats_base.html" %}
+{% import "admin/_stats_macros.html" as m %}
+{% block entete %}Statistiques - Livraison{% endblock %}
+{% block contenu_stats %}
+
+<div class="cartes-stats">
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.livrees }}</div>
+    <div class="label">Commandes livrees</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.retours }}</div>
+    <div class="label">Retours</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.taux_livraison }}%</div>
+    <div class="label">Taux de livraison reussie</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ ind.taux_retour }}%</div>
+    <div class="label">Taux de retour</div>
+  </div>
+  <div class="carte-stat">
+    <div class="valeur">{{ "%.2f"|format(ind.perte_retours) }} TND</div>
+    <div class="label">Marge perdue sur retours</div>
+  </div>
+</div>
+
+<h3>Performance par transporteur</h3>
+{% if not transporteurs %}
+  <p class="vide">Aucune commande sur la periode.</p>
+{% else %}
+<table class="table-admin">
+  <tr><th>Transporteur</th><th class="num">Commandes</th><th class="num">Part</th>
+      <th class="num">Livrees</th><th class="num">Taux de livraison</th>
+      <th class="num">Encaisse</th><th class="num">Benefice</th><th>Fiabilite</th></tr>
+  {% for t in transporteurs %}
+  <tr>
+    <td><strong>{{ t.valeur }}</strong></td>
+    <td class="num">{{ t.nb }}</td>
+    <td class="num">{{ t.part }}%</td>
+    <td class="num">{{ t.livrees }}</td>
+    <td class="num">
+      <span class="{{ 'bon' if t.taux_livraison >= 80 else 'moyen' if t.taux_livraison >= 60 else 'faible' }}">
+        {{ t.taux_livraison }}%
+      </span>
+    </td>
+    <td class="num">{{ "%.2f"|format(t.encaisse) }} TND</td>
+    <td class="num"><strong>{{ "%.2f"|format(t.marge) }} TND</strong></td>
+    <td style="width:180px;"><div class="jauge"><span style="width:{{ t.taux_livraison }}%"></span></div></td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="note-stats">
+  Le taux de livraison se calcule sur les commandes deja arrivees a leur terme
+  (livrees ou retournees). Celles encore en transit ne sont pas comptees.
+</p>
+{% endif %}
+{% endblock %}

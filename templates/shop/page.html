@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titre %}{{ page.titre(langue) }} - {{ parametres.nom_boutique if parametres else "Maison des Garnitures" }}{% endblock %}
+{% block description %}{{ page.contenu(langue)|striptags|truncate(160) }}{% endblock %}
+{% block contenu %}
+<div class="conteneur">
+  <article class="page-information">
+    <h1>{{ page.titre(langue) }}</h1>
+    <div class="corps-page">{{ page.contenu(langue)|safe }}</div>
+    <p class="maj-page">{{ t('derniere_maj') }} {{ page.date_maj.strftime("%d/%m/%Y") }}</p>
+  </article>
+</div>
+{% endblock %}

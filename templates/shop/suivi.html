@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titre %}Suivre ma commande{% endblock %}
+{% block contenu %}
+<div class="conteneur">
+  <h1 class="section-titre" style="padding:0;">{{ t('suivre_commande') }}</h1>
+  <form method="post" class="formulaire-commande">
+    <label>{{ t('numero_commande') }}</label>
+    <input type="text" name="numero" placeholder="Ex: MDG260828123456" required>
+    <label>{{ t('telephone_commande') }}</label>
+    <input type="tel" name="telephone" required>
+    <button type="submit" class="btn btn-rouge btn-large" style="margin-top:20px;">{{ t('verifier') }}</button>
+  </form>
+
+  {% if erreur %}<p style="color:var(--erreur); text-align:center;">{{ erreur }}</p>{% endif %}
+
+  {% if commande %}
+  <div class="formulaire-commande" style="margin-top:20px;">
+    <p><strong>{{ t('commande') }}:</strong> {{ commande.numero }}</p>
+    <p><strong>{{ t('statut') }}:</strong> <span class="badge-statut statut-{{ commande.statut }}">{{ t('statut_' + commande.statut) }}</span></p>
+    <p><strong>{{ t('total') }}:</strong> {{ "%.2f"|format(commande.total) }} TND</p>
+    {% if commande.numero_suivi %}
+    <p><strong>{{ t('numero_suivi_transporteur') }}:</strong>
+      {% if lien_suivi %}
+        <a href="{{ lien_suivi }}" target="_blank" rel="noopener">{{ commande.numero_suivi }}</a>
+      {% else %}{{ commande.numero_suivi }}{% endif %}
+    </p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,5 @@
+{# Grille de produits + bouton « voir plus ». Ce fragment est aussi renvoye
+   seul par le serveur quand le bouton demande la page suivante. #}
+{% for p in produits %}
+  {% include "shop/_carte_produit.html" %}
+{% endfor %}

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="{{ langue }}" dir="{{ direction }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titre %}Maison des Garnitures{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/polices.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/boutique.css') }}">
+  {# Theme sombre : charge en dernier, il recouvre les deux precedents.
+     Retirer cette ligne suffit a revenir au theme clair. #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sombre.css') }}">
+  <meta name="theme-color" content="#0E0F13">
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
+  <meta name="description" content="{% block description %}{{ t('slogan_pied') }} {{ t('livraison_cod') }}{% endblock %}">
+  <link rel="canonical" href="{{ request.base_url }}">
+  <meta property="og:site_name" content="{{ parametres.nom_boutique if parametres else 'Maison des Garnitures' }}">
+  <meta property="og:locale" content="{{ 'ar_TN' if langue == 'ar' else 'fr_TN' }}">
+  {% block meta_partage %}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ parametres.nom_boutique if parametres else 'Maison des Garnitures' }}">
+  <meta property="og:url" content="{{ request.base_url }}">
+  {% endblock %}
+
+  {% if parametres and parametres.google_verification %}
+  <meta name="google-site-verification" content="{{ parametres.google_verification }}">
+  {% endif %}
+
+  {% if parametres and parametres.google_analytics_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ parametres.google_analytics_id }}"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ parametres.google_analytics_id }}');
+  </script>
+  {% endif %}
+
+  {% if parametres and parametres.clarity_id %}
+  <script>
+  (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})
+  (window,document,"clarity","script","{{ parametres.clarity_id }}");
+  </script>
+  {% endif %}
+
+  {% if parametres and parametres.pixel_meta_id %}
+  <!-- Pixel Meta : les evenements portent le meme event_id que ceux envoyes
+       par le serveur via la Conversions API, pour que Meta les fusionne. -->
+  <script>
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+  document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '{{ parametres.pixel_meta_id }}');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id={{ parametres.pixel_meta_id }}&ev=PageView&noscript=1"></noscript>
+  {% endif %}
+</head>
+<body class="{% block classe_body %}{% endblock %}">
+  {# Le bandeau accepte plusieurs messages separes par | : ils defilent a la suite. #}
+  {% set brut = t('livraison_cod') if langue == 'ar' else ((parametres.texte_bandeau if parametres else '') or t('livraison_cod')) %}
+  {% set messages_bandeau = brut.split('|') | map('trim') | select | list %}
+  <div class="entete-collant">
+  <div class="bandeau-haut">
+    <div class="bandeau-inner">
+
+    <div class="reseaux-bandeau">
+      {% if parametres and parametres.whatsapp %}
+      <a href="https://wa.me/{{ parametres.whatsapp }}" target="_blank" rel="noopener"
+         class="lien-reseau whatsapp" title="WhatsApp" aria-label="WhatsApp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.25.25-.41.09-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.71 2.61 4.15 3.66.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
+        <span>WhatsApp</span>
+      </a>
+      {% endif %}
+
+      {% if parametres and parametres.instagram %}
+      <a href="{{ parametres.instagram }}" target="_blank" rel="noopener"
+         class="lien-reseau instagram" title="Instagram" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.8 3.8 0 0 1-1.38-.9 3.8 3.8 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 2.16c-3.14 0-3.51.01-4.75.07-1.15.05-1.77.24-2.18.4-.55.21-.94.47-1.35.88-.41.41-.67.8-.88 1.35-.16.41-.35 1.03-.4 2.18-.06 1.24-.07 1.61-.07 4.75s.01 3.51.07 4.75c.05 1.15.24 1.77.4 2.18.21.55.47.94.88 1.35.41.41.8.67 1.35.88.41.16 1.03.35 2.18.4 1.24.06 1.61.07 4.75.07s3.51-.01 4.75-.07c1.15-.05 1.77-.24 2.18-.4.55-.21.94-.47 1.35-.88.41-.41.67-.8.88-1.35.16-.41.35-1.03.4-2.18.06-1.24.07-1.61.07-4.75s-.01-3.51-.07-4.75c-.05-1.15-.24-1.77-.4-2.18a3.6 3.6 0 0 0-.88-1.35 3.6 3.6 0 0 0-1.35-.88c-.41-.16-1.03-.35-2.18-.4-1.24-.06-1.61-.07-4.75-.07zm0 3.67a6.01 6.01 0 1 1 0 12.02 6.01 6.01 0 0 1 0-12.02zm0 9.91a3.9 3.9 0 1 0 0-7.8 3.9 3.9 0 0 0 0 7.8zm7.65-10.15a1.4 1.4 0 1 1-2.81 0 1.4 1.4 0 0 1 2.81 0z"/></svg>
+      </a>
+      {% endif %}
+
+      {% if parametres and parametres.facebook %}
+      <a href="{{ parametres.facebook }}" target="_blank" rel="noopener"
+         class="lien-reseau facebook" title="Facebook" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.91h-2.33V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+      </a>
+      {% endif %}
+
+      {% if parametres and parametres.tiktok %}
+      <a href="{{ parametres.tiktok }}" target="_blank" rel="noopener"
+         class="lien-reseau tiktok" title="TikTok" aria-label="TikTok">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 0 1 0-5.18c.27 0 .52.04.76.12v-3.2a5.86 5.86 0 0 0-.76-.05A5.78 5.78 0 0 0 4.08 15.4a5.78 5.78 0 0 0 5.78 5.78 5.78 5.78 0 0 0 5.78-5.78V9.01a7.35 7.35 0 0 0 4.28 1.37V7.3a4.29 4.29 0 0 1-3.32-1.48z"/></svg>
+      </a>
+      {% endif %}
+    </div>
+
+    {% if messages_bandeau %}
+    <div class="defilement-bandeau" aria-live="off">
+      <div class="piste-defilement">
+        {# La liste est jouee deux fois : le defilement boucle sans laisser de trou. #}
+        {% for _ in range(2) %}
+          {% for msg in messages_bandeau %}
+            <span>{{ msg }}</span><span class="point-separateur">&#9679;</span>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if parametres and parametres.telephone %}
+    <a class="telephone-bandeau" href="tel:{{ parametres.telephone|replace(' ', '') }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+      <span>{{ parametres.telephone }}</span>
+    </a>
+    {% endif %}
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo-boutique" href="{{ url_for('accueil') }}">
+        <img src="{{ url_for('static', filename='img/logo.jpeg') }}" alt="Logo">
+        {# Le dernier mot du nom porte l'accent de couleur : « GARNITURES ». #}
+        {% set mots = (parametres.nom_boutique if parametres else "Maison des Garnitures").split() %}
+        <span class="nom-boutique">
+          {{ mots[:-1] | join(' ') }} <b class="accent-nom">{{ mots[-1] }}</b>
+          <span class="accroche-logo">{{ t('accroche_logo') }}</span>
+        </span>
+      </a>
+      <form class="recherche-header" action="{{ url_for('recherche') }}" method="get" role="search">
+        <svg class="loupe" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+        <input type="text" name="q" placeholder="{{ t('rechercher_produit') }}" aria-label="{{ t('rechercher') }}">
+        {# Une loupe plutot qu'un mot : le champ est deja explicite, et le
+           bouton tient moins de place sur telephone. #}
+        <button type="submit" aria-label="{{ t('rechercher') }}" title="{{ t('rechercher') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="loupe-bouton">
+            <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+          </svg>
+        </button>
+      </form>
+      <div class="actions-header">
+        <a class="panier-btn" href="{{ url_for('voir_panier') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM6.2 6h14.35a1 1 0 0 1 .97 1.25l-1.9 7.3a1.6 1.6 0 0 1-1.55 1.2H8.1a1.6 1.6 0 0 1-1.56-1.27L4.32 3.4H2.2a1 1 0 1 1 0-2h2.93a1 1 0 0 1 .98.79L6.2 6z"/></svg>
+          <span class="etiquette-panier">{{ t('panier') }}</span>
+          <span class="compteur-panier">{{ nb_articles_panier }}</span>
+        </a>
+        <div class="choix-langue">
+          {% for code, infos in langues.items() %}
+            <a href="{{ url_for('changer_langue', code=code) }}"
+               class="{{ 'actif' if code == langue }}" hreflang="{{ code }}"
+               title="{{ infos.nom }}">{{ infos.etiquette }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <nav class="menu-categories" aria-label="{{ t('nos_categories') }}">
+      <div class="menu-inner">
+        <a href="{{ url_for('catalogue') }}" class="lien-catalogue">{{ t('tous_produits') }}</a>
+        {% for cat in categories_menu %}
+          <a href="{{ url_for('voir_categorie', slug=cat.slug) }}">{{ intitule(cat) }}</a>
+        {% endfor %}
+      </div>
+    </nav>
+  </header>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for categorie, message in messages %}
+      <div class="flash {{ categorie }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <main>
+    {% block contenu %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="colonnes">
+
+      <div>
+        {% set mots_pied = (parametres.nom_boutique if parametres else "Maison des Garnitures").split() %}
+        <h4>{{ mots_pied[:-1] | join(' ') }} <b class="accent-nom">{{ mots_pied[-1] }}</b></h4>
+        <p>{{ t('slogan_pied') }}</p>
+      </div>
+
+      {% if pages_pied %}
+      <div>
+        <h4>{{ t('pages') }}</h4>
+        <ul class="liste-pied">
+          {% for p in pages_pied %}
+          <li><a href="{{ url_for('voir_page', slug=p.slug) }}">{{ p.titre(langue) }}</a></li>
+          {% endfor %}
+          <li><a href="{{ url_for('suivi_commande') }}">{{ t('suivre_commande') }}</a></li>
+        </ul>
+      </div>
+      {% endif %}
+
+      <div>
+        <h4>{{ t('contactez_nous') }}</h4>
+        {% if parametres and parametres.telephone %}
+        <p class="bloc-contact">
+          <span class="intitule-contact">{{ t('telephone') }}</span>
+          <a href="tel:{{ parametres.telephone|replace(' ', '') }}">{{ parametres.telephone }}</a>
+        </p>
+        {% endif %}
+        {% if parametres and parametres.email %}
+        <p class="bloc-contact">
+          <span class="intitule-contact">{{ t('email') }}</span>
+          <a href="mailto:{{ parametres.email }}">{{ parametres.email }}</a>
+        </p>
+        {% endif %}
+        {% if parametres and parametres.adresse %}
+        <p class="bloc-contact">
+          <span class="intitule-contact">{{ t('contact') }}</span>
+          {{ parametres.adresse }}
+        </p>
+        {% endif %}
+      </div>
+
+      <div>
+        <h4>{{ t('suivez_nous') }}</h4>
+        <div class="reseaux-pied">
+          {% if parametres and parametres.facebook %}
+          <a href="{{ parametres.facebook }}" target="_blank" rel="noopener" class="facebook" title="Facebook" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.91h-2.33V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+          </a>
+          {% endif %}
+          {% if parametres and parametres.instagram %}
+          <a href="{{ parametres.instagram }}" target="_blank" rel="noopener" class="instagram" title="Instagram" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.8 3.8 0 0 1-1.38-.9 3.8 3.8 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 2.16c-3.14 0-3.51.01-4.75.07-1.15.05-1.77.24-2.18.4-.55.21-.94.47-1.35.88-.41.41-.67.8-.88 1.35-.16.41-.35 1.03-.4 2.18-.06 1.24-.07 1.61-.07 4.75s.01 3.51.07 4.75c.05 1.15.24 1.77.4 2.18.21.55.47.94.88 1.35.41.41.8.67 1.35.88.41.16 1.03.35 2.18.4 1.24.06 1.61.07 4.75.07s3.51-.01 4.75-.07c1.15-.05 1.77-.24 2.18-.4.55-.21.94-.47 1.35-.88.41-.41.67-.8.88-1.35.16-.41.35-1.03.4-2.18.06-1.24.07-1.61.07-4.75s-.01-3.51-.07-4.75c-.05-1.15-.24-1.77-.4-2.18a3.6 3.6 0 0 0-.88-1.35 3.6 3.6 0 0 0-1.35-.88c-.41-.16-1.03-.35-2.18-.4-1.24-.06-1.61-.07-4.75-.07zm0 3.67a6.01 6.01 0 1 1 0 12.02 6.01 6.01 0 0 1 0-12.02zm0 9.91a3.9 3.9 0 1 0 0-7.8 3.9 3.9 0 0 0 0 7.8zm7.65-10.15a1.4 1.4 0 1 1-2.81 0 1.4 1.4 0 0 1 2.81 0z"/></svg>
+          </a>
+          {% endif %}
+          {% if parametres and parametres.tiktok %}
+          <a href="{{ parametres.tiktok }}" target="_blank" rel="noopener" class="tiktok" title="TikTok" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 0 1 0-5.18c.27 0 .52.04.76.12v-3.2a5.86 5.86 0 0 0-.76-.05A5.78 5.78 0 0 0 4.08 15.4a5.78 5.78 0 0 0 5.78 5.78 5.78 5.78 0 0 0 5.78-5.78V9.01a7.35 7.35 0 0 0 4.28 1.37V7.3a4.29 4.29 0 0 1-3.32-1.48z"/></svg>
+          </a>
+          {% endif %}
+          {% if parametres and parametres.whatsapp %}
+          <a href="https://wa.me/{{ parametres.whatsapp }}" target="_blank" rel="noopener" class="whatsapp" title="WhatsApp" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.25.25-.41.09-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.71 2.61 4.15 3.66.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="bas-pied">
+      <span>&copy; {{ annee_courante }} {{ parametres.nom_boutique if parametres else "Maison des Garnitures" }}
+        &mdash; {{ t('tous_droits') }}</span>
+      <span>{{ t('livraison_cod') }}</span>
+    </div>
+  </footer>
+
+  {% if parametres and parametres.whatsapp %}
+  <a class="whatsapp-flottant" target="_blank" rel="noopener"
+     href="https://wa.me/{{ parametres.whatsapp }}?text={{ ('Bonjour, je vous contacte depuis ' ~ (parametres.nom_boutique or 'votre boutique'))|urlencode }}"
+     aria-label="WhatsApp" title="{{ t('contact') }} WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.87 14.13c-.25.7-1.45 1.33-2 1.41-.51.08-1.15.11-1.86-.12-.43-.13-.98-.32-1.68-.62-2.96-1.28-4.89-4.26-5.04-4.46-.15-.2-1.2-1.6-1.2-3.05s.76-2.16 1.03-2.46c.27-.3.59-.37.78-.37.2 0 .39 0 .56.01.18.01.42-.7.66.5.25.6.84 2.06.91 2.21.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.65-.7.17-.2.75-.87.95-1.17.2-.3.4-.25.67-.15.27.1 1.72.81 2.01.96.3.15.5.22.57.35.07.12.07.72-.18 1.42z"/></svg>
+  </a>
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/entete.js') }}" defer></script>
+  {% block scripts_page %}{% endblock %}
+
+  {% if parametres and parametres.pixel_meta_id %}
+  {% block pixel_evenements %}{% endblock %}
+  <script>
+  // AddToCart : on genere l'identifiant ici, on le glisse dans le formulaire,
+  // et le serveur renvoie le meme a Meta. Un seul ajout compte, pas deux.
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f.action || f.action.indexOf('/panier/ajouter/') === -1) return;
+    var id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID().replace(/-/g, '')
+             : String(Date.now()) + Math.random().toString(16).slice(2);
+    var champ = f.querySelector('input[name="event_id"]');
+    if (!champ) {
+      champ = document.createElement('input');
+      champ.type = 'hidden';
+      champ.name = 'event_id';
+      f.appendChild(champ);
+    }
+    champ.value = id;
+    if (window.fbq) {
+      var qte = parseInt((f.querySelector('[name="quantite"]') || {}).value || 1, 10) || 1;
+      fbq('track', 'AddToCart', {
+        currency: 'TND',
+        value: parseFloat(f.dataset.prix || 0) * qte,
+        content_type: 'product',
+        content_name: f.dataset.nom || '',
+        content_ids: [f.dataset.ref || ''],
+        contents: [{ id: f.dataset.ref || '', quantity: qte, item_price: parseFloat(f.dataset.prix || 0) }]
+      }, { eventID: id });
+    }
+  }, true);
+  </script>
+  {% endif %}
+</body>
+</html>

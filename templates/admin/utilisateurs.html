@@ -1,0 +1,54 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Equipe{% endblock %}
+{% block entete %}Equipe{% endblock %}
+{% block contenu_admin %}
+
+<div class="entete-liste">
+  <span class="compte-liste">Utilisateurs <strong>{{ total }} au total</strong></span>
+  <a href="{{ url_for('admin_utilisateur_nouveau') }}" data-ouvre-panneau class="btn btn-rouge">
+    + Ajouter un utilisateur
+  </a>
+</div>
+
+<form method="get" class="barre-recherche-simple">
+  <input type="search" name="q" value="{{ recherche }}" placeholder="Chercher un utilisateur...">
+  <button type="submit" class="btn btn-secondaire btn-petit">Chercher</button>
+</form>
+
+<table class="table-admin">
+  <tr>
+    <th>Nom</th><th>E-mail</th><th>Telephone</th><th>Role</th>
+    <th>Rubriques ouvertes</th><th>Statut</th><th>Actions</th>
+  </tr>
+  {% for u in utilisateurs %}
+  <tr>
+    <td>{{ u.nom_affiche }}</td>
+    <td>{{ u.email }}</td>
+    <td>{{ u.telephone or "—" }}</td>
+    <td>{{ u.role }}</td>
+    <td class="rubriques-ouvertes">
+      {% if u.role == 'proprietaire' %}
+        <span class="pastille-droit tout">Tout</span>
+      {% else %}
+        {% for cle, libelle, _ in rubriques_droits %}
+          {% if u.droits.get(cle) %}<span class="pastille-droit">{{ libelle }}</span>{% endif %}
+        {% else %}<span class="sans-livreur">aucune</span>{% endfor %}
+      {% endif %}
+    </td>
+    <td>{{ "Actif" if u.actif else "Desactive" }}</td>
+    <td class="actions-commande">
+      <a href="{{ url_for('admin_utilisateur_modifier', utilisateur_id=u.id) }}" data-ouvre-panneau
+         class="icone-action" title="Modifier" aria-label="Modifier">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      </a>
+      <form method="post" action="{{ url_for('admin_utilisateur_desactiver', utilisateur_id=u.id) }}">
+        <button type="submit" class="btn btn-secondaire btn-petit">
+          {{ "Desactiver" if u.actif else "Activer" }}
+        </button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

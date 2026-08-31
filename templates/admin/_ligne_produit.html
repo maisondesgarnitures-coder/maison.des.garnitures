@@ -1,0 +1,38 @@
+{# Une ligne d'article. Partagee par la liste plate et la liste par rayon :
+   une seule mise en forme a maintenir. #}
+{# La page courante, filtres compris, voyage avec le lien : on revient
+   dessus apres l'enregistrement au lieu de repartir du debut. #}
+{% set retour = request.full_path if request.query_string else None %}
+{% set modifie = request.args.get('modifie', '') %}
+<tr id="produit-{{ p.id }}" data-id="{{ p.id }}" data-rayon="{{ rayon_id|default(0) }}"
+    class="{{ 'ligne-modifiee' if modifie == p.id|string }}">
+  <td class="cellule-poignee"><span class="poignee" title="Glisser pour deplacer">&#10495;</span></td>
+  <td class="cellule-vignette">
+    <a href="{{ url_for('admin_produit_modifier', produit_id=p.id, retour=retour) }}" data-ouvre-panneau
+       class="vignette-admin"
+       title="{{ p.galerie|length }} photo(s)">
+      {% if p.image %}
+        <img src="{{ url_for('static', filename='img/produits/' + p.image) }}" alt="" loading="lazy">
+      {% else %}
+        <span class="sans-photo">—</span>
+      {% endif %}
+      {% if p.galerie|length > 1 %}<em class="compteur-photos">{{ p.galerie|length }}</em>{% endif %}
+    </a>
+  </td>
+  <td class="col-id"><span class="etiquette-id">{{ p.id }}</span></td>
+  <td>
+    {{ p.nom }}
+    {% if p.reference %}<br><small class="ref-produit-ligne">{{ p.reference }}</small>{% endif %}
+  </td>
+  {% if not rayons %}<td>{{ p.categorie.nom if p.categorie else "-" }}</td>{% endif %}
+  <td>{{ "%.2f"|format(p.prix_affiche) }} TND</td>
+  <td>{% if p.en_rupture %}<span class="stock-zero">0</span>{% else %}{{ p.stock }}{% endif %}</td>
+  <td>{{ "Oui" if p.actif else "Non" }}</td>
+  <td>
+    <a href="{{ url_for('admin_produit_modifier', produit_id=p.id, retour=retour) }}" data-ouvre-panneau class="btn btn-secondaire btn-petit">Modifier</a>
+    <form method="post" action="{{ url_for('admin_produit_supprimer', produit_id=p.id) }}" style="display:inline;" onsubmit="return confirm('Supprimer ce produit ?');">
+      {% if retour %}<input type="hidden" name="retour" value="{{ retour }}">{% endif %}
+      <button type="submit" class="btn btn-petit" style="background:var(--erreur); color:white;">Suppr.</button>
+    </form>
+  </td>
+</tr>

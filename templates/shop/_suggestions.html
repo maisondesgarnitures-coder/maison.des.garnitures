@@ -1,0 +1,29 @@
+{% if suggestions %}
+<div class="bloc-suggestions">
+  <h3>{{ titre_suggestions or t('completez_commande') }}</h3>
+  <div class="liste-suggestions">
+    {% for s in suggestions %}
+    <div class="suggestion">
+      <a href="{{ url_for('voir_produit', produit_id=s.id) }}" class="visuel-suggestion">
+        {% if s.image %}
+          <img src="{{ url_for('static', filename='img/produits/' + s.image) }}" alt="{{ intitule(s) }}">
+        {% else %}<span>{{ t('photo_produit') }}</span>{% endif %}
+      </a>
+      <div class="infos-suggestion">
+        <a href="{{ url_for('voir_produit', produit_id=s.id) }}">{{ intitule(s) }}</a>
+        <div>
+          {% if s.en_promo %}<span class="prix-barre">{{ "%.2f"|format(s.prix) }} TND</span>{% endif %}
+          <span class="prix">{{ "%.2f"|format(s.prix_vitrine) }} TND</span>
+        </div>
+      </div>
+      <form method="post" action="{{ url_for('ajouter_panier', produit_id=s.id) }}"
+            data-ref="{{ s.reference or s.id }}" data-nom="{{ intitule(s) }}"
+            data-prix="{{ '%.3f'|format(s.prix_vitrine) }}">
+        <input type="hidden" name="quantite" value="1">
+        <button type="submit" class="btn btn-vert btn-petit">+ {{ t('ajouter') }}</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

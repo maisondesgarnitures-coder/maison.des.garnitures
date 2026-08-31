@@ -1,0 +1,53 @@
+{% extends "admin/_stats_base.html" %}
+{% import "admin/_stats_macros.html" as m %}
+{% block entete %}Statistiques - Equipe et confirmation{% endblock %}
+{% block contenu_stats %}
+
+<p class="note-stats">
+  Qui traite les commandes, a quelle vitesse et avec quel resultat. Le delai est
+  le temps ecoule entre la commande du client et sa confirmation par telephone :
+  c'est le facteur numero un du taux de confirmation en paiement a la livraison.
+</p>
+
+{% if not equipe %}
+  <p class="vide">Aucun changement de statut enregistre sur la periode.</p>
+{% else %}
+<table class="table-admin">
+  <tr>
+    <th>Membre</th>
+    <th class="num">Actions</th>
+    <th class="num">Confirmees</th>
+    <th class="num">Refusees</th>
+    <th class="num">Taux de confirmation</th>
+    <th class="num">Delai moyen</th>
+    <th class="num">Expediees</th>
+    <th class="num">Livrees</th>
+    <th class="num">Valeur confirmee</th>
+  </tr>
+  {% for f in equipe %}
+  <tr>
+    <td><strong>{{ f.nom }}</strong></td>
+    <td class="num">{{ f.actions }}</td>
+    <td class="num">{{ f.confirmees }}</td>
+    <td class="num">{{ f.refusees }}</td>
+    <td class="num">
+      {% if f.confirmees or f.refusees %}
+        <span class="{{ 'bon' if f.taux_confirmation >= 60 else 'moyen' if f.taux_confirmation >= 40 else 'faible' }}">
+          {{ f.taux_confirmation }}%
+        </span>
+      {% else %}-{% endif %}
+    </td>
+    <td class="num">{% if f.delai_moyen is not none %}{{ f.delai_moyen }} h{% else %}-{% endif %}</td>
+    <td class="num">{{ f.expediees }}</td>
+    <td class="num">{{ f.livrees }}</td>
+    <td class="num"><strong>{{ "%.2f"|format(f.valeur_confirmee) }} TND</strong></td>
+  </tr>
+  {% endfor %}
+  <tr class="ligne-total">
+    <td><strong>Total</strong></td>
+    <td class="num"><strong>{{ total_actions }}</strong></td>
+    <td colspan="7"></td>
+  </tr>
+</table>
+{% endif %}
+{% endblock %}

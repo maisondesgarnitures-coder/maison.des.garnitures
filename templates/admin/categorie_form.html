@@ -1,0 +1,93 @@
+{% extends gabarit_admin %}
+{% block titre %}Modifier une categorie{% endblock %}
+{% block entete %}Categorie : {{ categorie.nom }}{% endblock %}
+{% block contenu_admin %}
+
+<form method="post" class="form-produit" enctype="multipart/form-data" data-formulaire-principal
+      action="{{ url_for('admin_categorie_modifier', categorie_id=categorie.id) }}">
+
+  <section class="bloc-produit">
+    <div class="grille-2">
+      <div>
+        <label>Nom *</label>
+        <input type="text" name="nom" required value="{{ categorie.nom }}">
+        <label style="margin-top:10px;">Nom en arabe</label>
+        <input type="text" name="nom_ar" dir="rtl" placeholder="Laisser vide pour garder le nom francais"
+               value="{{ categorie.nom_ar or '' }}">
+      </div>
+      <div>
+        <label>Rattacher a</label>
+        <select name="parent_id">
+          <option value="">-- Categorie principale --</option>
+          {% for p in parents %}
+          <option value="{{ p.id }}" {% if categorie.parent_id == p.id %}selected{% endif %}>{{ "— " * p.niveau }}{{ p.nom }}</option>
+          {% endfor %}
+        </select>
+        <p class="aide">Une sous-categorie apparait sous sa categorie parente.</p>
+      </div>
+    </div>
+
+    <div class="cases-produit">
+      <label>
+        <input type="checkbox" name="actif" {% if categorie.actif %}checked{% endif %}>
+        Afficher cette categorie en boutique
+      </label>
+    </div>
+  </section>
+
+  <section class="bloc-produit">
+    <h3>Banniere</h3>
+    {% if categorie.image %}
+    <div class="apercu-banniere">
+      <img src="{{ url_for('static', filename='img/produits/' + categorie.image) }}" alt="">
+      <span>Banniere actuelle. Choisis un fichier pour la remplacer.</span>
+    </div>
+    {% endif %}
+    <input type="file" name="image" accept="image/*">
+    <p class="aide">Format conseille : 1200 x 400 pixels. Elle s'affiche en haut de la page de la categorie.</p>
+  </section>
+
+  <section class="bloc-produit">
+    <h3>Texte de presentation</h3>
+    <textarea name="description" rows="5" placeholder="Quelques lignes affichees sous la banniere.">{{ categorie.description or '' }}</textarea>
+    <p class="aide">Utile pour le referencement et pour rassurer le client sur ce qu'il va trouver ici.</p>
+  </section>
+
+  <section class="bloc-produit">
+    <h3>Referencement</h3>
+    <div class="grille-2">
+      <div>
+        <label>Titre pour Google</label>
+        <input type="text" name="meta_titre" maxlength="200"
+               value="{{ categorie.meta_titre or '' }}" placeholder="Vide = nom de la categorie">
+      </div>
+      <div>
+        <label>Identifiant dans l'adresse</label>
+        <input type="text" name="slug" value="{{ categorie.slug }}">
+        <p class="aide">/categorie/<strong>{{ categorie.slug }}</strong></p>
+      </div>
+    </div>
+    <label>Description pour Google</label>
+    <textarea name="meta_description" rows="2" maxlength="320">{{ categorie.meta_description or '' }}</textarea>
+  </section>
+
+  <section class="bloc-produit">
+    <h3>Contenu</h3>
+    <p class="aide">
+      {{ categorie.produits_visibles|length }} produit(s) visible(s)
+      {%- if categorie.enfants %}, {{ categorie.nb_produits_total }} en comptant les sous-categories{% endif %}
+      &middot; valeur du stock : <strong>{{ "%.2f"|format(categorie.valeur_stock) }} TND</strong>
+    </p>
+    {% if categorie.enfants %}
+    <p class="aide">Sous-categories : {{ categorie.enfants | map(attribute='nom') | join(', ') }}</p>
+    {% endif %}
+    <a href="{{ url_for('admin_produits') }}" class="btn btn-secondaire btn-petit">Gerer les produits</a>
+    <a href="{{ url_for('voir_categorie', slug=categorie.slug) }}" target="_blank" class="btn btn-secondaire btn-petit">Voir en boutique</a>
+  </section>
+
+  <div class="barre-actions">
+    <button type="submit" class="btn btn-rouge btn-large">Enregistrer</button>
+    <a href="{{ url_for('admin_categories') }}" class="btn btn-secondaire">Annuler</a>
+  </div>
+</form>
+{% endblock %}

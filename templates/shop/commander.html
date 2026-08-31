@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block titre %}Commander - Maison des Garnitures{% endblock %}
+{% block contenu %}
+<div class="conteneur">
+  <h1 class="section-titre" style="padding:0;">{{ t('finaliser_commande') }}</h1>
+  <form method="post" class="formulaire-commande">
+    <label>{{ t('nom_complet') }} *</label>
+    <input type="text" name="nom_client" required>
+
+    <label>{{ t('telephone') }} *</label>
+    <input type="tel" name="telephone" required placeholder="Ex: 20123456">
+
+    <label>{{ t('gouvernorat') }} *</label>
+    <select name="gouvernorat" id="selectGouvernorat" required>
+      <option value="">{{ t('choisir_gouvernorat') }}</option>
+    </select>
+
+    <label>{{ t('adresse_complete') }} *</label>
+    <textarea name="adresse" required rows="3" placeholder="{{ t('adresse_exemple') }}"></textarea>
+
+    <label>{{ t('commentaire_optionnel') }}</label>
+    <textarea name="commentaire" rows="2"></textarea>
+
+    <div style="margin-top:16px;">
+      {% for a in articles %}
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;">
+        <span>{{ a.nom_affiche }}{% if a.lot %} ({{ a.lot.nom }}){% endif %} x {{ a.quantite }}</span>
+        <span>{{ "%.2f"|format(a.sous_total) }} TND</span>
+      </div>
+      {% endfor %}
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-top:8px; color:var(--texte-secondaire);">
+        <span>{{ t('frais_livraison') }}</span>
+        <span>{{ "%.2f"|format(frais_livraison) }} TND</span>
+      </div>
+      <div class="recap-total">
+        <span>{{ t('total_a_payer') }}</span>
+        <span>{{ "%.2f"|format(total + frais_livraison) }} TND</span>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-rouge btn-large" style="margin-top:20px;">{{ t('confirmer_commande') }}</button>
+  </form>
+
+  {% with titre_suggestions = t('souvent_achete') %}
+    {% include "shop/_suggestions.html" %}
+  {% endwith %}
+</div>
+
+<script>
+const gouvernoratsTunisie = {"Tunis": ["Tunis Ville", "Bab El Bhar", "Bab Souika", "Carthage", "El Kabaria", "El Menzah", "El Omrane", "El Omrane Superieur", "El Ouardia", "Ettahrir", "Ezzouhour", "Hraïria", "Jebel Jelloud", "La Marsa", "Le Bardo", "Medina", "Sidi El Bechir", "Sidi Hassine", "Séjoumi", "Cité El Khadra", "Djebel Djelloud"], "Ariana": ["Ariana Ville", "Ettadhamen", "Kalâat El Andalous", "La Soukra", "Mnihla", "Raoued", "Sidi Thabet"], "Ben Arous": ["Ben Arous", "Bou Mhel El Bassatine", "El Mourouj", "Ezzahra", "Fouchana", "Hammam Chott", "Hammam Lif", "Medina Jedida", "Megrine", "Mohamedia", "Mornag", "Radès"], "Manouba": ["Den Den", "Douar Hicher", "El Batan", "Jedaida", "Manouba", "Mornaguia", "Oued Ellil", "Tebourba"], "Nabeul": ["Nabeul", "Béni Khalled", "Béni Khiar", "Dar Chaabane", "El Mida", "El Haouaria", "Grombalia", "Hammamet", "Kelibia", "Korba", "Menzel Bouzelfa", "Menzel Temime", "Soliman", "Takelsa", "Bou Argoub", "Hammam Ghezaz"], "Zaghouan": ["Zaghouan", "Bir Mcherga", "El Fahs", "Nadhour", "Saouaf", "Zriba"], "Bizerte": ["Bizerte Nord", "Bizerte Sud", "El Alia", "Ghar El Melh", "Ghezala", "Joumine", "Mateur", "Menzel Bourguiba", "Menzel Jemil", "Ras Jebel", "Sejnane", "Tinja", "Utique", "El Ouden"], "Béja": ["Béja Nord", "Béja Sud", "Amdoun", "Goubellat", "Medjez El Bab", "Nefza", "Teboursouk", "Testour", "Thibar"], "Jendouba": ["Jendouba", "Jendouba Nord", "Aïn Draham", "Balta-Bou Aouane", "Bou Salem", "Fernana", "Ghardimaou", "Oued Meliz", "Tabarka"], "Le Kef": ["Le Kef Est", "Le Kef Ouest", "Dahmani", "Jerissa", "Kalaat Khasba", "Kalaat Senan", "Ksour", "Nebeur", "Sakiet Sidi Youssef", "Sers", "Tajerouine", "Touiref"], "Siliana": ["Siliana Nord", "Siliana Sud", "Bargou", "Bou Arada", "El Aroussa", "El Krib", "Gaâfour", "Kesra", "Makthar", "Rouhia", "Sidi Bou Rouis"], "Kairouan": ["Kairouan Nord", "Kairouan Sud", "Bou Hajla", "Chebika", "Cherarda", "Echrarda", "El Alaa", "Hajeb El Ayoun", "Haffouz", "Nasrallah", "Oueslatia", "Sbikha"], "Kasserine": ["Kasserine Nord", "Kasserine Sud", "El Ayoun", "Ezzouhour", "Fériana", "Foussana", "Hassi El Ferid", "Hidra", "Jedelienne", "Mejel Bel Abbès", "Sbeitla", "Sbiba", "Thala"], "Sidi Bouzid": ["Sidi Bouzid Est", "Sidi Bouzid Ouest", "Bir El Hafey", "Cebbala", "Jelma", "Menzel Bouzaiane", "Meknassy", "Mezzouna", "Ouled Haffouz", "Regueb", "Sidi Ali Ben Aoun", "Souk Jedid"], "Sousse": ["Sousse Ville", "Sousse Jaouhara", "Sousse Riadh", "Akouda", "Bouficha", "Enfidha", "Hammam Sousse", "Hergla", "Kalâa Kebira", "Kalâa Seghira", "Kondar", "M'saken", "Sidi Bou Ali", "Sidi El Hani", "Zaouiet Sousse"], "Monastir": ["Monastir", "Bekalta", "Bembla", "Beni Hassen", "Jemmal", "Ksar Hellal", "Ksibet El Mediouni", "Moknine", "Ouerdanine", "Sahline", "Sayada-Lamta-Bou Hajar", "Teboulba", "Zeramdine"], "Mahdia": ["Mahdia", "Bou Merdes", "Chebba", "Chorbane", "El Jem", "Essouassi", "Hebira", "Ksour Essef", "Melloulèche", "Ouled Chamekh", "Sidi Alouane"], "Sfax": ["Sfax Ville", "Sfax Ouest", "Sfax Sud", "El Amra", "El Hencha", "Ghraiba", "Jebeniana", "Kerkennah", "Mahres", "Menzel Chaker", "Sakiet Eddaier", "Sakiet Ezzit", "Skhira", "Thyna", "Bir Ali Ben Khalifa"], "Gabès": ["Gabès Ville", "Gabès Ouest", "Gabès Sud", "El Hamma", "El Metouia", "Ghannouch", "Matmata", "Menzel Habib", "Mareth", "Nouvelle Matmata"], "Médenine": ["Médenine Nord", "Médenine Sud", "Ben Gardane", "Beni Khedache", "Djerba Ajim", "Djerba Houmt Souk", "Djerba Midoun", "Sidi Makhlouf", "Zarzis"], "Tataouine": ["Tataouine Nord", "Tataouine Sud", "Bir Lahmar", "Dhiba", "Ghomrassen", "Remada", "Smar"], "Gafsa": ["Gafsa Nord", "Gafsa Sud", "Belkhir", "El Guettar", "El Ksar", "Mdhilla", "Métlaoui", "Redeyef", "Sened", "Sidi Aïch"], "Tozeur": ["Tozeur", "Degueche", "Hazoua", "Nefta", "Tameghza"], "Kébili": ["Kébili Nord", "Kébili Sud", "Douz Nord", "Douz Sud", "Faouar", "Souk El Ahad"]};
+
+// Seul le gouvernorat est demande : une delegation absente de la base du
+// transporteur bloquait l'impression de son bordereau. L'adresse libre
+// porte desormais le detail de la ville.
+const selectGouv = document.getElementById('selectGouvernorat');
+
+Object.keys(gouvernoratsTunisie).sort().forEach(function(gouv) {
+  const option = document.createElement('option');
+  option.value = gouv;
+  option.textContent = gouv;
+  selectGouv.appendChild(option);
+});
+</script>
+{% endblock %}
+
+<script>
+// Le client a saisi son numero mais n'a pas encore valide : on memorise son
+// panier pour pouvoir le relancer. Envoi discret, sans bloquer la saisie.
+(function () {
+  var form = document.querySelector('.formulaire-commande');
+  if (!form) return;
+  var attente = null, dernierEnvoi = '';
+
+  function memoriser() {
+    var tel = (form.querySelector('[name="telephone"]') || {}).value || '';
+    var chiffres = tel.replace(/[^0-9]/g, '');
+    if (chiffres.length < 8) return;
+
+    var donnees = new FormData();
+    donnees.append('telephone', tel);
+    donnees.append('nom_client', (form.querySelector('[name="nom_client"]') || {}).value || '');
+    donnees.append('gouvernorat', (form.querySelector('[name="gouvernorat"]') || {}).value || '');
+
+    var signature = [...donnees.values()].join('|');
+    if (signature === dernierEnvoi) return;
+    dernierEnvoi = signature;
+
+    fetch('{{ url_for("memoriser_panier_abandonne") }}', {
+      method: 'POST', body: donnees, keepalive: true
+    }).catch(function () {});
+  }
+
+  form.addEventListener('input', function () {
+    clearTimeout(attente);
+    attente = setTimeout(memoriser, 1200);
+  });
+  form.addEventListener('change', memoriser);
+})();
+</script>
+
+{% block pixel_evenements %}
+<script>
+fbq('track', 'InitiateCheckout', {
+  currency: 'TND',
+  value: {{ '%.3f'|format(total_final) }},
+  content_type: 'product',
+  num_items: {{ articles|map(attribute='quantite')|sum }}
+}, { eventID: {{ event_id|tojson }} });
+</script>
+{% endblock %}

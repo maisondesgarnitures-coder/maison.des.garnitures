@@ -1,0 +1,153 @@
+{% extends "admin/base_admin.html" %}
+{% block titre %}Commande {{ commande.numero }}{% endblock %}
+{% block entete %}Commande {{ commande.numero }}{% endblock %}
+{% block contenu_admin %}
+<div class="form-admin" style="max-width:800px;">
+  <p><strong>Client:</strong> {{ commande.nom_client }}</p>
+  <p><strong>Telephone:</strong> {{ commande.telephone }}</p>
+  <p><strong>Adresse:</strong> {{ commande.adresse }}, {{ commande.ville }}, {{ commande.gouvernorat }}</p>
+  {% if commande.commentaire %}<p><strong>Commentaire:</strong> {{ commande.commentaire }}</p>{% endif %}
+  <p><strong>Statut actuel:</strong> <span class="badge-statut statut-{{ commande.statut }}">{{ commande.statut }}</span></p>
+  {% if commande.transporteur %}
+  <p class="ligne-transporteur">
+    <strong>Transporteur:</strong>
+    {% if transporteur_actuel and transporteur_actuel.logo %}
+      <img src="{{ url_for('static', filename='img/produits/' + transporteur_actuel.logo) }}"
+           alt="{{ commande.transporteur }}" class="logo-transporteur">
+    {% elif transporteur_actuel %}
+      <span class="pastille-livreur" style="background: {{ transporteur_actuel.couleur }};"
+            title="{{ commande.transporteur }}">{{ transporteur_actuel.initiales }}</span>
+    {% endif %}
+    {{ commande.transporteur }}
+  </p>
+  {% endif %}
+  {% if commande.numero_suivi %}
+  <p><strong>Numero de suivi:</strong>
+    {% if lien_suivi %}
+      <a href="{{ lien_suivi }}" target="_blank" rel="noopener">{{ commande.numero_suivi }}</a>
+    {% else %}{{ commande.numero_suivi }}{% endif %}
+  </p>
+  {% endif %}
+
+  {% if whatsapp_confirmation or whatsapp_expedition %}
+  <div style="background:#eafaf0; border:1px solid var(--vert); border-radius:8px; padding:16px; margin:16px 0;">
+    <h3 style="margin-top:0;">Contacter le client sur WhatsApp</h3>
+    <p style="font-size:13px; color:var(--texte-secondaire); margin-top:0;">
+      Le message est deja redige d'apres tes modeles. Il s'ouvre dans WhatsApp, tu n'as qu'a envoyer.
+    </p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      {% if whatsapp_confirmation %}
+        <a href="{{ whatsapp_confirmation }}" target="_blank" class="btn btn-vert">Confirmer la commande</a>
+      {% endif %}
+      {% if whatsapp_expedition and commande.numero_suivi %}
+        <a href="{{ whatsapp_expedition }}" target="_blank" class="btn btn-bleu">Annoncer l'expedition</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <p style="margin:16px 0;">
+    <a href="{{ url_for('admin_bon_livraison', commande_id=commande.id) }}" target="_blank"
+       class="btn btn-bleu" style="margin-inline-end:8px;">Bon de livraison</a>
+    <a href="{{ url_for('admin_facture', commande_id=commande.id) }}" target="_blank" class="btn btn-secondaire">
+      Editer la facture
+    </a>
+  </p>
+
+  <h3>Articles</h3>
+  <table class="table-admin">
+    <tr><th>Produit</th><th>Prix unitaire</th><th>Quantite</th><th>Sous-total</th></tr>
+    {% for l in commande.lignes %}
+    <tr>
+      <td>{{ l.nom_produit }}</td>
+      <td>{{ "%.2f"|format(l.prix_unitaire) }} TND</td>
+      <td>{{ l.quantite }}</td>
+      <td>{{ "%.2f"|format(l.prix_unitaire * l.quantite) }} TND</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p style="text-align:right; font-weight:700; margin-top:10px;">Total: {{ "%.2f"|format(commande.total) }} TND (dont {{ "%.2f"|format(commande.frais_livraison) }} TND de livraison)</p>
+
+  {% if commande.statut in ['confirmee', 'preparation'] and not commande.numero_suivi %}
+  <div style="background:#eef6ff; border:1px solid var(--bleu); border-radius:8px; padding:16px; margin-top:20px;">
+    <h3 style="margin-top:0;">Expedition automatique First Delivery</h3>
+    <p style="font-size:13px; color:var(--texte-secondaire);">Envoie cette commande directement a First Delivery et recupere le code a barre de suivi automatiquement.</p>
+    <form method="post" action="{{ url_for('admin_expedier_first_delivery', commande_id=commande.id) }}" onsubmit="return confirm('Confirmer l\'envoi de cette commande a First Delivery ?');">
+      <button type="submit" class="btn btn-bleu">Expedier via First Delivery</button>
+    </form>
+  </div>
+  {% endif %}
+
+  {% if commande.transporteur == 'First Delivery' and commande.numero_suivi %}
+  <div style="background:#eafaf0; border:1px solid var(--vert); border-radius:8px; padding:16px; margin-top:20px;">
+    <h3 style="margin-top:0;">Expedition First Delivery active</h3>
+    <p style="font-size:13px;">Code a barre: <strong>{{ commande.numero_suivi }}</strong></p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+      {% if commande.lien_bordereau %}
+      <a href="{{ commande.lien_bordereau }}" target="_blank" class="btn btn-vert">Imprimer le bordereau</a>
+      {% else %}
+      <span style="font-size:13px; color:var(--texte-secondaire);">
+        First Delivery ne fournit le lien d'impression qu'au moment de la creation.
+        Pour cette expedition, imprime depuis ton espace First Delivery avec le code
+        <strong>{{ commande.numero_suivi }}</strong>.
+      </span>
+      {% endif %}
+      <a href="{{ url_for('admin_verifier_statut_first_delivery', commande_id=commande.id) }}" class="btn btn-secondaire btn-petit">Verifier le statut chez First Delivery</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <h3 style="margin-top:24px;">Changer le statut manuellement</h3>
+  <form method="post" action="{{ url_for('admin_commande_statut', commande_id=commande.id) }}">
+    <label>Nouveau statut</label>
+    <select name="statut" data-statut-colore>
+      {% if utilisateur.role in ['proprietaire', 'commandes'] %}
+      <option value="a_confirmer" {% if commande.statut=='a_confirmer' %}selected{% endif %}>A confirmer</option>
+      <option value="confirmee" {% if commande.statut=='confirmee' %}selected{% endif %}>Confirmee</option>
+      <option value="annulee" {% if commande.statut=='annulee' %}selected{% endif %}>Annulee</option>
+      <option value="injoignable" {% if commande.statut=='injoignable' %}selected{% endif %}>Client injoignable</option>
+      {% endif %}
+      {% if utilisateur.role in ['proprietaire', 'livraison'] %}
+      <option value="preparation" {% if commande.statut=='preparation' %}selected{% endif %}>Preparation</option>
+      <option value="expediee" {% if commande.statut=='expediee' %}selected{% endif %}>Expediee</option>
+      <option value="livree" {% if commande.statut=='livree' %}selected{% endif %}>Livree</option>
+      <option value="retour" {% if commande.statut=='retour' %}selected{% endif %}>Retour</option>
+      {% endif %}
+    </select>
+
+    <label>Societe de livraison</label>
+    <select name="transporteur" data-avec-logo>
+      <option value="">-- Choisir un transporteur --</option>
+      {% for t in transporteurs_objets %}
+      <option value="{{ t.nom }}" {% if commande.transporteur == t.nom %}selected{% endif %}
+              data-initiales="{{ t.initiales }}" data-couleur="{{ t.couleur }}"
+              {% if t.logo %}data-logo="{{ url_for('static', filename='img/produits/' + t.logo) }}"{% endif %}>
+        {{ t.nom }}
+      </option>
+      {% endfor %}
+    </select>
+
+    <label>Numero de suivi (optionnel)</label>
+    <input type="text" name="numero_suivi" value="{{ commande.numero_suivi or '' }}" placeholder="Numero fourni par le transporteur">
+
+    <button type="submit" class="btn btn-rouge" style="margin-top:16px;">Mettre a jour manuellement</button>
+  </form>
+
+  {% if commande.historique %}
+  <h3 style="margin-top:24px;">Historique de suivi</h3>
+  <table class="table-admin">
+    <tr><th>Date</th><th>Ancien statut</th><th>Nouveau statut</th><th>Modifie par</th></tr>
+    {% for h in commande.historique|sort(attribute='date_evenement', reverse=true) %}
+    <tr>
+      <td>{{ h.date_evenement.strftime("%d/%m/%Y %H:%M") }}</td>
+      <td>{% if h.ancien_statut %}<span class="badge-statut statut-{{ h.ancien_statut }}">{{ h.ancien_statut }}</span>{% else %}-{% endif %}</td>
+      <td><span class="badge-statut statut-{{ h.nouveau_statut }}">{{ h.nouveau_statut }}</span></td>
+      <td>{{ h.nom_utilisateur }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p style="color:var(--texte-secondaire); margin-top:20px;">Aucun changement de statut enregistre pour le moment.</p>
+  {% endif %}
+</div>
+{% endblock %}

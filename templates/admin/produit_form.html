@@ -1,0 +1,645 @@
+{% extends gabarit_admin %}
+{% block titre %}{{ "Modifier" if produit else "Nouveau" }} produit{% endblock %}
+{% block entete %}{{ "Modifier le produit" if produit else "Nouveau produit" }}
+{% endblock %}
+{% block contenu_admin %}
+
+<form method="post" class="form-produit" enctype="multipart/form-data" data-formulaire-principal
+      {# Le filtre de la liste voyage jusqu'a l'envoi : sans lui dans cette
+         adresse, la redirection d'apres enregistrement n'a rien a suivre. #}
+      action="{{ url_for('admin_produit_modifier', produit_id=produit.id, retour=request.args.get('retour')) if produit
+                else url_for('admin_produit_nouveau', retour=request.args.get('retour')) }}">
+
+  <!-- ============ Bloc principal ============ -->
+  <section class="bloc-produit">
+    <div class="grille-2">
+      <div>
+        <label>Nom du produit *</label>
+        <input type="text" name="nom" required value="{{ produit.nom if produit else '' }}">
+        <label style="margin-top:10px;">Nom en arabe</label>
+        <input type="text" name="nom_ar" dir="rtl" placeholder="Laisser vide pour garder le nom francais"
+               value="{{ produit.nom_ar or '' if produit else '' }}">
+        {% if produit and produit.slug %}
+          <p class="aide">Adresse en boutique : <code>/produit/{{ produit.id }}</code> &middot; identifiant SEO : <code>{{ produit.slug }}</code></p>
+        {% endif %}
+      </div>
+      <div>
+        <label>Reference / SKU</label>
+        <input type="text" name="reference" value="{{ produit.reference if produit and produit.reference else '' }}">
+      </div>
+    </div>
+
+    <div class="grille-2">
+      <div>
+        <label>Categorie</label>
+        <select name="categorie_id">
+          <option value="">-- Sans categorie --</option>
+          {% for c in categories %}
+          {# Le chemin complet : plusieurs categories portent le meme nom. #}
+          <option value="{{ c.id }}" {% if produit and produit.categorie_id == c.id %}selected{% endif %}>{{ c.chemin | map(attribute='nom') | join(' › ') }}{% if not c.actif %} (masquee){% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="grille-2">
+        <div>
+          <label>Couleur</label>
+          <input type="text" name="couleur" value="{{ produit.couleur if produit and produit.couleur else '' }}">
+        </div>
+        <div>
+          <label>Dimensions</label>
+          <input type="text" name="dimensions" value="{{ produit.dimensions if produit and produit.dimensions else '' }}">
+        </div>
+      </div>
+
+      {# Cotes des fraises et meches : c'est sur elles que le client filtre. #}
+      <div class="grille-2">
+        <div>
+          <label>Diametre de queue (mm)</label>
+          <input type="number" step="0.1" min="0" name="queue_mm"
+                 value="{{ produit.queue_mm if produit and produit.queue_mm is not none else '' }}"
+                 placeholder="6, 8, 12...">
+          <p class="aide">Le diametre du corps qui entre dans la pince de la defonceuse.</p>
+        </div>
+        <div>
+          <label>Diametre de coupe (mm)</label>
+          <input type="number" step="0.1" min="0" name="coupe_mm"
+                 value="{{ produit.coupe_mm if produit and produit.coupe_mm is not none else '' }}"
+                 placeholder="10, 14, 22...">
+          <p class="aide">Le diametre utile, celui de la rainure obtenue.</p>
+        </div>
+      </div>
+      <div class="grille-2">
+        <div>
+          <label>Longueur de coupe utile (mm)</label>
+          <input type="number" step="0.1" min="0" name="longueur_mm"
+                 value="{{ produit.longueur_mm if produit and produit.longueur_mm is not none else '' }}"
+                 placeholder="12, 20, 25...">
+          <p class="aide">La profondeur maximale que la fraise peut usiner.</p>
+        </div>
+        <div></div>
+      </div>
+    </div>
+
+    <div class="cases-produit">
+      <label><input type="checkbox" name="actif" {% if not produit or produit.actif %}checked{% endif %}> Visible en boutique</label>
+      <label><input type="checkbox" name="vedette" {% if produit and produit.vedette %}checked{% endif %}> Produit vedette (accueil)</label>
+      <label><input type="checkbox" name="offre_panier" {% if produit and produit.offre_panier %}checked{% endif %}> Proposer au panier et au checkout</label>
+    </div>
+  </section>
+
+  <!-- ============ Photos ============ -->
+  {% if produit %}
+  <section class="bloc-produit">
+    <h3>Photos</h3>
+    <p class="aide">
+      Glisse les photos pour les reordonner. <strong>La premiere est la photo principale</strong> :
+      c'est elle qui apparait dans les listes, sur Facebook et dans le flux catalogue.
+    </p>
+
+    <div class="bande-photos" id="bandePhotos" data-produit="{{ produit.id }}">
+      {% for photo in produit.galerie %}
+      <div class="carte-photo" data-fichier="{{ photo }}">
+        <span class="poignee-photo" title="Glisser pour deplacer">&#10495;</span>
+        <button type="button" class="supprimer-photo" title="Supprimer">&times;</button>
+        <img src="{{ url_for('static', filename='img/produits/' + photo) }}" alt="" loading="lazy">
+        <span class="etiquette-principale">Principale</span>
+      </div>
+      {% endfor %}
+
+      <label class="carte-ajout" id="carteAjout">
+        <input type="file" id="champPhotos" accept="image/*" multiple hidden>
+        <span class="signe">+</span>
+        <span class="texte">Ajouter des photos</span>
+        <span class="detail">JPG, PNG ou WEBP</span>
+      </label>
+    </div>
+
+      <hr style="margin:22px 0; border:none; border-top:1px solid var(--bordure);">
+
+      <label>Video de demonstration &mdash; lien</label>
+      <input type="url" name="video_url" placeholder="https://www.youtube.com/watch?v=..."
+             value="{{ produit.video_url or '' if produit else '' }}">
+      <p class="aide">
+        Colle un lien YouTube, Instagram, Facebook, TikTok ou Vimeo. C'est la
+        methode recommandee : la video ne pese rien sur ton serveur et se charge
+        vite chez le client. Pour Instagram, ouvre la publication et copie
+        l'adresse qui contient <code>/reel/</code> ou <code>/p/</code> : le lien
+        court <code>instagram.com/share/...</code> n'est pas lisible, et le
+        compte doit etre public.
+      </p>
+      <label class="case-simple" style="margin-top:10px;">
+        <input type="checkbox" name="video_verticale"
+               {% if produit and produit.video_verticale %}checked{% endif %}>
+        <span>Video verticale (format telephone)</span>
+      </label>
+      <p class="aide">
+        TikTok, les Shorts et les Reels Instagram sont reconnus tout seuls.
+        Coche ici pour un Reel Facebook ou toute autre video filmee a la
+        verticale : sinon elle s'affiche entre deux bandes noires.
+      </p>
+
+      <label style="margin-top:14px;">ou fichier video (MP4, WebM, MOV &mdash; 40 Mo maximum)</label>
+      <input type="file" name="video" accept="video/mp4,video/webm,video/quicktime">
+      {% if produit and produit.video %}
+      <p class="aide">
+        Video actuelle : <code>{{ produit.video }}</code>
+        &nbsp;<label style="display:inline; font-weight:400;">
+          <input type="checkbox" name="retirer_video" style="width:auto;"> la retirer
+        </label>
+      </p>
+      {% endif %}
+      <p class="aide">Le fichier televerse a la priorite sur le lien.</p>
+  </section>
+  {% endif %}
+
+  <!-- ============ Stock ============ -->
+  <section class="bloc-produit">
+    <h3>Stock</h3>
+    <div class="grille-4">
+      <div>
+        <label>Stock disponible</label>
+        <input type="number" name="stock" id="champStock" value="{{ produit.stock if produit else 0 }}">
+      </div>
+      <div>
+        <label>Alerte a partir de</label>
+        <input type="number" min="0" name="seuil_alerte"
+               value="{{ produit.seuil_alerte if produit and produit.seuil_alerte is not none else '' }}"
+               placeholder="seuil general">
+        <p class="aide">Vide = seuil general de la boutique.</p>
+      </div>
+      <div>
+        <label>Stock entrant</label>
+        <input type="number" min="0" name="stock_entrant" value="{{ produit.stock_entrant if produit and produit.stock_entrant else 0 }}">
+        <p class="aide">Commande fournisseur en route.</p>
+      </div>
+      <div>
+        <label>Stock abime</label>
+        <input type="number" min="0" name="stock_abime" value="{{ produit.stock_abime if produit and produit.stock_abime else 0 }}">
+        <p class="aide">Invendable, suivi a part.</p>
+      </div>
+    </div>
+    <div class="cases-produit">
+      <label>
+        <input type="checkbox" name="vente_en_rupture" {% if produit and produit.vente_en_rupture %}checked{% endif %}>
+        Continuer a vendre en rupture <span class="aide-inline">(precommande : le client peut commander a 0)</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- ============ Prix ============ -->
+  <section class="bloc-produit">
+    <h3>Prix</h3>
+    <div class="grille-4">
+      <div>
+        <label>Prix barre</label>
+        <input type="number" step="0.001" name="prix" id="champPrix" required
+               value="{{ produit.prix if produit else '' }}">
+        <p class="aide">Prix normal, barre si une promo est saisie.</p>
+      </div>
+      <div>
+        <label>Prix de vente</label>
+        <input type="number" step="0.001" name="prix_promo" id="champPromo"
+               value="{{ produit.prix_promo if produit and produit.prix_promo else '' }}"
+               placeholder="aucune promo">
+      </div>
+      <div>
+        <label>Prix d'achat</label>
+        <input type="number" step="0.001" name="cout" id="champCout"
+               value="{{ produit.cout if produit and produit.cout else '' }}">
+        <p class="aide">Jamais affiche en boutique.</p>
+      </div>
+      <div>
+        <label>Marge</label>
+        <div class="marge-calculee" id="margeCalculee">-</div>
+      </div>
+    </div>
+
+    <div class="grille-2">
+      <div>
+        <label>Frais de livraison de ce produit</label>
+        <input type="number" step="0.001" name="prix_livraison"
+               value="{{ produit.prix_livraison if produit and produit.prix_livraison is not none else '' }}"
+               placeholder="frais generaux de la boutique">
+        <p class="aide">Utile pour une machine lourde. Si le panier en contient plusieurs, le tarif le plus eleve s'applique.</p>
+      </div>
+      <div>
+        <label>Cout reel de la livraison</label>
+        <input type="number" step="0.001" name="cout_livraison"
+               value="{{ produit.cout_livraison if produit and produit.cout_livraison is not none else '' }}"
+               placeholder="ce que te facture le transporteur">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Onglets ============ -->
+  <section class="bloc-produit sans-marge-haut">
+    <nav class="onglets-produit">
+      <button type="button" class="actif" data-onglet="description">Description</button>
+      {% if not produit %}<button type="button" data-onglet="photos">Photos</button>{% endif %}
+      {% if produit %}<button type="button" data-onglet="options">Options</button>{% endif %}
+      {% if produit %}<button type="button" data-onglet="lots">Offres / Lots</button>{% endif %}
+      {% if produit %}<button type="button" data-onglet="paliers">Prix par quantite</button>{% endif %}
+      <button type="button" data-onglet="lot">Remise simple</button>
+      <button type="button" data-onglet="lies">Produits lies</button>
+      <button type="button" data-onglet="seo">SEO</button>
+      {% if produit %}<button type="button" data-onglet="avis">Avis</button>{% endif %}
+    </nav>
+
+    <div class="panneau-onglet actif" data-panneau="description">
+      <label>Description du produit</label>
+      <textarea name="description" rows="10">{{ produit.description if produit else '' }}</textarea>
+      <p class="aide">La mise en forme HTML est conservee. Tu peux ecrire en francais puis en arabe dans la meme fiche.</p>
+    </div>
+
+    {# Panneau reserve a la creation : en modification, les medias se gerent
+       dans la carte « Photos » en haut de page. Sans cette condition, les
+       champs video existaient en double et le second, vide, ecrasait le premier. #}
+    {% if not produit %}
+    <div class="panneau-onglet" data-panneau="photos">
+      <label>Photo principale</label>
+      <input type="file" name="image" accept="image/*">
+      <label style="margin-top:14px;">Photos supplementaires</label>
+      <input type="file" name="images_sup" accept="image/*" multiple>
+      <p class="aide">Une fois le produit cree, tu pourras les reordonner directement en haut de cette page.</p>
+
+      <hr style="margin:22px 0; border:none; border-top:1px solid var(--bordure);">
+
+      <label>Video de demonstration &mdash; lien</label>
+      <input type="url" name="video_url" placeholder="https://www.youtube.com/watch?v=..."
+             value="{{ produit.video_url or '' if produit else '' }}">
+      <p class="aide">
+        Colle un lien YouTube, Instagram, Facebook, TikTok ou Vimeo. C'est la
+        methode recommandee : la video ne pese rien sur ton serveur et se charge
+        vite chez le client. Pour Instagram, ouvre la publication et copie
+        l'adresse qui contient <code>/reel/</code> ou <code>/p/</code> : le lien
+        court <code>instagram.com/share/...</code> n'est pas lisible, et le
+        compte doit etre public.
+      </p>
+      <label class="case-simple" style="margin-top:10px;">
+        <input type="checkbox" name="video_verticale"
+               {% if produit and produit.video_verticale %}checked{% endif %}>
+        <span>Video verticale (format telephone)</span>
+      </label>
+      <p class="aide">
+        TikTok, les Shorts et les Reels Instagram sont reconnus tout seuls.
+        Coche ici pour un Reel Facebook ou toute autre video filmee a la
+        verticale : sinon elle s'affiche entre deux bandes noires.
+      </p>
+
+      <label style="margin-top:14px;">ou fichier video (MP4, WebM, MOV &mdash; 40 Mo maximum)</label>
+      <input type="file" name="video" accept="video/mp4,video/webm,video/quicktime">
+      {% if produit and produit.video %}
+      <p class="aide">
+        Video actuelle : <code>{{ produit.video }}</code>
+        &nbsp;<label style="display:inline; font-weight:400;">
+          <input type="checkbox" name="retirer_video" style="width:auto;"> la retirer
+        </label>
+      </p>
+      {% endif %}
+      <p class="aide">Le fichier televerse a la priorite sur le lien.</p>
+    </div>
+    {% endif %}
+
+    {% if produit %}
+    <div class="panneau-onglet" data-panneau="options">
+      <input type="hidden" name="onglet_options" value="1">
+      <p class="aide">
+        Une option est un choix propose au client : Couleur, Taille, Configuration.
+        Tape une valeur puis <kbd>Entree</kbd> : elle s'ajoute en etiquette. Chaque
+        croisement de valeurs devient une variante, avec son prix et son stock.
+        Pour une pastille de couleur, ecris la valeur suivie du code : <code>Rouge #c0392b</code>.
+      </p>
+
+      <div id="listeOptions">
+        {% for o in produit.options %}
+        <div class="ligne-option">
+          <div>
+            <label>Nom de l'option</label>
+            <input type="text" name="option_nom" value="{{ o.nom }}" placeholder="Couleur, Taille...">
+          </div>
+          <div>
+            <label>Affichage</label>
+            <select name="option_type">
+              <option value="texte" {% if o.type == 'texte' %}selected{% endif %}>Boutons texte</option>
+              <option value="couleur" {% if o.type == 'couleur' %}selected{% endif %}>Pastilles de couleur</option>
+            </select>
+          </div>
+          <div class="large">
+            <label>Valeurs</label>
+            <div class="champ-etiquettes" data-etiquettes>
+              <input type="hidden" name="option_valeurs"
+                     value="{{ o.valeurs | map(attribute='valeur') | join(', ') }}">
+            </div>
+          </div>
+          <button type="button" class="btn btn-secondaire btn-petit supprimer-ligne">Retirer</button>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="actions-onglet">
+        <button type="button" class="btn btn-secondaire btn-petit" id="ajouterOption">+ Ajouter une option</button>
+      </div>
+
+      {# Le tableau est reconstruit par le navigateur des qu'une valeur change.
+         Les lignes deja enregistrees servent de point de depart. #}
+      <script type="application/json" id="donneesVariantes">
+        {{ produit.variantes | map(attribute='pour_formulaire') | list | tojson }}
+      </script>
+      <div id="zoneVariantes"
+           data-prix-produit="{{ '%.3f'|format(produit.prix or 0) }}"
+           data-cout-produit="{{ '%.3f'|format(produit.cout or 0) }}"
+           data-dossier="{{ url_for('static', filename='img/produits/') }}"></div>
+    </div>
+
+    <div class="panneau-onglet" data-panneau="lots">
+      <input type="hidden" name="onglet_lots" value="1">
+      <p class="aide">
+        Paliers d'achat proposes sur la fiche : « Achetez 2 », « Pack de 3 ». Le client
+        choisit une carte, et le prix saisi est le <strong>prix total du lot</strong>.
+        C'est le levier le plus efficace pour augmenter le panier moyen en paiement a la livraison.
+      </p>
+
+      <div id="listeLots">
+        {% for l in produit.lots %}
+        <div class="carte-lot">
+          <div class="entete-lot">
+            <span>Offre {{ loop.index }}</span>
+            <label class="defaut-lot">
+              <input type="radio" name="lot_defaut" value="{{ loop.index0 }}" {% if l.par_defaut %}checked{% endif %}> Selectionnee par defaut
+            </label>
+            <button type="button" class="btn btn-secondaire btn-petit supprimer-ligne">Retirer</button>
+          </div>
+          <div class="grille-4">
+            <div><label>Nom</label><input type="text" name="lot_nom" value="{{ l.nom }}" placeholder="Achetez 2"></div>
+            <div><label>Accroche</label><input type="text" name="lot_etiquette" value="{{ l.etiquette or '' }}" placeholder="Economisez 20 DT"></div>
+            <div><label>Quantite</label><input type="number" min="1" name="lot_qte" value="{{ l.quantite }}"></div>
+            <div><label>Couleur du badge</label>
+              <select name="lot_couleur">
+                <option value="vert" {% if l.couleur_badge == 'vert' %}selected{% endif %}>Vert</option>
+                <option value="rouge" {% if l.couleur_badge == 'rouge' %}selected{% endif %}>Rouge</option>
+                <option value="bleu" {% if l.couleur_badge == 'bleu' %}selected{% endif %}>Bleu</option>
+              </select>
+            </div>
+          </div>
+          <div class="grille-4">
+            <div><label>Prix total du lot</label><input type="number" step="0.001" name="lot_prix" value="{{ l.prix }}"></div>
+            <div><label>Prix barre</label><input type="number" step="0.001" name="lot_barre" value="{{ l.prix_barre if l.prix_barre is not none else '' }}" placeholder="calcule"></div>
+            <div><label>Livraison</label><input type="number" step="0.001" name="lot_livraison" value="{{ l.prix_livraison if l.prix_livraison is not none else '' }}" placeholder="par defaut"></div>
+            <div><label>Photo</label>
+              {% if l.image %}<img src="{{ url_for('static', filename='img/produits/' + l.image) }}" class="mini-photo" alt="">{% endif %}
+              <input type="file" name="lot_image" accept="image/*">
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="actions-onglet">
+        <button type="button" class="btn btn-secondaire btn-petit" id="ajouterLot">+ Ajouter une offre</button>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if produit %}
+    <div class="panneau-onglet" data-panneau="paliers">
+      <input type="hidden" name="onglet_paliers" value="1">
+      <p class="aide">
+        Prix degressif selon la quantite commandee. Exemple pour une charniere vendue
+        a la piece : <strong>1 piece &rarr; 2.250</strong>, <strong>100 &rarr; 1.950</strong>,
+        <strong>500 &rarr; 1.850</strong>. Le client voit la grille sur la fiche et le
+        prix s'ajuste tout seul quand il change la quantite.
+      </p>
+
+      <div id="listePaliers">
+        {% for pal in produit.paliers %}
+        <div class="ligne-palier">
+          <div>
+            <label>A partir de (pieces)</label>
+            <input type="number" min="1" name="palier_quantite" value="{{ pal.quantite_min }}">
+          </div>
+          <div>
+            <label>Prix unitaire (TND)</label>
+            <input type="number" step="0.001" min="0" name="palier_prix" value="{{ pal.prix }}">
+          </div>
+          <button type="button" class="btn btn-secondaire btn-petit supprimer-ligne">Retirer</button>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="actions-onglet">
+        <button type="button" class="btn btn-secondaire btn-petit" id="ajouterPalier">+ Ajouter un palier</button>
+      </div>
+
+      {% if produit.paliers %}
+      <table class="table-admin" style="margin-top:18px; max-width:520px;">
+        <tr><th>Quantite commandee</th><th class="num">Prix unitaire</th><th class="num">Economie</th></tr>
+        {% for pal in produit.paliers %}
+        <tr>
+          <td>{{ pal.quantite_min }} piece(s) et plus</td>
+          <td class="num"><strong>{{ "%.3f"|format(pal.prix) }} TND</strong></td>
+          <td class="num">
+            {% if produit.prix_affiche and pal.prix < produit.prix_affiche %}
+              <span class="bon">-{{ ((produit.prix_affiche - pal.prix) / produit.prix_affiche * 100)|round|int }} %</span>
+            {% else %}-{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      <p class="aide">En dessous du premier palier, c'est le prix de vente normal qui s'applique.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="panneau-onglet" data-panneau="lot">
+      <p class="aide">Encourage l'achat en quantite : « a partir de 3, -10 % ». La remise apparait sur la fiche et s'applique au panier.</p>
+      <div class="grille-4">
+        <div>
+          <label>A partir de</label>
+          <input type="number" min="2" name="lot_quantite"
+                 value="{{ produit.lot_quantite if produit and produit.lot_quantite else '' }}"
+                 placeholder="aucune offre">
+        </div>
+        <div>
+          <label>Type de remise</label>
+          <select name="lot_type">
+            <option value="pourcentage" {% if produit and produit.lot_type == 'pourcentage' %}selected{% endif %}>Pourcentage</option>
+            <option value="fixe" {% if produit and produit.lot_type == 'fixe' %}selected{% endif %}>Montant fixe (TND)</option>
+          </select>
+        </div>
+        <div>
+          <label>Valeur</label>
+          <input type="number" step="0.001" name="lot_valeur"
+                 value="{{ produit.lot_valeur if produit and produit.lot_valeur else '' }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="panneau-onglet" data-panneau="lies">
+      <p class="aide">
+        Produits proposes en bas de la fiche. Si tu n'en choisis aucun, la boutique
+        affiche automatiquement des produits de la meme categorie.
+      </p>
+      <select name="produits_lies" multiple size="12" class="choix-multiple">
+        {% for p in tous_produits %}
+        <option value="{{ p.id }}" {% if produit and p.id in produit.ids_lies %}selected{% endif %}>
+          {{ p.nom }}{% if p.reference %} ({{ p.reference }}){% endif %}
+        </option>
+        {% endfor %}
+      </select>
+      <p class="aide">Maintiens Ctrl (ou Cmd) pour en selectionner plusieurs. 8 au maximum.</p>
+    </div>
+
+    <div class="panneau-onglet" data-panneau="seo">
+      <label>Titre pour Google</label>
+      <input type="text" name="meta_titre" maxlength="200" id="champMetaTitre"
+             value="{{ produit.meta_titre if produit and produit.meta_titre else '' }}"
+             placeholder="Vide = nom du produit">
+      <p class="aide"><span id="compteurTitre">0</span> caracteres. Google en affiche environ 60.</p>
+
+      <label>Description pour Google</label>
+      <textarea name="meta_description" rows="3" maxlength="320" id="champMetaDesc"
+                placeholder="Vide = debut de la description">{{ produit.meta_description if produit and produit.meta_description else '' }}</textarea>
+      <p class="aide"><span id="compteurDesc">0</span> caracteres. Google en affiche environ 155.</p>
+
+      <label>Identifiant dans l'adresse (slug)</label>
+      <input type="text" name="slug" value="{{ produit.slug if produit and produit.slug else '' }}"
+             placeholder="genere depuis le nom">
+    </div>
+
+    {% if produit %}
+    <div class="panneau-onglet" data-panneau="avis">
+      {% if produit.avis_publies %}
+        <p><strong>{{ produit.note_moyenne }}/5</strong> sur {{ produit.avis_publies|length }} avis publie(s).</p>
+      {% else %}
+        <p class="aide">Aucun avis publie sur ce produit.</p>
+      {% endif %}
+      {% set en_attente = produit.avis | rejectattr('approuve') | list %}
+      {% if en_attente %}
+        <p class="alerte-attente">{{ en_attente|length }} avis en attente de validation.</p>
+      {% endif %}
+      <a href="{{ url_for('admin_avis') }}" class="btn btn-secondaire btn-petit">Ouvrir la moderation des avis</a>
+    </div>
+    {% endif %}
+  </section>
+
+  <div class="barre-actions">
+    <button type="submit" class="btn btn-rouge btn-large">
+      {{ "Enregistrer les modifications" if produit else "Creer le produit" }}
+    </button>
+    {# Annuler ramene sur la liste filtree, comme l'enregistrement. Le chemin
+       n'est suivi que s'il reste dans l'administration. #}
+    {% set retour = request.args.get('retour', '') %}
+    <a href="{{ retour if retour.startswith('/admin/') else url_for('admin_produits') }}" class="btn btn-secondaire">Annuler</a>
+  </div>
+</form>
+
+
+
+{% endblock %}
+
+{% block scripts_page %}
+{% if produit %}<script src="{{ url_for('static', filename='js/photos-produit.js') }}"></script>{% endif %}
+<script>
+// Onglets
+document.querySelectorAll('.onglets-produit button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('.onglets-produit button').forEach(x => x.classList.remove('actif'));
+    document.querySelectorAll('.panneau-onglet').forEach(x => x.classList.remove('actif'));
+    this.classList.add('actif');
+    document.querySelector('[data-panneau="' + this.dataset.onglet + '"]').classList.add('actif');
+  });
+});
+
+// Marge calculee en direct : on voit tout de suite si un prix d'achat est incoherent
+function majMarge() {
+  var prix = parseFloat(document.getElementById('champPromo').value)
+          || parseFloat(document.getElementById('champPrix').value) || 0;
+  var cout = parseFloat(document.getElementById('champCout').value) || 0;
+  var cible = document.getElementById('margeCalculee');
+  if (!prix) { cible.textContent = '-'; cible.className = 'marge-calculee'; return; }
+  var marge = prix - cout;
+  var taux = (marge / prix * 100);
+  cible.textContent = marge.toFixed(3) + ' TND (' + taux.toFixed(1) + ' %)';
+  cible.className = 'marge-calculee ' + (!cout ? '' : marge <= 0 ? 'perte' : taux < 15 ? 'faible' : 'bonne');
+}
+['champPrix', 'champPromo', 'champCout'].forEach(function (id) {
+  var e = document.getElementById(id);
+  if (e) e.addEventListener('input', majMarge);
+});
+majMarge();
+
+// Compteurs SEO
+function compteur(champ, sortie) {
+  var e = document.getElementById(champ), s = document.getElementById(sortie);
+  if (!e || !s) return;
+  var maj = function () { s.textContent = e.value.length; };
+  e.addEventListener('input', maj); maj();
+}
+compteur('champMetaTitre', 'compteurTitre');
+compteur('champMetaDesc', 'compteurDesc');
+
+// Ajout dynamique d'options et d'offres
+function ajouterLigne(conteneurId, gabarit) {
+  var c = document.getElementById(conteneurId);
+  if (!c) return;
+  var d = document.createElement('div');
+  d.innerHTML = gabarit.trim();
+  c.appendChild(d.firstChild);
+}
+
+var boutonOption = document.getElementById('ajouterOption');
+if (boutonOption) boutonOption.addEventListener('click', function () {
+  ajouterLigne('listeOptions',
+    '<div class="ligne-option">' +
+    '<div><label>Nom de l&#39;option</label><input type="text" name="option_nom" placeholder="Couleur, Taille..."></div>' +
+    '<div><label>Affichage</label><select name="option_type"><option value="texte">Boutons texte</option><option value="couleur">Pastilles de couleur</option></select></div>' +
+    '<div class="large"><label>Valeurs</label><div class="champ-etiquettes" data-etiquettes><input type="hidden" name="option_valeurs" value=""></div></div>' +
+    '<button type="button" class="btn btn-secondaire btn-petit supprimer-ligne">Retirer</button></div>');
+});
+
+
+var boutonPalier = document.getElementById('ajouterPalier');
+if (boutonPalier) boutonPalier.addEventListener('click', function () {
+  ajouterLigne('listePaliers',
+    '<div class="ligne-palier">' +
+    '<div><label>A partir de (pieces)</label><input type="number" min="1" name="palier_quantite"></div>' +
+    '<div><label>Prix unitaire (TND)</label><input type="number" step="0.001" min="0" name="palier_prix"></div>' +
+    '<button type="button" class="btn btn-secondaire btn-petit supprimer-ligne">Retirer</button></div>');
+});
+
+var boutonLot = document.getElementById('ajouterLot');
+if (boutonLot) boutonLot.addEventListener('click', function () {
+  var n = document.querySelectorAll('#listeLots .carte-lot').length;
+  ajouterLigne('listeLots',
+    '<div class="carte-lot"><div class="entete-lot"><span>Offre ' + (n + 1) + '</span>' +
+    '<label class="defaut-lot"><input type="radio" name="lot_defaut" value="' + n + '"> Selectionnee par defaut</label>' +
+    '<button type="button" class="btn btn-secondaire btn-petit supprimer-ligne">Retirer</button></div>' +
+    '<div class="grille-4">' +
+    '<div><label>Nom</label><input type="text" name="lot_nom" placeholder="Achetez 2"></div>' +
+    '<div><label>Accroche</label><input type="text" name="lot_etiquette" placeholder="Economisez 20 DT"></div>' +
+    '<div><label>Quantite</label><input type="number" min="1" name="lot_qte" value="2"></div>' +
+    '<div><label>Couleur du badge</label><select name="lot_couleur"><option value="vert">Vert</option><option value="rouge">Rouge</option><option value="bleu">Bleu</option></select></div>' +
+    '</div><div class="grille-4">' +
+    '<div><label>Prix total du lot</label><input type="number" step="0.001" name="lot_prix"></div>' +
+    '<div><label>Prix barre</label><input type="number" step="0.001" name="lot_barre" placeholder="calcule"></div>' +
+    '<div><label>Livraison</label><input type="number" step="0.001" name="lot_livraison" placeholder="par defaut"></div>' +
+    '<div><label>Photo</label><input type="file" name="lot_image" accept="image/*"></div>' +
+    '</div></div>');
+});
+
+document.addEventListener('click', function (e) {
+  if (e.target.classList && e.target.classList.contains('supprimer-ligne')) {
+    var bloc = e.target.closest('.ligne-option, .carte-lot, .ligne-palier');
+    if (bloc) bloc.remove();
+  }
+});
+
+// Revenir sur le bon onglet apres enregistrement (#options, #lots)
+if (location.hash) {
+  var cible = document.querySelector('[data-onglet="' + location.hash.slice(1) + '"]');
+  if (cible) cible.click();
+}
+</script>
+
+<script src="{{ url_for('static', filename='js/options-produit.js') }}"></script>
+{% endblock %}

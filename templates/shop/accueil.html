@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block titre %}{{ parametres.nom_boutique if parametres else "Maison des Garnitures" }} — {{ t('accroche_logo') }}{% endblock %}
+
+{# Les trois photos du collage viennent des produits mis en avant. #}
+{% set vitrine = (produits_vedette or nouveautes)[:3] %}
+
+{% macro entete(titre, sous_titre, lien=None, libelle=None) %}
+<div class="entete-section">
+  <div>
+    <div class="titre-groupe">
+      <span class="barre-accent" aria-hidden="true"></span>
+      <h2>{{ titre }}</h2>
+    </div>
+    <p class="sous-titre-section">{{ sous_titre }}</p>
+  </div>
+  {% if lien %}
+  <a class="lien-section" href="{{ lien }}">
+    {{ libelle }}
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.2 5.2 11.8 6.6l4.4 4.4H4v2h12.2l-4.4 4.4 1.4 1.4L20 12z"/></svg>
+  </a>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro rangee(produits, identifiant='') %}
+<div class="conteneur">
+  <div class="carrousel-produits" data-carrousel data-intervalle="6000"{% if identifiant %} id="{{ identifiant }}"{% endif %}>
+    <button type="button" class="fleche-carrousel precedent" aria-label="{{ t('precedent') }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z"/></svg>
+    </button>
+    <div class="piste-carrousel piste-produits">
+      {% for p in produits %}{% include "shop/_carte_produit.html" %}{% endfor %}
+    </div>
+    <button type="button" class="fleche-carrousel suivant" aria-label="{{ t('suivant') }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"/></svg>
+    </button>
+  </div>
+</div>
+{% endmacro %}
+
+{% block contenu %}
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-texte">
+      <span class="etiquette-hero">
+        <span class="pastille" aria-hidden="true"></span>
+        {{ t('hero_etiquette') }}
+      </span>
+      <h1>{{ t('hero_titre_1') }} <span class="surligne">{{ t('hero_titre_2') }}</span></h1>
+      <p class="accroche">{{ t('hero_accroche') }}</p>
+
+      <div class="hero-actions">
+        <a href="{{ url_for('catalogue') }}" class="btn btn-rouge">{{ t('voir_catalogue_court') }}</a>
+        {% if parametres and parametres.whatsapp %}
+        <a href="https://wa.me/{{ parametres.whatsapp }}" target="_blank" rel="noopener" class="btn btn-fantome">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23z"/></svg>
+          {{ t('commander_whatsapp') }}
+        </a>
+        {% endif %}
+      </div>
+
+      <div class="chiffres-hero">
+        <div>
+          <span class="valeur-chiffre">{{ nb_produits }}</span>
+          <span class="libelle-chiffre">{{ t('chiffre_references') }}</span>
+        </div>
+        <div>
+          <span class="valeur-chiffre">{{ categories|length }}</span>
+          <span class="libelle-chiffre">{{ t('chiffre_categories') }}</span>
+        </div>
+        <div>
+          <span class="valeur-chiffre">{{ t('avance_montant') }}</span>
+          <span class="libelle-chiffre">{{ t('chiffre_avance') }}</span>
+        </div>
+      </div>
+    </div>
+
+    {% if vitrine %}
+    <div class="hero-visuel" aria-hidden="true">
+      {% for p in vitrine %}
+        {% if p.image %}
+        <div class="vignette v{{ loop.index }}">
+          <img src="{{ url_for('static', filename='img/produits/' + p.image) }}" alt="" loading="eager">
+        </div>
+        {% endif %}
+      {% endfor %}
+      <div class="pastille-prix"><span class="montant">{{ t('avance_montant') }}</span><small>{{ t('avance_libelle') }}</small></div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="bande-confiance">
+  <div class="atout">
+    <span class="icone-atout"><svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1h2.4a2 2 0 0 1 1.7.94l1.6 2.55c.2.32.3.69.3 1.06V16a2 2 0 0 1-2 2h-1.2a3 3 0 0 1-5.6 0H9.8a3 3 0 0 1-5.6 0H3a1 1 0 0 1-1-1V6zm13 3v4.2c.5-.4 1.1-.7 1.8-.7 1.1 0 2 .6 2.5 1.5H21v-3.3L19.4 9H16zM7 15.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm10.8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg></span>
+    <div><strong>{{ t('atout_livraison_t') }}</strong><span>{{ t('atout_livraison_d') }}</span></div>
+  </div>
+  <div class="atout">
+    <span class="icone-atout"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4H4V6h16v2zm0 10H4v-6h16v6zm-9-4h5v2h-5v-2z"/></svg></span>
+    <div><strong>{{ t('atout_cod_t') }}</strong><span>{{ t('atout_cod_d') }}</span></div>
+  </div>
+  <div class="atout">
+    <span class="icone-atout"><svg viewBox="0 0 24 24"><path d="M12 1 3 5v6c0 5.05 3.4 9.76 9 11 5.6-1.24 9-5.95 9-11V5l-9-4zm-1.2 14.4L7 11.6l1.4-1.4 2.4 2.4 5-5L17.2 9l-6.4 6.4z"/></svg></span>
+    <div><strong>{{ t('atout_pro_t') }}</strong><span>{{ t('atout_pro_d') }}</span></div>
+  </div>
+  <div class="atout">
+    <span class="icone-atout"><svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></span>
+    <div><strong>{{ t('atout_conseil_t') }}</strong><span>{{ t('atout_conseil_d') }}</span></div>
+  </div>
+</section>
+
+{{ entete(t('nos_categories'), t('sous_titre_categories')) }}
+<div class="conteneur">
+  {# Une seule ligne qui defile toute seule ; les fleches reprennent la main. #}
+  <div class="carrousel-categories" data-carrousel data-intervalle="4500">
+    <button type="button" class="fleche-carrousel precedent" aria-label="{{ t('precedent') }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z"/></svg>
+    </button>
+
+    <div class="piste-carrousel piste-categories">
+      {% for cat in categories %}
+      <a class="carte-categorie {{ 'avec-image' if cat.image }}" href="{{ url_for('voir_categorie', slug=cat.slug) }}">
+        {% if cat.image %}<img src="{{ url_for('static', filename='img/produits/' + cat.image) }}" alt="" loading="lazy">{% endif %}
+        <span class="compte-categorie">{{ cat.nb_produits_total }}</span>
+        <span>{{ intitule(cat) }}</span>
+      </a>
+      {% endfor %}
+    </div>
+
+    <button type="button" class="fleche-carrousel suivant" aria-label="{{ t('suivant') }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"/></svg>
+    </button>
+  </div>
+</div>
+
+{% if produits_vedette %}
+{{ entete(t('produits_vedettes'), t('sous_titre_vedettes'), url_for('catalogue'), t('tout_voir')) }}
+{{ rangee(produits_vedette, "produits-vedette") }}
+{% endif %}
+
+{% if nouveautes %}
+{{ entete(t('nouveautes'), t('sous_titre_nouveautes'), url_for('catalogue', tri='recent'), t('tout_voir')) }}
+{{ rangee(nouveautes) }}
+{% endif %}
+
+{{ entete(t('tous_produits'), t('sous_titre_tous')) }}
+<div class="conteneur">
+  <div class="grille-produits">
+    {% for p in tous_produits %}{% include "shop/_carte_produit.html" %}{% endfor %}
+  </div>
+  <div class="zone-voir-plus">
+    <a href="{{ url_for('catalogue') }}" class="btn btn-secondaire btn-large">
+      {{ t('voir_catalogue').replace('{n}', nb_produits|string) }}
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts_page %}
+<script src="{{ url_for('static', filename='js/carrousel.js') }}" defer></script>
+{% endblock %}

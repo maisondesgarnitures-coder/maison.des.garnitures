@@ -1,0 +1,31 @@
+{# Barre de tri, grille paginee et bouton « voir plus ». #}
+{% if total %}
+<div class="barre-catalogue">
+  <span class="compte-produits">{{ total }} {{ t('produits_trouves') if total > 1 else t('produit_trouve') }}</span>
+  <form method="get" class="tri-catalogue">
+    {% for cle, valeur in request.args.items() if cle not in ('tri', 'page', 'fragment') %}
+      <input type="hidden" name="{{ cle }}" value="{{ valeur }}">
+    {% endfor %}
+    <label for="choixTri">{{ t('trier_par') }}</label>
+    <select name="tri" id="choixTri" onchange="this.form.submit()">
+      {% for cle, infos in tris.items() %}
+      <option value="{{ cle }}" {% if tri == cle %}selected{% endif %}>{{ t('tri_' + cle) }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+{% endif %}
+
+<div class="grille-produits" id="grilleProduits">
+  {% include "shop/_grille_paginee.html" %}
+</div>
+
+{% if reste %}
+<div class="zone-voir-plus">
+  <a class="btn btn-secondaire btn-large bouton-voir-plus" id="boutonVoirPlus"
+     href="{{ request.path }}?{{ request.query_string.decode() | replace('page=' ~ page, '') | trim('&') }}{{ '&' if request.query_string else '' }}page={{ page + 1 }}"
+     data-page="{{ page + 1 }}">
+    {{ t('voir_plus') }} <span class="reste-produits">({{ reste }})</span>
+  </a>
+</div>
+{% endif %}

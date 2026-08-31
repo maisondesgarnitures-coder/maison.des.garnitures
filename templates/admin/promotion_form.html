@@ -1,0 +1,40 @@
+{% extends gabarit_admin %}
+{% block titre %}Nouvelle promotion{% endblock %}
+{% block entete %}Creer une promotion{% endblock %}
+{% block contenu_admin %}
+<form method="post" class="form-admin" data-formulaire-principal
+      action="{{ url_for('admin_promotion_nouvelle') }}">
+  <label>Titre de la promotion *</label>
+  <input type="text" name="titre" required placeholder="Ex: Promotion rentree">
+
+  <label>Code promo *</label>
+  <input type="text" name="code" required placeholder="Ex: RENTREE10" style="text-transform:uppercase;">
+
+  <label>Type de reduction *</label>
+  <select name="type_reduction">
+    <option value="pourcentage">Pourcentage (%)</option>
+    <option value="montant">Montant fixe (TND)</option>
+  </select>
+
+  <label>Valeur de la reduction *</label>
+  <input type="number" step="0.01" name="valeur" required placeholder="Ex: 10">
+
+  <label>Montant minimum de commande (TND)</label>
+  <input type="number" step="0.01" name="montant_minimum" value="0">
+
+  <label>Nombre maximum d'utilisations (0 = illimite)</label>
+  <input type="number" name="utilisation_max" value="0">
+
+  <label>Date de debut (optionnel)</label>
+  <input type="date" name="date_debut">
+
+  <label>Date d'expiration (optionnel)</label>
+  <input type="date" name="date_fin">
+
+  <label style="display:flex; align-items:center; gap:8px; margin-top:14px;">
+    <input type="checkbox" name="actif" style="width:auto;" checked> Promotion active immediatement
+  </label>
+
+  <button type="submit" class="btn btn-rouge" style="margin-top:20px;">Creer la promotion</button>
+</form>
+{% endblock %}
