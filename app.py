@@ -5689,15 +5689,21 @@ def migrer_colonnes_manquantes():
         if perimees:
             db.session.commit()
 
-    for table, colonnes in nouvelles.items():
-        existantes = {ligne[1] for ligne in db.session.execute(db.text("PRAGMA table_info(%s)" % table))}
-        if not existantes:
-            continue
-        for nom, definition in colonnes:
-            if nom not in existantes:
-                db.session.execute(db.text("ALTER TABLE %s ADD COLUMN %s %s" % (table, nom, definition)))
-                app.logger.info("Colonne ajoutee : %s.%s", table, nom)
-    db.session.commit()
+    # « PRAGMA » n'existe que dans SQLite. Sur PostgreSQL, db.create_all()
+    # vient de creer le schema complet a partir des modeles : il n'y a aucune
+    # colonne a rattraper, et cette boucle ferait echouer le demarrage.
+    if db.engine.dialect.name == "sqlite":
+        for table, colonnes in nouvelles.items():
+            existantes = {ligne[1] for ligne in
+                          db.session.execute(db.text("PRAGMA table_info(%s)" % table))}
+            if not existantes:
+                continue
+            for nom, definition in colonnes:
+                if nom not in existantes:
+                    db.session.execute(db.text(
+                        "ALTER TABLE %s ADD COLUMN %s %s" % (table, nom, definition)))
+                    app.logger.info("Colonne ajoutee : %s.%s", table, nom)
+        db.session.commit()
     nettoyer_bordereaux_perimes()
 
 
