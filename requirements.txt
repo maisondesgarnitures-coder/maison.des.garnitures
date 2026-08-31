@@ -8,4 +8,6 @@ openpyxl==3.1.3
 waitress==3.0.0
 
 # PostgreSQL en ligne. Inutile en local, ou SQLite suffit.
-psycopg[binary]==3.2.1
+# Version non figee : le paquet binaire 3.2.1 a disparu de PyPI et le
+# deploiement echouait. On accepte toute la serie 3.x, compatible.
+psycopg[binary]>=3.2.13,<4
