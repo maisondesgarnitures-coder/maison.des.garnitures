@@ -2201,46 +2201,83 @@ def admin_mot_de_passe_oublie():
 
 @app.route("/admin/reinitialiser", methods=["GET", "POST"])
 def admin_reinitialiser():
-    """Verification du code et choix du nouveau mot de passe."""
+    """Etape 1 : le code, et rien d'autre.
+
+    Le mot de passe se choisit a l'ecran suivant. Melanger les deux obligeait
+    a tout retaper des qu'un chiffre etait faux, et laissait croire que le
+    code avait ete refuse quand c'etait la confirmation qui ne suivait pas.
+    """
     email = (request.values.get("email") or "").strip().lower()[:150]
     erreur = None
 
     if request.method == "POST":
         code = (request.form.get("code") or "").strip()
+        u = Utilisateur.query.filter_by(email=email, actif=True).first()
+        demande = None
+        if u:
+            demande = (CodeReinitialisation.query
+                       .filter_by(utilisateur_id=u.id, utilise=False)
+                       .order_by(CodeReinitialisation.id.desc()).first())
+
+        if not demande or not demande.valide:
+            erreur = "Code expire ou invalide. Demandez-en un nouveau."
+        elif not check_password_hash(demande.code_hash, code):
+            demande.essais = (demande.essais or 0) + 1
+            db.session.commit()
+            restants = ESSAIS_CODE_MAX - demande.essais
+            erreur = ("Code incorrect. %s"
+                      % ("Il ne reste plus d'essai : demandez un nouveau code."
+                         if restants <= 0 else "Essais restants : %d." % restants))
+        else:
+            # Le code n'est pas consomme ici : un abandon a l'ecran suivant
+            # obligerait alors a en redemander un. Le laissez-passer tient
+            # dans la session signee, que le visiteur ne peut pas fabriquer.
+            session["reinit_demande"] = demande.id
+            session["reinit_utilisateur"] = u.id
+            return redirect(url_for("admin_nouveau_mot_de_passe"))
+
+    return render_template("admin/reinitialiser.html", email=email, erreur=erreur)
+
+
+def oublier_laissez_passer():
+    session.pop("reinit_demande", None)
+    session.pop("reinit_utilisateur", None)
+
+
+@app.route("/admin/nouveau-mot-de-passe", methods=["GET", "POST"])
+def admin_nouveau_mot_de_passe():
+    """Etape 2 : le nouveau mot de passe, une fois le code reconnu."""
+    demande = db.session.get(CodeReinitialisation, session.get("reinit_demande") or 0)
+    u = db.session.get(Utilisateur, session.get("reinit_utilisateur") or 0)
+
+    # Le quart d'heure a pu s'ecouler pendant que la page restait ouverte.
+    if not demande or not u or demande.utilisateur_id != u.id or not demande.valide:
+        oublier_laissez_passer()
+        flash("Le code a expire. Demandez-en un nouveau.", "erreur")
+        return redirect(url_for("admin_mot_de_passe_oublie"))
+
+    erreur = None
+    if request.method == "POST":
         nouveau = request.form.get("mot_de_passe") or ""
         confirme = request.form.get("mot_de_passe_2") or ""
-        u = Utilisateur.query.filter_by(email=email, actif=True).first()
 
         if len(nouveau) < 8:
             erreur = "Le mot de passe doit faire au moins 8 caracteres."
         elif nouveau != confirme:
             erreur = "Les deux mots de passe ne sont pas identiques."
         else:
-            demande = None
-            if u:
-                demande = (CodeReinitialisation.query
-                           .filter_by(utilisateur_id=u.id, utilise=False)
-                           .order_by(CodeReinitialisation.id.desc()).first())
-            if not demande or not demande.valide:
-                erreur = "Code expire ou invalide. Demandez-en un nouveau."
-            elif not check_password_hash(demande.code_hash, code):
-                demande.essais = (demande.essais or 0) + 1
-                db.session.commit()
-                restants = ESSAIS_CODE_MAX - demande.essais
-                erreur = ("Code incorrect. %s"
-                          % ("Il ne reste plus d'essai : demandez un nouveau code."
-                             if restants <= 0 else "Essais restants : %d." % restants))
-            else:
-                u.mot_de_passe_hash = generate_password_hash(nouveau)
-                # Tous les codes de ce compte tombent, pas seulement celui-ci.
-                perimer_les_codes(u)
-                u.doit_changer_mdp = False
-                db.session.commit()
-                app.logger.info("Mot de passe change pour %s", u.email)
-                flash("Mot de passe modifié. Vous pouvez vous connecter.", "succes")
-                return redirect(url_for("admin_login"))
+            u.mot_de_passe_hash = generate_password_hash(nouveau)
+            u.doit_changer_mdp = False
+            # Tous les codes de ce compte tombent, pas seulement celui-ci.
+            perimer_les_codes(u)
+            db.session.commit()
+            oublier_laissez_passer()
+            app.logger.info("Mot de passe change pour %s", u.email)
+            flash("Mot de passe modifie. Vous pouvez vous connecter.", "succes")
+            return redirect(url_for("admin_login"))
 
-    return render_template("admin/reinitialiser.html", email=email, erreur=erreur)
+    return render_template("admin/nouveau_mot_de_passe.html",
+                           email_masque=u.email_masque, erreur=erreur)
 
 
 @app.route("/admin/login", methods=["GET", "POST"])

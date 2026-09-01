@@ -2555,3 +2555,8 @@ body.panneau-ouvert { overflow: hidden; }
   margin-inline-start: 8px;
 }
 .rayon-orphelin { color: #6b7280; background: #e5e7eb; margin-inline-start: 0; }
+
+/* Parcours « mot de passe oublie » : le visiteur doit voir ou il en est,
+   sinon la deuxieme page ressemble a un recommencement. */
+.login-admin-box .etape-parcours { color: var(--texte-secondaire); font-size:12px; letter-spacing:.08em; text-transform: uppercase; margin: 0 0 4px; }
+.login-admin-box .code-accepte { color:#1B7F4B; background:#E8F6EE; border:1px solid #A8DcC0; border-radius:6px; padding:8px 10px; font-size:13px; margin-top:12px; }
