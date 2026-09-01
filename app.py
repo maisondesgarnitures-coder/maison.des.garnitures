@@ -21,7 +21,7 @@ import requests
 from datetime import datetime, timedelta
 from functools import wraps
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, abort
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, abort, g
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -1048,8 +1048,9 @@ def donnees_client_meta(commande=None):
         "client_user_agent": request.headers.get("User-Agent", ""),
     }
     # Cookies deposes par le Pixel : ils relient la visite au clic publicitaire.
-    fbp = request.cookies.get("_fbp")
-    fbc = request.cookies.get("_fbc")
+    poses = cookies_meta()
+    fbp = request.cookies.get("_fbp") or poses.get("_fbp")
+    fbc = request.cookies.get("_fbc") or poses.get("_fbc")
     if fbp:
         donnees["fbp"] = fbp
     if fbc:
@@ -1335,6 +1336,36 @@ PARAMETRES_ATTRIBUTION = {
 }
 
 
+# Meta relie une visite a un clic publicitaire par deux cookies que le Pixel
+# pose en JavaScript. Quand le Pixel est bloque - ou simplement pas encore
+# execute, ce qui est le cas au tout premier affichage - ils n'existent pas,
+# et l'evenement serveur part sans le lien vers la publicite. Meta le signale
+# dans ses diagnostics : « faible couverture de fbc via l'API Conversions ».
+# On les pose donc nous-memes, au format documente : fb.1.<horodatage ms>.<valeur>.
+DUREE_COOKIES_META = 90 * 24 * 3600
+
+
+def fbc_depuis_le_clic():
+    """Reconstruit _fbc a partir du fbclid laisse par la publicite."""
+    fbclid = (request.args.get("fbclid") or "").strip()[:400]
+    return "fb.1.%d.%s" % (int(time.time() * 1000), fbclid) if fbclid else None
+
+
+def cookies_meta():
+    """Ceux qui manquent et que le serveur doit poser sur cette reponse."""
+    return getattr(g, "_cookies_meta", None) or {}
+
+
+@app.after_request
+def poser_cookies_meta(reponse):
+    for nom, valeur in cookies_meta().items():
+        # Lisible en JavaScript : le Pixel doit retrouver la meme valeur que
+        # le serveur, sans quoi les deux envois ne se rejoindraient pas.
+        reponse.set_cookie(nom, valeur, max_age=DUREE_COOKIES_META,
+                           samesite="Lax", secure=EN_PRODUCTION, httponly=False)
+    return reponse
+
+
 @app.before_request
 def memoriser_attribution():
     """La provenance est retenue au premier clic, pas au dernier."""
@@ -1353,6 +1384,16 @@ def memoriser_attribution():
         nouveau = True
     if nouveau:
         session["attribution"] = capture
+
+    manquants = {}
+    if not request.cookies.get("_fbc"):
+        depuis_clic = fbc_depuis_le_clic()
+        if depuis_clic:
+            manquants["_fbc"] = depuis_clic
+    if not request.cookies.get("_fbp"):
+        manquants["_fbp"] = "fb.1.%d.%d" % (int(time.time() * 1000),
+                                            secrets.randbelow(10 ** 10))
+    g._cookies_meta = manquants
 
 
 def langue_courante():
