@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nouveau mot de passe - Maison des Garnitures</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-admin-page">
+  <div class="login-admin-box">
+    <img src="{{ url_for('static', filename='img/logo.jpeg') }}" alt="Logo">
+    <h2>Nouveau mot de passe</h2>
+    <p style="color:var(--texte-secondaire); font-size:13px;">
+      Entrez le code recu par e-mail, puis choisissez votre nouveau mot de passe.
+    </p>
+    {% if erreur %}<p style="color:var(--erreur); font-size:13px;">{{ erreur }}</p>{% endif %}
+
+    <form method="post" style="text-align:left; margin-top:16px;">
+      <input type="hidden" name="email" value="{{ email }}">
+
+      <label style="display:block; margin-bottom:4px; font-weight:600; font-size:13px;">Email</label>
+      <input type="email" value="{{ email }}" disabled
+             style="width:100%; padding:10px; margin-bottom:12px; border:1px solid var(--bordure); border-radius:6px; background:#f6f7f8;">
+
+      <label style="display:block; margin-bottom:4px; font-weight:600; font-size:13px;">Code a six chiffres</label>
+      <input type="text" name="code" required autofocus
+             inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code"
+             style="width:100%; padding:10px; margin-bottom:12px; border:1px solid var(--bordure); border-radius:6px; letter-spacing:.4em; text-align:center; font-size:18px;">
+
+      <label style="display:block; margin-bottom:4px; font-weight:600; font-size:13px;">Nouveau mot de passe</label>
+      <input type="password" name="mot_de_passe" required minlength="8" autocomplete="new-password"
+             style="width:100%; padding:10px; margin-bottom:12px; border:1px solid var(--bordure); border-radius:6px;">
+
+      <label style="display:block; margin-bottom:4px; font-weight:600; font-size:13px;">Confirmez le mot de passe</label>
+      <input type="password" name="mot_de_passe_2" required minlength="8" autocomplete="new-password"
+             style="width:100%; padding:10px; margin-bottom:16px; border:1px solid var(--bordure); border-radius:6px;">
+
+      <button type="submit" class="btn btn-rouge btn-large">Changer le mot de passe</button>
+    </form>
+
+    <p style="margin-top:18px; font-size:13px;">
+      <a href="{{ url_for('admin_mot_de_passe_oublie') }}">Demander un nouveau code</a>
+      &nbsp;&middot;&nbsp;
+      <a href="{{ url_for('admin_login') }}">Retour a la connexion</a>
+    </p>
+  </div>
+</body>
+</html>

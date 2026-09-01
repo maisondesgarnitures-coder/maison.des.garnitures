@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mot de passe oublie - Maison des Garnitures</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-admin-page">
+  <div class="login-admin-box">
+    <img src="{{ url_for('static', filename='img/logo.jpeg') }}" alt="Logo">
+    <h2>Mot de passe oublie</h2>
+    <p style="color:var(--texte-secondaire); font-size:13px;">
+      Entrez l'adresse de votre compte. Vous recevrez un code a six chiffres,
+      valable quinze minutes.
+    </p>
+    <form method="post" style="text-align:left; margin-top:16px;">
+      <label style="display:block; margin-bottom:4px; font-weight:600; font-size:13px;">Email</label>
+      <input type="email" name="email" required autofocus
+             style="width:100%; padding:10px; margin-bottom:16px; border:1px solid var(--bordure); border-radius:6px;">
+      <button type="submit" class="btn btn-rouge btn-large">Envoyer le code</button>
+    </form>
+    <p style="margin-top:18px; font-size:13px;">
+      <a href="{{ url_for('admin_login') }}">Retour a la connexion</a>
+    </p>
+  </div>
+</body>
+</html>

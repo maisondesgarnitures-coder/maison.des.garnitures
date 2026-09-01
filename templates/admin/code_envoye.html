@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code envoye - Maison des Garnitures</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-admin-page">
+  <div class="login-admin-box">
+    <img src="{{ url_for('static', filename='img/logo.jpeg') }}" alt="Logo">
+    <h2>Verifiez votre boite mail</h2>
+    {# Le message ne dit pas si le compte existe : sinon, cette page servirait
+       a dresser la liste des adresses valides. #}
+    <p style="color:var(--texte-secondaire); font-size:13px;">
+      Si un compte utilise cette adresse, un code a six chiffres vient d'y
+      etre envoye. Il est valable quinze minutes et ne sert qu'une fois.
+    </p>
+    <p style="color:var(--texte-secondaire); font-size:13px;">
+      Pensez a regarder dans les indesirables.
+    </p>
+    <a href="{{ url_for('admin_reinitialiser', email=email) }}"
+       class="btn btn-rouge btn-large" style="margin-top:16px; display:block;">
+      J'ai recu le code
+    </a>
+    <p style="margin-top:18px; font-size:13px;">
+      <a href="{{ url_for('admin_mot_de_passe_oublie') }}">Renvoyer un code</a>
+      &nbsp;&middot;&nbsp;
+      <a href="{{ url_for('admin_login') }}">Retour a la connexion</a>
+    </p>
+  </div>
+</body>
+</html>

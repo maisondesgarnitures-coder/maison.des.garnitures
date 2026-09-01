@@ -5,6 +5,7 @@ import time
 import uuid
 
 import codebarres
+import courriel
 import hashlib
 import secrets
 import html
@@ -168,6 +169,31 @@ GOUVERNORATS_TUNISIE = {
 FIRST_DELIVERY_TOKEN = os.environ.get("FIRST_DELIVERY_TOKEN", "")
 FIRST_DELIVERY_BASE_URL = "https://www.firstdeliverygroup.com/api/v2"
 
+class CodeReinitialisation(db.Model):
+    """Code a usage unique pour reprendre la main sur un compte.
+
+    Le code n'est jamais enregistre en clair : seule son empreinte l'est,
+    comme un mot de passe. Quelqu'un qui lirait la base ne pourrait pas s'en
+    servir. Il expire vite et ne supporte qu'un petit nombre d'essais, sans
+    quoi six chiffres se devinent en quelques milliers de tentatives.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    utilisateur_id = db.Column(db.Integer, db.ForeignKey("utilisateur.id"),
+                               nullable=False)
+    code_hash = db.Column(db.String(255), nullable=False)
+    expire_le = db.Column(db.DateTime, nullable=False)
+    essais = db.Column(db.Integer, default=0)
+    utilise = db.Column(db.Boolean, default=False)
+    date_creation = db.Column(db.DateTime, default=datetime.utcnow)
+    utilisateur = db.relationship("Utilisateur")
+
+    @property
+    def valide(self):
+        return (not self.utilise
+                and self.essais < ESSAIS_CODE_MAX
+                and datetime.utcnow() < self.expire_le)
+
+
 class Utilisateur(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(120), nullable=False)
@@ -183,6 +209,14 @@ class Utilisateur(db.Model):
     alertes_lues_le = db.Column(db.DateTime)
 
     def verifier_mot_de_passe(self, mdp): return check_password_hash(self.mot_de_passe_hash, mdp)
+
+    @property
+    def email_masque(self):
+        """m****@gmail.com : de quoi se reconnaitre sans divulguer l'adresse."""
+        nom, _, domaine = (self.email or "").partition("@")
+        if not domaine:
+            return ""
+        return "%s%s@%s" % (nom[:1], "*" * max(len(nom) - 1, 1), domaine)
 
     @property
     def nom_affiche(self):
@@ -2045,6 +2079,119 @@ def suivi_commande():
     c = Commande.query.filter_by(numero=request.form.get("numero"), telephone=request.form.get("telephone")).first() if request.method == "POST" else None
     return render_template("shop/suivi.html", commande=c,
                            lien_suivi=(lien_de_suivi(c) if c else None), erreur=traduire("commande_introuvable", langue_courante()) if request.method == "POST" and not c else None)
+
+# Reglages du « mot de passe oublie ». Six chiffres se devinent vite : la
+# duree courte et le petit nombre d'essais sont ce qui rend le code sur.
+DUREE_CODE_MINUTES = 15
+ESSAIS_CODE_MAX = 5
+CODES_PAR_QUART_DHEURE = 3
+
+
+def code_a_six_chiffres():
+    """Tire au sort par le generateur cryptographique, pas par random."""
+    return "%06d" % secrets.randbelow(1000000)
+
+
+def demandes_recentes(utilisateur):
+    """Combien de codes ce compte a-t-il demandes dans le dernier quart d'heure."""
+    depuis = datetime.utcnow() - timedelta(minutes=DUREE_CODE_MINUTES)
+    return CodeReinitialisation.query.filter(
+        CodeReinitialisation.utilisateur_id == utilisateur.id,
+        CodeReinitialisation.date_creation >= depuis).count()
+
+
+def envoyer_code(utilisateur):
+    """Cree un code, l'envoie, et renvoie True si le courriel est parti."""
+    code = code_a_six_chiffres()
+    db.session.add(CodeReinitialisation(
+        utilisateur_id=utilisateur.id,
+        code_hash=generate_password_hash(code),
+        expire_le=datetime.utcnow() + timedelta(minutes=DUREE_CODE_MINUTES)))
+    db.session.commit()
+
+    boutique = ParametreBoutique.query.first()
+    enseigne = (boutique.nom_boutique if boutique else "Maison des Garnitures")
+    texte = (
+        "Bonjour,\n\n"
+        "Voici votre code pour changer le mot de passe de l'administration "
+        "%s :\n\n    %s\n\n"
+        "Il est valable %d minutes et ne sert qu'une fois.\n\n"
+        "Si vous n'avez rien demande, ignorez ce message : votre mot de passe "
+        "n'a pas change.\n" % (enseigne, code, DUREE_CODE_MINUTES))
+
+    envoye = courriel.envoyer(utilisateur.email,
+                              "%s — code de verification" % enseigne, texte)
+    if not envoye and not EN_PRODUCTION:
+        # En local, sans serveur d'envoi configure, le code passe par le
+        # journal : de quoi essayer la page sans monter un service de mail.
+        app.logger.warning("SMTP absent — code pour %s : %s",
+                           utilisateur.email, code)
+    return envoye
+
+
+@app.route("/admin/mot-de-passe-oublie", methods=["GET", "POST"])
+def admin_mot_de_passe_oublie():
+    """Demande d'un code. Ne dit jamais si l'adresse existe.
+
+    Repondre « compte inconnu » permettrait de dresser la liste des adresses
+    valides : le message est donc le meme dans tous les cas.
+    """
+    if request.method == "POST":
+        email = (request.form.get("email") or "").strip().lower()[:150]
+        u = Utilisateur.query.filter_by(email=email, actif=True).first()
+        if u:
+            if demandes_recentes(u) >= CODES_PAR_QUART_DHEURE:
+                app.logger.warning("Trop de demandes de code pour %s", email)
+            else:
+                envoyer_code(u)
+        return render_template("admin/code_envoye.html", email=email)
+    return render_template("admin/mot_de_passe_oublie.html")
+
+
+@app.route("/admin/reinitialiser", methods=["GET", "POST"])
+def admin_reinitialiser():
+    """Verification du code et choix du nouveau mot de passe."""
+    email = (request.values.get("email") or "").strip().lower()[:150]
+    erreur = None
+
+    if request.method == "POST":
+        code = (request.form.get("code") or "").strip()
+        nouveau = request.form.get("mot_de_passe") or ""
+        confirme = request.form.get("mot_de_passe_2") or ""
+        u = Utilisateur.query.filter_by(email=email, actif=True).first()
+
+        if len(nouveau) < 8:
+            erreur = "Le mot de passe doit faire au moins 8 caracteres."
+        elif nouveau != confirme:
+            erreur = "Les deux mots de passe ne sont pas identiques."
+        else:
+            demande = None
+            if u:
+                demande = (CodeReinitialisation.query
+                           .filter_by(utilisateur_id=u.id, utilise=False)
+                           .order_by(CodeReinitialisation.id.desc()).first())
+            if not demande or not demande.valide:
+                erreur = "Code expire ou invalide. Demandez-en un nouveau."
+            elif not check_password_hash(demande.code_hash, code):
+                demande.essais = (demande.essais or 0) + 1
+                db.session.commit()
+                restants = ESSAIS_CODE_MAX - demande.essais
+                erreur = ("Code incorrect. %s"
+                          % ("Il ne reste plus d'essai : demandez un nouveau code."
+                             if restants <= 0 else "Essais restants : %d." % restants))
+            else:
+                u.mot_de_passe_hash = generate_password_hash(nouveau)
+                # Tous les codes de ce compte tombent, pas seulement celui-ci.
+                for autre in CodeReinitialisation.query.filter_by(
+                        utilisateur_id=u.id, utilise=False).all():
+                    autre.utilise = True
+                db.session.commit()
+                app.logger.info("Mot de passe change pour %s", u.email)
+                flash("Mot de passe modifié. Vous pouvez vous connecter.", "succes")
+                return redirect(url_for("admin_login"))
+
+    return render_template("admin/reinitialiser.html", email=email, erreur=erreur)
+
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
