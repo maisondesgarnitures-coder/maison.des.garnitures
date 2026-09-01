@@ -1056,9 +1056,17 @@ def donnees_client_meta(commande=None):
         donnees["fbc"] = fbc
 
     if commande is not None:
+        courriel = hacher(commande.email)
+        if courriel:
+            donnees["em"] = [courriel]
         telephone = telephone_e164(commande.telephone)
         if telephone:
-            donnees["ph"] = [hashlib.sha256(telephone.encode("utf-8")).hexdigest()]
+            empreinte = hashlib.sha256(telephone.encode("utf-8")).hexdigest()
+            donnees["ph"] = [empreinte]
+            # Chez un marchand en paiement a la livraison, le telephone est la
+            # seule cle qui suit la personne d'une commande a l'autre : c'est
+            # donc lui qui sert d'identifiant externe.
+            donnees["external_id"] = [empreinte]
         morceaux = (commande.nom_client or "").split()
         if morceaux:
             prenom = hacher(morceaux[0])
@@ -1645,8 +1653,17 @@ def recherche():
     base = Produit.query.filter(Produit.actif == True)
     contexte = page_produits(base, request.args.get("tri"), terme=q)
     if request.args.get("fragment"):
+        # « Voir plus » recharge la suite de la meme recherche : compter un
+        # second Search ferait passer une seule intention pour deux.
         return render_template("shop/_grille_paginee.html", **contexte)
-    return render_template("shop/recherche.html", requete=q, **contexte)
+
+    event_id = nouvel_event_id()
+    envoyer_evenement_meta("Search", event_id, request.url, donnees_client_meta(), {
+        "search_string": q[:200],
+        "content_type": "product",
+        "content_ids": [p.reference or str(p.id) for p in contexte["produits"][:10]],
+    })
+    return render_template("shop/recherche.html", requete=q, event_id=event_id, **contexte)
 
 # ---------------------------------------------------------------------------
 # PANIER

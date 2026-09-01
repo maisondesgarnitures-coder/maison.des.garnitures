@@ -378,3 +378,22 @@ var TXT_GRATUIT = {{ t('livraison_gratuite_atteinte')|tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/fiche-produit.js') }}"></script>
 {% endblock %}
+
+{# Le serveur envoie deja ViewContent ; le navigateur envoie le meme, avec le
+   meme identifiant, et Meta n'en compte qu'un. Deux chemins valent mieux
+   qu'un : les bloqueurs coupent le navigateur, iOS coupe une partie du
+   reste. #}
+{% block pixel_evenements %}
+<script>
+fbq('track', 'ViewContent', {
+  currency: 'TND',
+  value: {{ '%.3f'|format(produit.prix_affiche) }},
+  content_type: 'product',
+  content_name: {{ produit.nom|tojson }},
+  content_ids: [{{ (produit.reference or produit.id|string)|tojson }}],
+  contents: [{ id: {{ (produit.reference or produit.id|string)|tojson }},
+               quantity: 1,
+               item_price: {{ '%.3f'|format(produit.prix_affiche) }} }]
+}, { eventID: {{ event_id|tojson }} });
+</script>
+{% endblock %}

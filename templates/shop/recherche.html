@@ -17,3 +17,14 @@
 <script>var TXT_CHARGEMENT = {{ t('chargement')|tojson }};</script>
 <script src="{{ url_for('static', filename='js/voir-plus.js') }}"></script>
 {% endblock %}
+
+{% block pixel_evenements %}
+{% if requete and event_id %}
+<script>
+fbq('track', 'Search', {
+  search_string: {{ requete|tojson }},
+  content_type: 'product'
+}, { eventID: {{ event_id|tojson }} });
+</script>
+{% endif %}
+{% endblock %}
