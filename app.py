@@ -33,6 +33,28 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # devinent et affichent quand meme, mais un cache ou un robot peut refuser.
 mimetypes.add_type("image/webp", ".webp")
 
+def charger_env():
+    """Lit le fichier .env s'il existe, sans ecraser l'environnement reel.
+
+    Les reglages secrets ne sont pas versionnes : en ligne ils viennent de
+    l'hebergeur, sur un poste ils viennent de ce fichier. Sans cette lecture,
+    une variable posee dans .env ne servait qu'a servir.py, pas au lancement
+    ordinaire de l'application.
+    """
+    chemin = os.path.join(BASE_DIR, ".env")
+    if not os.path.exists(chemin):
+        return
+    for ligne in open(chemin, encoding="utf-8"):
+        ligne = ligne.strip()
+        if not ligne or ligne.startswith("#") or "=" not in ligne:
+            continue
+        cle, valeur = ligne.split("=", 1)
+        # setdefault : l'hebergeur a toujours le dernier mot sur le fichier.
+        os.environ.setdefault(cle.strip(), valeur.strip().strip('"').strip("'"))
+
+
+charger_env()
+
 # « production » des que la boutique est joignable depuis Internet. Ce seul
 # reglage durcit les cookies, coupe le debogueur et exige une vraie cle.
 EN_PRODUCTION = os.environ.get("MODE", "local").lower() == "production"
