@@ -7,3 +7,7 @@ __pycache__/
 
 # Binaire ngrok depose a la main, jamais versionne
 ngrok.exe
+
+# Archive Converty : 16 Mo d images deja presentes autrement dans static/img.
+# A conserver sur disque et a copier ailleurs, pas a versionner.
+archive_converty/

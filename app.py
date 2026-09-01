@@ -6073,53 +6073,71 @@ def migrer_colonnes_manquantes():
         if perimees:
             db.session.commit()
 
-    # Le rattrapage vaut pour les DEUX moteurs. Il avait ete reserve a SQLite
-    # parce qu'il interrogeait « PRAGMA table_info », propre a SQLite ; mais
-    # db.create_all() ne cree que les TABLES manquantes, jamais les COLONNES
-    # d'une table qui existe deja. Sur PostgreSQL, une colonne ajoutee au
-    # modele apres la migration faisait donc tomber le demarrage :
-    # « column parametre_boutique.meta_domain_verification does not exist ».
+    # Le rattrapage vaut pour les DEUX moteurs : db.create_all() ne cree que
+    # les TABLES manquantes, jamais les COLONNES d'une table qui existe deja.
+    #
+    # L'ordre compte. Une premiere version lisait le catalogue et modifiait les
+    # tables en alternance, dans une transaction jamais validee : sur
+    # PostgreSQL le demarrage restait bloque, Render n'a jamais vu de port
+    # s'ouvrir et a abandonne au bout de quinze minutes. On releve donc tout le
+    # schema d'abord, on dresse le plan ensuite, on modifie enfin - une colonne
+    # a la fois, validee aussitot.
     inspecteur = db.inspect(db.engine)
+    schema = {nom: {c["name"] for c in inspecteur.get_columns(nom)}
+              for nom in inspecteur.get_table_names()}
     postgres = db.engine.dialect.name == "postgresql"
 
     def definition_adaptee(definition):
-        """Les types SQLite ci-dessus n'ont pas tous cours sur PostgreSQL."""
+        """Les types de la liste ci-dessus sont ecrits pour SQLite."""
         if not postgres:
             return definition
         return (definition.replace("DATETIME", "TIMESTAMP")
                           .replace("BOOLEAN DEFAULT 1", "BOOLEAN DEFAULT TRUE")
                           .replace("BOOLEAN DEFAULT 0", "BOOLEAN DEFAULT FALSE"))
 
-    def ajouter(table, nom, definition):
-        db.session.execute(db.text(
-            "ALTER TABLE %s ADD COLUMN %s %s" % (table, nom, definition)))
-        app.logger.info("Colonne ajoutee : %s.%s", table, nom)
+    plan, vues = [], set()
+
+    def prevoir(table, nom, definition):
+        if table not in schema or nom in schema[table] or (table, nom) in vues:
+            return
+        plan.append((table, nom, definition))
+        vues.add((table, nom))
 
     for table, colonnes in nouvelles.items():
-        if not inspecteur.has_table(table):
-            continue
-        existantes = {c["name"] for c in inspecteur.get_columns(table)}
         for nom, definition in colonnes:
-            if nom not in existantes:
-                ajouter(table, nom, definition_adaptee(definition))
+            prevoir(table, nom, definition_adaptee(definition))
 
-    # Filet de securite : la liste ci-dessus se tient a la main, et un oubli
-    # ne se voit pas en local (le fichier SQLite porte deja la colonne). On
-    # compare donc aussi chaque modele a sa table reelle. Ajout en NULL
-    # autorise : une colonne obligatoire ne peut pas s'ajouter a des lignes
+    # Filet de securite : la liste ci-dessus se tient a la main, et un oubli ne
+    # se voit pas en local, ou le fichier SQLite porte deja la colonne. On
+    # compare donc aussi chaque modele a sa table reelle. Ajout sans contrainte
+    # NOT NULL : une colonne obligatoire ne peut pas s'ajouter a des lignes
     # existantes sans valeur.
     for modele in db.Model.registry.mappers:
         table = modele.local_table
-        if table is None or not inspecteur.has_table(table.name):
+        if table is None:
             continue
-        existantes = {c["name"] for c in inspecteur.get_columns(table.name)}
         for colonne in table.columns:
-            if colonne.name in existantes:
-                continue
-            ajouter(table.name, colonne.name,
+            prevoir(table.name, colonne.name,
                     colonne.type.compile(db.engine.dialect))
 
-    db.session.commit()
+    if plan and postgres:
+        # Une attente de verrou ne doit jamais devenir une attente infinie.
+        db.session.execute(db.text("SET lock_timeout = '15s'"))
+        db.session.commit()
+
+    for table, nom, definition in plan:
+        try:
+            db.session.execute(db.text(
+                "ALTER TABLE %s ADD COLUMN %s %s" % (table, nom, definition)))
+            db.session.commit()
+            app.logger.info("Colonne ajoutee : %s.%s", table, nom)
+        except Exception as erreur:
+            # Un echec isole ne doit ni annuler les colonnes deja ajoutees, ni
+            # empecher le service de repondre : mieux vaut demarrer et le dire.
+            db.session.rollback()
+            app.logger.warning("Colonne %s.%s non ajoutee : %s",
+                               table, nom, str(erreur)[:200])
+
     nettoyer_bordereaux_perimes()
 
 
