@@ -6073,21 +6073,53 @@ def migrer_colonnes_manquantes():
         if perimees:
             db.session.commit()
 
-    # « PRAGMA » n'existe que dans SQLite. Sur PostgreSQL, db.create_all()
-    # vient de creer le schema complet a partir des modeles : il n'y a aucune
-    # colonne a rattraper, et cette boucle ferait echouer le demarrage.
-    if db.engine.dialect.name == "sqlite":
-        for table, colonnes in nouvelles.items():
-            existantes = {ligne[1] for ligne in
-                          db.session.execute(db.text("PRAGMA table_info(%s)" % table))}
-            if not existantes:
+    # Le rattrapage vaut pour les DEUX moteurs. Il avait ete reserve a SQLite
+    # parce qu'il interrogeait « PRAGMA table_info », propre a SQLite ; mais
+    # db.create_all() ne cree que les TABLES manquantes, jamais les COLONNES
+    # d'une table qui existe deja. Sur PostgreSQL, une colonne ajoutee au
+    # modele apres la migration faisait donc tomber le demarrage :
+    # « column parametre_boutique.meta_domain_verification does not exist ».
+    inspecteur = db.inspect(db.engine)
+    postgres = db.engine.dialect.name == "postgresql"
+
+    def definition_adaptee(definition):
+        """Les types SQLite ci-dessus n'ont pas tous cours sur PostgreSQL."""
+        if not postgres:
+            return definition
+        return (definition.replace("DATETIME", "TIMESTAMP")
+                          .replace("BOOLEAN DEFAULT 1", "BOOLEAN DEFAULT TRUE")
+                          .replace("BOOLEAN DEFAULT 0", "BOOLEAN DEFAULT FALSE"))
+
+    def ajouter(table, nom, definition):
+        db.session.execute(db.text(
+            "ALTER TABLE %s ADD COLUMN %s %s" % (table, nom, definition)))
+        app.logger.info("Colonne ajoutee : %s.%s", table, nom)
+
+    for table, colonnes in nouvelles.items():
+        if not inspecteur.has_table(table):
+            continue
+        existantes = {c["name"] for c in inspecteur.get_columns(table)}
+        for nom, definition in colonnes:
+            if nom not in existantes:
+                ajouter(table, nom, definition_adaptee(definition))
+
+    # Filet de securite : la liste ci-dessus se tient a la main, et un oubli
+    # ne se voit pas en local (le fichier SQLite porte deja la colonne). On
+    # compare donc aussi chaque modele a sa table reelle. Ajout en NULL
+    # autorise : une colonne obligatoire ne peut pas s'ajouter a des lignes
+    # existantes sans valeur.
+    for modele in db.Model.registry.mappers:
+        table = modele.local_table
+        if table is None or not inspecteur.has_table(table.name):
+            continue
+        existantes = {c["name"] for c in inspecteur.get_columns(table.name)}
+        for colonne in table.columns:
+            if colonne.name in existantes:
                 continue
-            for nom, definition in colonnes:
-                if nom not in existantes:
-                    db.session.execute(db.text(
-                        "ALTER TABLE %s ADD COLUMN %s %s" % (table, nom, definition)))
-                    app.logger.info("Colonne ajoutee : %s.%s", table, nom)
-        db.session.commit()
+            ajouter(table.name, colonne.name,
+                    colonne.type.compile(db.engine.dialect))
+
+    db.session.commit()
     nettoyer_bordereaux_perimes()
 
 
