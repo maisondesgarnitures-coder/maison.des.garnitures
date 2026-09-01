@@ -5553,7 +5553,12 @@ def admin_parametres():
                       "modele_whatsapp_confirmation", "modele_whatsapp_expedition",
                       "modele_whatsapp_relance", "raison_sociale",
                       "matricule_fiscal", "registre_commerce"):
-            setattr(params, champ, request.form.get(champ, "").strip())
+            # Un champ absent de la requete n'est pas un champ vide : sans
+            # cette condition, un formulaire partiel effacait en silence tout
+            # ce qu'il ne portait pas (coordonnees, mentions legales, modeles
+            # de messages). Pour vider un champ, il faut l'envoyer vide.
+            if champ in request.form:
+                setattr(params, champ, request.form.get(champ, "").strip())
 
         # Le jeton CAPI n'est jamais renvoye au navigateur : le champ arrive
         # donc vide a chaque affichage, et « vide » signifie « ne change
