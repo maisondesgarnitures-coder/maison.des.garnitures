@@ -983,6 +983,9 @@ class ParametreBoutique(db.Model):
     # Mesure d'audience : un champ vide = le service n'est pas charge du tout.
     google_analytics_id = db.Column(db.String(40), default="")
     google_verification = db.Column(db.String(120), default="")
+    # Meta delivre un code par domaine : celui de la vitrine Converty ne
+    # vaudra pas pour le domaine propre de la boutique.
+    meta_domain_verification = db.Column(db.String(120), default="")
     clarity_id = db.Column(db.String(40), default="")
     texte_bandeau = db.Column(db.String(255), default="Livraison partout en Tunisie - Paiement a la livraison")
     modele_whatsapp_confirmation = db.Column(db.Text, default="")
@@ -5543,13 +5546,26 @@ def admin_parametres():
 
     if request.method == "POST":
         for champ in ("nom_boutique", "telephone", "whatsapp", "adresse", "facebook",
-                      "instagram", "tiktok", "email", "pixel_meta_id", "meta_capi_token",
+                      "instagram", "tiktok", "email", "pixel_meta_id",
                       "meta_test_event_code", "texte_bandeau",
-                      "google_analytics_id", "google_verification", "clarity_id",
+                      "google_analytics_id", "google_verification",
+                      "meta_domain_verification", "clarity_id",
                       "modele_whatsapp_confirmation", "modele_whatsapp_expedition",
                       "modele_whatsapp_relance", "raison_sociale",
                       "matricule_fiscal", "registre_commerce"):
             setattr(params, champ, request.form.get(champ, "").strip())
+
+        # Le jeton CAPI n'est jamais renvoye au navigateur : le champ arrive
+        # donc vide a chaque affichage, et « vide » signifie « ne change
+        # rien ». Sans cette exception, le gestionnaire de mots de passe du
+        # navigateur remplissait ce champ « password » avec l'identifiant de
+        # l'administration, qui partait en base a l'enregistrement suivant.
+        jeton = (request.form.get("meta_capi_token") or "").strip()
+        if request.form.get("effacer_capi_token"):
+            params.meta_capi_token = ""
+        elif jeton:
+            params.meta_capi_token = jeton
+
         params.frais_livraison_defaut = nombre_ou_defaut(request.form.get("frais_livraison_defaut"), 8.0)
         params.montant_livraison_gratuite = nombre_ou_defaut(request.form.get("montant_livraison_gratuite"), 150.0)
         params.taux_tva = nombre_ou_defaut(request.form.get("taux_tva"), 19.0)
@@ -5923,6 +5939,7 @@ def migrer_colonnes_manquantes():
             ("meta_test_event_code", "VARCHAR(50) DEFAULT ''"),
             ("google_analytics_id", "VARCHAR(40) DEFAULT ''"),
             ("google_verification", "VARCHAR(120) DEFAULT ''"),
+            ("meta_domain_verification", "VARCHAR(120) DEFAULT ''"),
             ("clarity_id", "VARCHAR(40) DEFAULT ''"),
             ("modele_whatsapp_confirmation", "TEXT DEFAULT ''"),
             ("modele_whatsapp_expedition", "TEXT DEFAULT ''"),

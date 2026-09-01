@@ -22,6 +22,9 @@
   <meta property="og:url" content="{{ request.base_url }}">
   {% endblock %}
 
+  {% if parametres and parametres.meta_domain_verification %}
+  <meta name="facebook-domain-verification" content="{{ parametres.meta_domain_verification }}">
+  {% endif %}
   {% if parametres and parametres.google_verification %}
   <meta name="google-site-verification" content="{{ parametres.google_verification }}">
   {% endif %}

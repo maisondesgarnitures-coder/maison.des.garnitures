@@ -50,6 +50,15 @@
   <label>ID du Pixel Meta</label>
   <input type="text" name="pixel_meta_id" value="{{ params.pixel_meta_id }}" placeholder="Ex: 1234567890123456">
 
+  <label style="margin-top:16px;">Meta &mdash; code de verification du domaine</label>
+  <input type="text" name="meta_domain_verification" value="{{ params.meta_domain_verification or '' }}"
+         placeholder="Ex: z2dgfo81xcjkteyanw90prvwebh52p">
+  <p class="aide">
+    Business Manager &gt; Securite de la marque &gt; Domaines. Meta donne un code
+    <strong>par domaine</strong> : celui de la vitrine Converty ne vaudra pas pour ce site.
+    A remplir une fois le nom de domaine choisi.
+  </p>
+
   <label style="margin-top:16px;">Google Analytics 4 &mdash; identifiant de mesure</label>
   <input type="text" name="google_analytics_id" value="{{ params.google_analytics_id or '' }}"
          placeholder="Ex: G-XXXXXXXXXX">
@@ -65,7 +74,19 @@
   <p class="aide">Gratuit et sans limite : montre ou les visiteurs abandonnent le formulaire de commande.</p>
 
   <label>Token Conversions API <span style="font-weight:400; color:var(--texte-secondaire);">(Gestionnaire d'evenements &gt; Parametres &gt; Generer un token)</span></label>
-  <input type="password" name="meta_capi_token" value="{{ params.meta_capi_token or '' }}" placeholder="Colle ici le token d'acces">
+  <input type="password" name="meta_capi_token" value="" autocomplete="off"
+         placeholder="{{ "Un jeton est enregistre : laisse vide pour le garder" if params.meta_capi_token else "Colle ici le token d'acces" }}">
+  <p class="aide">
+    {% if params.meta_capi_token %}
+      Un jeton est enregistre ({{ params.meta_capi_token|length }} caracteres).
+      Il n'est jamais reaffiche. Laisse le champ vide pour le conserver, ou colle-en un autre pour le remplacer.
+      <label style="display:inline-flex; align-items:center; gap:6px; font-weight:400; margin-top:6px;">
+        <input type="checkbox" name="effacer_capi_token" value="1" style="width:auto;"> Effacer le jeton enregistre
+      </label>
+    {% else %}
+      Aucun jeton enregistre : seul le Pixel du navigateur envoie des evenements.
+    {% endif %}
+  </p>
 
   <label>Code d'evenement test <span style="font-weight:400; color:var(--texte-secondaire);">(optionnel, a vider une fois les tests finis)</span></label>
   <input type="text" name="meta_test_event_code" value="{{ params.meta_test_event_code or '' }}" placeholder="Ex: TEST12345">
