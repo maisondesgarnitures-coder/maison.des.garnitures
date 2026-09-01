@@ -170,6 +170,8 @@
 
         <span>{{ utilisateur.nom }}</span>
         <span class="role-badge">{{ utilisateur.role }}</span>
+        <a href="{{ url_for('admin_changer_mot_de_passe') }}" class="lien-mot-de-passe"
+           title="Changer mon mot de passe">Mot de passe</a>
       </div>
     </div>
 
@@ -178,7 +180,7 @@
       <strong>Mot de passe d'usine encore actif.</strong>
       Il est ecrit dans le code du projet : n'importe qui le connaissant peut
       ouvrir ton administration. Change-le avant la mise en ligne &mdash;
-      <a href="{{ url_for('admin_utilisateurs') }}">Equipe</a>, puis modifie ton compte.
+      <a href="{{ url_for('admin_changer_mot_de_passe') }}">changer mon mot de passe</a>.
     </div>
     {% endif %}
 

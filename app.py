@@ -229,6 +229,9 @@ class Utilisateur(db.Model):
     actif = db.Column(db.Boolean, default=True)
     date_creation = db.Column(db.DateTime, default=datetime.utcnow)
     alertes_lues_le = db.Column(db.DateTime)
+    # Vrai apres une reinitialisation par le proprietaire : le mot de passe
+    # provisoire a transite par WhatsApp ou de vive voix, il ne doit pas rester.
+    doit_changer_mdp = db.Column(db.Boolean, default=False)
 
     def verifier_mot_de_passe(self, mdp): return check_password_hash(self.mot_de_passe_hash, mdp)
 
@@ -1139,10 +1142,20 @@ def utilisateur_courant():
     uid = session.get("user_id")
     return Utilisateur.query.get(uid) if uid else None
 
+# Pages encore ouvertes a qui traine un mot de passe provisoire : celle qui
+# le remplace, et la sortie. Tout le reste attend.
+PAGES_HORS_BLOCAGE = ("admin_changer_mot_de_passe", "admin_logout", "static")
+
+
 def connexion_requise(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if not utilisateur_courant(): return redirect(url_for("admin_login"))
+        u = utilisateur_courant()
+        if not u: return redirect(url_for("admin_login"))
+        # Un mot de passe provisoire a circule en clair (WhatsApp, oral) : tant
+        # qu'il n'est pas remplace, le compte n'est protege par rien.
+        if u.doit_changer_mdp and request.endpoint not in PAGES_HORS_BLOCAGE:
+            return redirect(url_for("admin_changer_mot_de_passe"))
         return f(*args, **kwargs)
     return wrapper
 
@@ -2114,6 +2127,22 @@ def code_a_six_chiffres():
     return "%06d" % secrets.randbelow(1000000)
 
 
+# Sans O/0 ni I/l/1 : le mot de passe se dicte au telephone et se recopie
+# depuis WhatsApp sans faire hesiter sur un caractere.
+ALPHABET_PROVISOIRE = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"
+
+
+def mot_de_passe_provisoire(longueur=10):
+    return "".join(secrets.choice(ALPHABET_PROVISOIRE) for _ in range(longueur))
+
+
+def perimer_les_codes(utilisateur):
+    """Un code encore en vie rouvrirait le compte : on les fait tous tomber."""
+    for demande in CodeReinitialisation.query.filter_by(
+            utilisateur_id=utilisateur.id, utilise=False).all():
+        demande.utilise = True
+
+
 def demandes_recentes(utilisateur):
     """Combien de codes ce compte a-t-il demandes dans le dernier quart d'heure."""
     depuis = datetime.utcnow() - timedelta(minutes=DUREE_CODE_MINUTES)
@@ -2204,9 +2233,8 @@ def admin_reinitialiser():
             else:
                 u.mot_de_passe_hash = generate_password_hash(nouveau)
                 # Tous les codes de ce compte tombent, pas seulement celui-ci.
-                for autre in CodeReinitialisation.query.filter_by(
-                        utilisateur_id=u.id, utilise=False).all():
-                    autre.utilise = True
+                perimer_les_codes(u)
+                u.doit_changer_mdp = False
                 db.session.commit()
                 app.logger.info("Mot de passe change pour %s", u.email)
                 flash("Mot de passe modifié. Vous pouvez vous connecter.", "succes")
@@ -2221,6 +2249,44 @@ def admin_login():
         u = Utilisateur.query.filter_by(email=request.form.get("email", "").strip().lower(), actif=True).first()
         if u and u.verifier_mot_de_passe(request.form.get("mot_de_passe", "")): session["user_id"] = u.id; return redirect(url_for("admin_dashboard"))
     return render_template("admin/login.html", erreur="Email ou mot de passe incorrect." if request.method == "POST" else None)
+
+@app.route("/admin/mon-mot-de-passe", methods=["GET", "POST"])
+@connexion_requise
+def admin_changer_mot_de_passe():
+    """Chacun change le sien, quel que soit son role.
+
+    Sans cette page, un membre de l'equipe ne peut rien faire seul : la liste
+    « Equipe » est reservee au proprietaire. C'est aussi l'ecran impose apres
+    un mot de passe provisoire.
+    """
+    u = utilisateur_courant()
+    erreur = None
+
+    if request.method == "POST":
+        actuel = request.form.get("actuel") or ""
+        nouveau = request.form.get("mot_de_passe") or ""
+        confirme = request.form.get("mot_de_passe_2") or ""
+
+        if not u.verifier_mot_de_passe(actuel):
+            erreur = "Mot de passe actuel incorrect."
+        elif len(nouveau) < 8:
+            erreur = "Le nouveau mot de passe doit faire au moins 8 caracteres."
+        elif nouveau != confirme:
+            erreur = "Les deux mots de passe ne sont pas identiques."
+        elif nouveau == actuel:
+            erreur = "Choisis un mot de passe different de l'ancien."
+        else:
+            u.mot_de_passe_hash = generate_password_hash(nouveau)
+            u.doit_changer_mdp = False
+            perimer_les_codes(u)
+            db.session.commit()
+            app.logger.info("Mot de passe change par %s", u.email)
+            flash("Mot de passe modifie.", "succes")
+            return redirect(url_for("admin_dashboard"))
+
+    return render_template("admin/changer_mot_de_passe.html",
+                           u=u, impose=bool(u.doit_changer_mdp), erreur=erreur)
+
 
 @app.route("/admin/logout")
 def admin_logout(): session.pop("user_id", None); return redirect(url_for("admin_login"))
@@ -5367,6 +5433,37 @@ def admin_utilisateur_modifier(utilisateur_id):
                            droits_role=DROITS_PAR_ROLE)
 
 
+@app.route("/admin/utilisateurs/<int:utilisateur_id>/reinitialiser", methods=["POST"])
+@connexion_requise
+@roles_requis("proprietaire")
+def admin_utilisateur_reinitialiser(utilisateur_id):
+    """Mot de passe provisoire, affiche une seule fois au proprietaire.
+
+    C'est la voie de secours quand l'e-mail ne repond pas : dans une boutique,
+    un vendeur est joignable par WhatsApp bien plus vite que par courriel, et
+    tous n'ont pas d'adresse qu'ils relevent. Le mot de passe n'est jamais mis
+    dans l'adresse de la page : il passe par le message d'un seul affichage.
+    """
+    cible = Utilisateur.query.get_or_404(utilisateur_id)
+    moi = utilisateur_courant()
+    if cible.id == moi.id:
+        flash("Pour ton propre compte, passe par « Changer mon mot de passe ».",
+              "erreur")
+        return redirect(retour_admin("admin_utilisateurs"))
+
+    provisoire = mot_de_passe_provisoire()
+    cible.mot_de_passe_hash = generate_password_hash(provisoire)
+    cible.doit_changer_mdp = True
+    perimer_les_codes(cible)
+    db.session.commit()
+    app.logger.info("Mot de passe reinitialise pour %s par %s",
+                    cible.email, moi.email)
+    flash("Mot de passe provisoire de %s : %s — transmets-le lui maintenant, "
+          "il ne sera plus affiche. Il devra en choisir un autre des sa "
+          "premiere connexion." % (cible.nom_affiche, provisoire), "succes")
+    return redirect(retour_admin("admin_utilisateurs"))
+
+
 @app.route("/admin/utilisateurs/<int:utilisateur_id>/desactiver", methods=["POST"])
 @connexion_requise
 @roles_requis("proprietaire")
@@ -5832,7 +5929,8 @@ def migrer_colonnes_manquantes():
                     ("video_verticale", "BOOLEAN DEFAULT 0")],
         "utilisateur": [("alertes_lues_le", "DATETIME"),
                         ("prenom", "VARCHAR(120)"), ("telephone", "VARCHAR(40)"),
-                        ("permissions", "TEXT")],
+                        ("permissions", "TEXT"),
+                        ("doit_changer_mdp", "BOOLEAN DEFAULT 0")],
         "categorie": [("nom_ar", "VARCHAR(120)"),
                       ("actif", "BOOLEAN DEFAULT 1"), ("description", "TEXT"),
                       ("meta_titre", "VARCHAR(200)"), ("meta_description", "VARCHAR(320)"),

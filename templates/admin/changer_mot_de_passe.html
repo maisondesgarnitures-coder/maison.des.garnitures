@@ -1,0 +1,56 @@
+{# Page autonome, sans le menu : c'est aussi l'ecran impose apres un mot de
+   passe provisoire, ou toute autre page renverrait ici de toute facon. #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Changer mon mot de passe - Maison des Garnitures</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-admin-page">
+  <div class="login-admin-box">
+    <img src="{{ url_for('static', filename='img/logo.jpeg') }}" alt="Logo">
+    <h2>{{ "Choisis ton mot de passe" if impose else "Changer mon mot de passe" }}</h2>
+    <p style="color:var(--texte-secondaire); font-size:13px;">{{ u.email }}</p>
+
+    {% if impose %}
+    <p style="background:#FFF4E5; border:1px solid #F0B357; border-radius:6px;
+              padding:10px; font-size:13px; text-align:left; margin-top:14px;">
+      Ton mot de passe actuel est provisoire : il t'a ete transmis par
+      un message, donc il n'est plus secret. Choisis-en un a toi pour
+      continuer.
+    </p>
+    {% endif %}
+
+    {% if erreur %}<p style="color:var(--erreur);">{{ erreur }}</p>{% endif %}
+
+    <form method="post" style="text-align:left; margin-top:16px;">
+      <label style="display:block; margin-bottom:4px; font-weight:600; font-size:13px;">
+        {{ "Mot de passe provisoire" if impose else "Mot de passe actuel" }}
+      </label>
+      <input type="password" name="actuel" required autofocus
+             style="width:100%; padding:10px; margin-bottom:12px; border:1px solid var(--bordure); border-radius:6px;">
+
+      <label style="display:block; margin-bottom:4px; font-weight:600; font-size:13px;">Nouveau mot de passe</label>
+      <input type="password" name="mot_de_passe" required minlength="8"
+             style="width:100%; padding:10px; margin-bottom:4px; border:1px solid var(--bordure); border-radius:6px;">
+      <p style="color:var(--texte-secondaire); font-size:12px; margin:0 0 12px;">8 caracteres au minimum.</p>
+
+      <label style="display:block; margin-bottom:4px; font-weight:600; font-size:13px;">Repete le nouveau mot de passe</label>
+      <input type="password" name="mot_de_passe_2" required minlength="8"
+             style="width:100%; padding:10px; margin-bottom:16px; border:1px solid var(--bordure); border-radius:6px;">
+
+      <button type="submit" class="btn btn-rouge btn-large">Enregistrer</button>
+    </form>
+
+    <p style="margin-top:18px; font-size:13px;">
+      {% if impose %}
+        <a href="{{ url_for('admin_logout') }}">Se deconnecter</a>
+      {% else %}
+        <a href="{{ url_for('admin_dashboard') }}">Retour a l'administration</a>
+      {% endif %}
+    </p>
+  </div>
+</body>
+</html>

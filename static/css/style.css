@@ -349,6 +349,10 @@ footer.site-footer h4 { color: white; margin-bottom: 10px; }
 .admin-main { flex: 1; padding: 24px; background: var(--fond); }
 .admin-topbar { display:flex; justify-content: space-between; align-items:center; margin-bottom: 20px; }
 .admin-topbar .role-badge { background: var(--bleu); color:white; font-size:12px; padding: 4px 10px; border-radius: 4px;}
+/* Discret : on ne change pas son mot de passe tous les jours, mais il doit
+   se trouver sans passer par « Equipe », fermee a l'equipe justement. */
+.admin-topbar .lien-mot-de-passe { font-size:12px; color: var(--texte-secondaire); text-decoration: none; border-bottom: 1px dotted currentColor; }
+.admin-topbar .lien-mot-de-passe:hover { color: var(--texte); }
 
 .cartes-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
 .carte-stat { background: var(--blanc); border-radius: var(--rayon); padding: 18px; border: 1px solid var(--bordure); box-shadow: var(--ombre); }
