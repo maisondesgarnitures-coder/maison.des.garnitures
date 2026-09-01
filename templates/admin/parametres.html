@@ -74,7 +74,12 @@
   <p class="aide">Gratuit et sans limite : montre ou les visiteurs abandonnent le formulaire de commande.</p>
 
   <label>Token Conversions API <span style="font-weight:400; color:var(--texte-secondaire);">(Gestionnaire d'evenements &gt; Parametres &gt; Generer un token)</span></label>
-  <input type="password" name="meta_capi_token" value="" autocomplete="off"
+  {# Chrome ignore « off » sur un champ password et y verse l'identifiant du
+     site. « new-password » est la seule valeur qu'il respecte vraiment, et le
+     champ leurre au-dessus absorbe ce qu'il tenterait malgre tout. #}
+  <input type="password" name="_leurre_mdp" autocomplete="off" tabindex="-1"
+         aria-hidden="true" style="position:absolute; opacity:0; height:0; width:0; border:0; padding:0;">
+  <input type="password" name="meta_capi_token" value="" autocomplete="new-password"
          placeholder="{{ "Un jeton est enregistre : laisse vide pour le garder" if params.meta_capi_token else "Colle ici le token d'acces" }}">
   <p class="aide">
     {% if params.meta_capi_token %}
