@@ -11,3 +11,6 @@ waitress==3.0.0
 # Version non figee : le paquet binaire 3.2.1 a disparu de PyPI et le
 # deploiement echouait. On accepte toute la serie 3.x, compatible.
 psycopg[binary]>=3.2.13,<4
+
+# Retouche des photos produits (recadrer_photos_carrees.py).
+Pillow>=10,<13
