@@ -520,13 +520,16 @@ nav.menu-categories a.lien-catalogue { color: #fff; font-weight: 700; }
   box-shadow: var(--ombre-2);
 }
 .carte-produit .image-produit {
-  height: 210px;
+  /* Cadre carre, comme les photos : l'image le remplit d'un bord a l'autre. */
+  height: auto;
+  aspect-ratio: 1 / 1;
   background: #FAFBFC;
   border-bottom: 1px solid var(--trait);
   position: relative;
 }
 .carte-produit .image-produit img {
-  padding: 16px;
+  padding: 0;
+  object-fit: cover;
   transition: transform .45s cubic-bezier(.2,.7,.3,1);
 }
 .carte-produit:hover .image-produit img { transform: scale(1.06); }
@@ -698,7 +701,6 @@ footer.site-footer a:hover { color: #fff; }
   .carte-categorie, .carte-categorie.avec-image { height: 138px; }
   .carte-categorie span:not(.compte-categorie) { font-size: 13.5px; padding: 12px 12px 11px; }
   .carte-categorie .compte-categorie { top: 9px; inset-inline-end: 9px; font-size: 11px; padding: 3px 8px; }
-  .carte-produit .image-produit { height: 150px; }
   .carte-produit .contenu { padding: 11px; }
   .carte-produit h3 { font-size: 13px; min-height: 36px; }
   .prix { font-size: 16.5px; }
