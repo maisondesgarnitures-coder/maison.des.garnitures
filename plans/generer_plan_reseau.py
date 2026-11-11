@@ -170,9 +170,20 @@ arrow(890, 1150, "l", C["froide"], 7); arrow(890, 1170, "l", C["chaude"], 7)
 douche(800, 1160)
 text(890, 1192, "EF + EC douche", 12, 600, "#5b6672")
 
+# Piscine 3 devant la Maison 1 (+ douche EF/EC)
+building(1205, 630, 165, 220, "Piscine", fill=C["pool"])
+svg.append('<rect x="1215" y="640" width="145" height="200" rx="4" fill="url(#water)"/>')
+text(1287, 770, "devant Maison 1", 12, 600, "#5b6672")
+pipe([(1395, 740), (1370, 740)], C["piscine"], 5, "6 4")
+svg.append(f'<circle cx="1395" cy="740" r="5" fill="{C["piscine"]}" stroke="#fff" stroke-width="1.5"/>')
+pipe([(1238, 510), (1238, 572)], C["froide"], 4)
+pipe([(1252, 510), (1252, 572)], C["chaude"], 4)
+douche(1245, 590, False)
+text(1272, 595, "Douche", 14, 700, anchor="start")
+
 vanne(900, 900, True, "l")
 vanne(678, 540, True, "l")
-vanne(1180, 560, True, "r")
+vanne(1180, 905, True, "r")
 svg.append('</g>')
 
 # ---------------------------------------------------------------- cartouche / légende
