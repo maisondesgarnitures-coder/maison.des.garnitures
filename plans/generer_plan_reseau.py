@@ -5,7 +5,7 @@ OUT = Path(__file__).with_name("plan-reseau-eau.svg")
 
 C = {
     "sonede": "#1f4fa8", "froide": "#2f74d0", "chaude": "#d6402b",
-    "jardin": "#2e9b5f", "piscine": "#14a3b8", "arrosage": "#2f74d0",
+    "jardin": "#2e9b5f", "piscine": "#14a3b8", "retour": "#e3609e", "arrosage": "#2f74d0",
     "mur": "#2b3440", "fill": "#f4f1ea", "pool": "#d9f1f6", "txt": "#1d2530",
 }
 svg = []
@@ -129,11 +129,11 @@ text(106, -15, "Compteur SONEDE — 3 lignes", 14, 600, C["sonede"], anchor="sta
 # Conduite jardin (boucle verte) : départ ouest, retour est
 pipe([(1030, T), (1030, 980), (120, 980), (120, 30), (1490, 30), (1490, 1056), (1295, 1056), (1295, T)], C["jardin"], 4, r=16)
 arrow(120, 560, "u", C["jardin"]); arrow(800, 30, "r", C["jardin"]); arrow(1490, 560, "d", C["jardin"])
-text(150, 470, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 150 470)"')
-text(1520, 640, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 1520 640)"')
+text(150, 470, "Conduite jardin · poly 25", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 150 470)"')
+text(1520, 640, "Conduite jardin · poly 25", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 1520 640)"')
 
 # --- faisceaux de 5 conduites principales
-ORDER = [C["froide"], C["froide"], C["chaude"], C["chaude"], C["jardin"]]
+ORDER = [C["froide"], C["froide"], C["chaude"], C["chaude"], C["retour"]]
 for i, col in enumerate(ORDER):  # -> Maison 3
     x = 1045 + 10 * i; y = 920 - 10 * i
     pipe([(x, T), (x, y), (940, y)], col, 4, r=12)
@@ -142,8 +142,8 @@ d_arr = f"M1100,{T} L1100,760 Q1100,715 1055,715 L430,715 C285,715 270,640 270,5
 pipe(d_arr, C["arrosage"], 3)
 for (x, y) in [(270, 140), (270, 330), (300, 640), (620, 715), (860, 715)]:
     svg.append(f'<circle cx="{x}" cy="{y}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
-text(290, 128, "Arrosage", 16, 700, C["arrosage"], anchor="start")
-text(560, 705, "Ligne d'arrosage · robinets", 13, 600, C["arrosage"], italic=True)
+text(290, 128, "Arrosage · tube poly 32", 16, 700, C["arrosage"], anchor="start")
+text(560, 705, "Tube poly 32 · robinets", 13, 600, C["arrosage"], italic=True)
 for i, col in enumerate(ORDER):  # -> Maison 2
     x = 1115 + 10 * i; y = 680 - 10 * i; xt = 700 + 10 * i
     pipe([(x, T), (x, y), (xt, y), (xt, 490)], col, 4, r=14)
@@ -167,7 +167,7 @@ pipe([(1285, T), (1285, 1040), (1472, 1040), (1472, 170)], C["arrosage"], 3, r=1
 for yy in [170, 330, 500, 680]:
     svg.append(f'<circle cx="1472" cy="{yy}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
 arrow(1472, 790, "u", C["arrosage"], 8)
-text(1462, 600, "Arrosage", 15, 700, C["arrosage"], extra='transform="rotate(-90 1462 600)"')
+text(1462, 600, "Arrosage · tube poly 32", 15, 700, C["arrosage"], extra='transform="rotate(-90 1462 600)"')
 
 # Collecteur : point de départ unique
 svg.append(f'<rect x="962" y="{T-6}" width="340" height="12" rx="6" fill="{C["mur"]}"/>')
@@ -207,9 +207,10 @@ rows = [
     (C["sonede"], 4, None, "Arrivée SONEDE (3 lignes)"),
     (C["froide"], 4, None, "Eau froide"),
     (C["chaude"], 4, None, "Eau chaude (chaudière)"),
-    (C["jardin"], 4, None, "Conduite jardin / puits"),
+    (C["jardin"], 4, None, "Jardin poly 25 / puits"),
     (C["piscine"], 5, "12 7", "Eau piscine"),
-    (C["arrosage"], 3, None, "Ligne d'arrosage"),
+    (C["arrosage"], 3, None, "Arrosage — tube poly 32"),
+    (C["retour"], 4, None, "Retour sanitaire"),
 ]
 y = 220
 for col, w, dash, lab in rows:
@@ -233,12 +234,12 @@ svg.append(f'<line x1="{px+20}" y1="{y}" x2="{px+270}" y2="{y}" stroke="#cbd2d9"
 text(px + 20, y, "FAISCEAU PRINCIPAL", 15, 800, "#5b6672", anchor="start"); y += 28
 text(px + 20, y, "Depuis le local chaudière vers", 14, 500, anchor="start"); y += 20
 text(px + 20, y, "chaque maison (1, 2, 3) :", 14, 500, anchor="start"); y += 30
-for col, lab in [(C["froide"], "2 × eau froide"), (C["chaude"], "2 × eau chaude"), (C["jardin"], "1 × conduite jardin")]:
+for col, lab in [(C["froide"], "2 × eau froide"), (C["chaude"], "2 × eau chaude"), (C["retour"], "1 × retour sanitaire")]:
     svg.append(f'<rect x="{px+20}" y="{y-12}" width="34" height="14" rx="3" fill="{col}"/>')
     text(px + 66, y, lab, 14, 500, anchor="start"); y += 28
 
 # Nord
-ny = 920
+ny = 970
 svg.append(f'<line x1="{px+20}" y1="{ny-60}" x2="{px+270}" y2="{ny-60}" stroke="#cbd2d9"/>')
 svg.append(f'<g transform="translate({px+145},{ny})"><circle r="38" fill="#fff" stroke="#9aa5b1" stroke-width="1.5"/>'
            f'<polygon points="0,-30 10,8 0,2 -10,8" fill="{C["txt"]}"/><polygon points="0,30 10,8 0,2 -10,8" fill="#cbd2d9"/></g>')
