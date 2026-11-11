@@ -111,6 +111,37 @@
 <path d="M1145,1000 L1145,510" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M1155,1000 L1155,510" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M1155,1000 L1155,510" fill="none" stroke="#2e9b5f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1080,235 L1080.0,208.0 Q1080,198 1070.0,198.0 L1018,198" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1080,235 L1080.0,208.0 Q1080,198 1070.0,198.0 L1018,198" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1095,235 L1095.0,194.0 Q1095,184 1085.0,184.0 L1018,184" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1095,235 L1095.0,194.0 Q1095,184 1085.0,184.0 L1018,184" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="982" y="173" width="36" height="36" rx="6" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><circle cx="1000" cy="191" r="7" fill="none" stroke="#2b3440" stroke-width="2"/>
+<circle cx="990.65" cy="181.65" r="1.6" fill="#2f74d0"/>
+<circle cx="1000.0" cy="179.95" r="1.6" fill="#2f74d0"/>
+<circle cx="1009.35" cy="181.65" r="1.6" fill="#2f74d0"/>
+<circle cx="988.95" cy="191.0" r="1.6" fill="#2f74d0"/>
+<circle cx="1011.05" cy="191.0" r="1.6" fill="#2f74d0"/>
+<circle cx="990.65" cy="200.35" r="1.6" fill="#2f74d0"/>
+<circle cx="1000.0" cy="202.05" r="1.6" fill="#2f74d0"/>
+<circle cx="1009.35" cy="200.35" r="1.6" fill="#2f74d0"/>
+<text x="1000" y="165" font-size="14" font-weight="700" fill="#1d2530" text-anchor="middle" >Douche</text>
+<path d="M960,1150 L818,1150" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M960,1150 L818,1150" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M960,1170 L818,1170" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M960,1170 L818,1170" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="883.0,1150.0 897.0,1144.4 897.0,1155.6" fill="#2f74d0" stroke="#fff" stroke-width="1.5"/>
+<polygon points="883.0,1170.0 897.0,1164.4 897.0,1175.6" fill="#d6402b" stroke="#fff" stroke-width="1.5"/>
+<rect x="782" y="1142" width="36" height="36" rx="6" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><circle cx="800" cy="1160" r="7" fill="none" stroke="#2b3440" stroke-width="2"/>
+<circle cx="790.65" cy="1150.65" r="1.6" fill="#2f74d0"/>
+<circle cx="800.0" cy="1148.95" r="1.6" fill="#2f74d0"/>
+<circle cx="809.35" cy="1150.65" r="1.6" fill="#2f74d0"/>
+<circle cx="788.95" cy="1160.0" r="1.6" fill="#2f74d0"/>
+<circle cx="811.05" cy="1160.0" r="1.6" fill="#2f74d0"/>
+<circle cx="790.65" cy="1169.35" r="1.6" fill="#2f74d0"/>
+<circle cx="800.0" cy="1171.05" r="1.6" fill="#2f74d0"/>
+<circle cx="809.35" cy="1169.35" r="1.6" fill="#2f74d0"/>
+<text x="800" y="1134" font-size="14" font-weight="700" fill="#1d2530" text-anchor="middle" >Douche</text>
+<text x="890" y="1192" font-size="12" font-weight="600" fill="#5b6672" text-anchor="middle" >EF + EC douche</text>
 <g><circle cx="900" cy="900" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M890,890 L910,910 M910,890 L890,910" stroke="#2b3440" stroke-width="2"/><circle cx="900" cy="900" r="4" fill="#2b3440"/></g>
 <text x="878" y="898" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >5 conduites</text>
 <text x="878" y="914" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >principales</text>
@@ -144,18 +175,31 @@
 <circle cx="1690" cy="490" r="12" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M1682,482 L1698,498 M1698,482 L1682,498" stroke="#2b3440" stroke-width="2"/>
 <text x="1735" y="487" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Vanne / regard</text>
 <text x="1735" y="505" font-size="13" font-weight="500" fill="#5b6672" text-anchor="start" >5 conduites principales</text>
-<polygon points="1699.0,536.0 1681.0,528.8 1681.0,543.2" fill="#1d2530" stroke="#fff" stroke-width="1.5"/>
-<text x="1735" y="541" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Sens d'écoulement</text>
-<line x1="1660" y1="586" x2="1910" y2="586" stroke="#cbd2d9"/>
-<text x="1660" y="620" font-size="15" font-weight="800" fill="#5b6672" text-anchor="start" >FAISCEAU PRINCIPAL</text>
-<text x="1660" y="648" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >Depuis le local chaudière vers</text>
-<text x="1660" y="668" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >chaque maison (1, 2, 3) :</text>
-<rect x="1660" y="686" width="34" height="14" rx="3" fill="#2f74d0"/>
-<text x="1706" y="698" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >2 × eau froide</text>
-<rect x="1660" y="714" width="34" height="14" rx="3" fill="#d6402b"/>
-<text x="1706" y="726" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >2 × eau chaude</text>
-<rect x="1660" y="742" width="34" height="14" rx="3" fill="#2e9b5f"/>
-<text x="1706" y="754" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >1 × conduite jardin</text>
+<g transform="translate(0,0)">
+<rect x="1672" y="518" width="36" height="36" rx="6" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><circle cx="1690" cy="536" r="7" fill="none" stroke="#2b3440" stroke-width="2"/>
+<circle cx="1680.65" cy="526.65" r="1.6" fill="#2f74d0"/>
+<circle cx="1690.0" cy="524.95" r="1.6" fill="#2f74d0"/>
+<circle cx="1699.35" cy="526.65" r="1.6" fill="#2f74d0"/>
+<circle cx="1678.95" cy="536.0" r="1.6" fill="#2f74d0"/>
+<circle cx="1701.05" cy="536.0" r="1.6" fill="#2f74d0"/>
+<circle cx="1680.65" cy="545.35" r="1.6" fill="#2f74d0"/>
+<circle cx="1690.0" cy="547.05" r="1.6" fill="#2f74d0"/>
+<circle cx="1699.35" cy="545.35" r="1.6" fill="#2f74d0"/>
+</g>
+<text x="1735" y="533" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Douche de piscine</text>
+<text x="1735" y="551" font-size="13" font-weight="500" fill="#5b6672" text-anchor="start" >eau chaude + eau froide</text>
+<polygon points="1699.0,584.0 1681.0,576.8 1681.0,591.2" fill="#1d2530" stroke="#fff" stroke-width="1.5"/>
+<text x="1735" y="589" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Sens d'écoulement</text>
+<line x1="1660" y1="634" x2="1910" y2="634" stroke="#cbd2d9"/>
+<text x="1660" y="668" font-size="15" font-weight="800" fill="#5b6672" text-anchor="start" >FAISCEAU PRINCIPAL</text>
+<text x="1660" y="696" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >Depuis le local chaudière vers</text>
+<text x="1660" y="716" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >chaque maison (1, 2, 3) :</text>
+<rect x="1660" y="734" width="34" height="14" rx="3" fill="#2f74d0"/>
+<text x="1706" y="746" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >2 × eau froide</text>
+<rect x="1660" y="762" width="34" height="14" rx="3" fill="#d6402b"/>
+<text x="1706" y="774" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >2 × eau chaude</text>
+<rect x="1660" y="790" width="34" height="14" rx="3" fill="#2e9b5f"/>
+<text x="1706" y="802" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >1 × conduite jardin</text>
 <line x1="1660" y1="860" x2="1910" y2="860" stroke="#cbd2d9"/>
 <g transform="translate(1785,920)"><circle r="38" fill="#fff" stroke="#9aa5b1" stroke-width="1.5"/><polygon points="0,-30 10,8 0,2 -10,8" fill="#1d2530"/><polygon points="0,30 10,8 0,2 -10,8" fill="#cbd2d9"/></g>
 <text x="1785" y="874" font-size="16" font-weight="800" fill="#1d2530" text-anchor="middle" >N</text>

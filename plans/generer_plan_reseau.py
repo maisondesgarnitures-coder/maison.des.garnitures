@@ -69,6 +69,15 @@ def vanne(x, y, label=None, side="r"):
         text(x + dx, y + 14, "principales", 13, 600, anchor=anc)
 
 
+def douche(x, y, label=True):
+    svg.append(f'<rect x="{x-18}" y="{y-18}" width="36" height="36" rx="6" fill="#fff" stroke="{C["mur"]}" stroke-width="2.5"/>'
+               f'<circle cx="{x}" cy="{y}" r="7" fill="none" stroke="{C["mur"]}" stroke-width="2"/>')
+    for dx, dy in [(-11, -11), (0, -13), (11, -11), (-13, 0), (13, 0), (-11, 11), (0, 13), (11, 11)]:
+        svg.append(f'<circle cx="{x+dx*.85}" cy="{y+dy*.85}" r="1.6" fill="{C["froide"]}"/>')
+    if label:
+        text(x, y - 26, "Douche", 14, 700)
+
+
 # ---------------------------------------------------------------- terrain
 W, H = 1960, 1340
 svg.append(f'<rect width="{W}" height="{H}" fill="#ffffff"/>')
@@ -150,6 +159,17 @@ for i, col in enumerate(ORDER):
     x = 1115 + 10 * i
     pipe([(x, 1000), (x, 510)], col, 4)
 
+
+# Douches devant chaque piscine (eau chaude + eau froide)
+pipe([(1080, 235), (1080, 198), (1018, 198)], C["froide"], 4, r=10)
+pipe([(1095, 235), (1095, 184), (1018, 184)], C["chaude"], 4, r=10)
+douche(1000, 191)
+pipe([(960, 1150), (818, 1150)], C["froide"], 4)
+pipe([(960, 1170), (818, 1170)], C["chaude"], 4)
+arrow(890, 1150, "l", C["froide"], 7); arrow(890, 1170, "l", C["chaude"], 7)
+douche(800, 1160)
+text(890, 1192, "EF + EC douche", 12, 600, "#5b6672")
+
 vanne(900, 900, True, "l")
 vanne(678, 540, True, "l")
 vanne(1180, 560, True, "r")
@@ -185,6 +205,9 @@ svg.append(f'<circle cx="{px+50}" cy="{y}" r="12" fill="#fff" stroke="{C["mur"]}
            f'<path d="M{px+42},{y-8} L{px+58},{y+8} M{px+58},{y-8} L{px+42},{y+8}" stroke="{C["mur"]}" stroke-width="2"/>')
 text(px + 95, y - 3, "Vanne / regard", 15, 500, anchor="start")
 text(px + 95, y + 15, "5 conduites principales", 13, 500, "#5b6672", anchor="start"); y += 46
+svg.append('<g transform="translate(0,0)">'); douche(px + 50, y, False); svg.append('</g>')
+text(px + 95, y - 3, "Douche de piscine", 15, 500, anchor="start")
+text(px + 95, y + 15, "eau chaude + eau froide", 13, 500, "#5b6672", anchor="start"); y += 48
 arrow(px + 50, y, "r", C["txt"], 9); text(px + 95, y + 5, "Sens d'écoulement", 15, 500, anchor="start"); y += 50
 
 svg.append(f'<line x1="{px+20}" y1="{y}" x2="{px+270}" y2="{y}" stroke="#cbd2d9"/>'); y += 34
