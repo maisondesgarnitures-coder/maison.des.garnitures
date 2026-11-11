@@ -130,11 +130,11 @@ arrow(1395, 560, "u", C["piscine"]); arrow(1000, 50, "l", C["piscine"])
 text(1420, 420, "Eau piscine", 14, 600, C["piscine"], extra='transform="rotate(-90 1420 420)"')
 
 # Puits
-pipe([(1445, 922), (1445, 978), (1190, 978), (1190, 1000)], C["jardin"], 5)
+pipe([(1430, 916), (1430, 978), (1190, 978), (1190, 1000)], C["jardin"], 5)
 arrow(1320, 978, "l", C["jardin"])
-svg.append(f'<circle cx="1445" cy="890" r="32" fill="#fff" stroke="{C["mur"]}" stroke-width="3"/>'
-           f'<circle cx="1445" cy="890" r="22" fill="#dbeee3" stroke="{C["jardin"]}" stroke-width="2"/>')
-text(1445, 896, "Puits", 15, 700)
+svg.append(f'<circle cx="1430" cy="890" r="26" fill="#fff" stroke="{C["mur"]}" stroke-width="3"/>'
+           f'<circle cx="1430" cy="890" r="19" fill="#dbeee3" stroke="{C["jardin"]}" stroke-width="2"/>')
+text(1430, 895, "Puits", 12, 700)
 
 # Arrosage (réseau courbe avec robinets)
 d_arr = "M1035,1000 L1035,760 Q1035,715 990,715 L430,715 C285,715 270,640 270,500 L270,140"
@@ -144,12 +144,12 @@ for (x, y) in [(270, 140), (270, 330), (300, 640), (620, 715), (860, 715)]:
 text(290, 128, "Arrosage", 16, 700, C["arrosage"], anchor="start")
 text(560, 705, "Ligne d'arrosage · robinets", 13, 600, C["arrosage"], italic=True)
 
-# Arrosage côté droit (depuis le puits)
-pipe([(1445, 858), (1445, 170)], C["arrosage"], 3)
+# Arrosage côté droit (depuis le local chaudière)
+pipe([(1175, 1200), (1175, 1218), (1472, 1218), (1472, 170)], C["arrosage"], 3, r=14)
 for yy in [170, 330, 500, 680]:
-    svg.append(f'<circle cx="1445" cy="{yy}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
-arrow(1445, 790, "u", C["arrosage"], 8)
-text(1468, 600, "Arrosage", 15, 700, C["arrosage"], extra='transform="rotate(-90 1468 600)"')
+    svg.append(f'<circle cx="1472" cy="{yy}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
+arrow(1472, 790, "u", C["arrosage"], 8); arrow(1320, 1218, "r", C["arrosage"], 8)
+text(1462, 600, "Arrosage", 15, 700, C["arrosage"], extra='transform="rotate(-90 1462 600)"')
 
 # Faisceaux de 5 conduites principales
 ORDER = [C["froide"], C["froide"], C["chaude"], C["chaude"], C["jardin"]]

@@ -67,11 +67,11 @@
 <polygon points="1395.0,551.0 1387.8,569.0 1402.2,569.0" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
 <polygon points="991.0,50.0 1009.0,42.8 1009.0,57.2" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
 <text x="1420" y="420" font-size="14" font-weight="600" fill="#14a3b8" text-anchor="middle" transform="rotate(-90 1420 420)">Eau piscine</text>
-<path d="M1445,922 L1445.0,960.0 Q1445,978 1427.0,978.0 L1201.0,978.0 Q1190,978 1190.0,989.0 L1190,1000" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1445,922 L1445.0,960.0 Q1445,978 1427.0,978.0 L1201.0,978.0 Q1190,978 1190.0,989.0 L1190,1000" fill="none" stroke="#2e9b5f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1430,916 L1430.0,960.0 Q1430,978 1412.0,978.0 L1201.0,978.0 Q1190,978 1190.0,989.0 L1190,1000" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1430,916 L1430.0,960.0 Q1430,978 1412.0,978.0 L1201.0,978.0 Q1190,978 1190.0,989.0 L1190,1000" fill="none" stroke="#2e9b5f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
 <polygon points="1311.0,978.0 1329.0,970.8 1329.0,985.2" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
-<circle cx="1445" cy="890" r="32" fill="#fff" stroke="#2b3440" stroke-width="3"/><circle cx="1445" cy="890" r="22" fill="#dbeee3" stroke="#2e9b5f" stroke-width="2"/>
-<text x="1445" y="896" font-size="15" font-weight="700" fill="#1d2530" text-anchor="middle" >Puits</text>
+<circle cx="1430" cy="890" r="26" fill="#fff" stroke="#2b3440" stroke-width="3"/><circle cx="1430" cy="890" r="19" fill="#dbeee3" stroke="#2e9b5f" stroke-width="2"/>
+<text x="1430" y="895" font-size="12" font-weight="700" fill="#1d2530" text-anchor="middle" >Puits</text>
 <path d="M1035,1000 L1035,760 Q1035,715 990,715 L430,715 C285,715 270,640 270,500 L270,140" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M1035,1000 L1035,760 Q1035,715 990,715 L430,715 C285,715 270,640 270,500 L270,140" fill="none" stroke="#2f74d0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="270" cy="140" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
@@ -81,14 +81,15 @@
 <circle cx="860" cy="715" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
 <text x="290" y="128" font-size="16" font-weight="700" fill="#2f74d0" text-anchor="start" >Arrosage</text>
 <text x="560" y="705" font-size="13" font-weight="600" fill="#2f74d0" text-anchor="middle" font-style="italic" >Ligne d'arrosage · robinets</text>
-<path d="M1445,858 L1445,170" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1445,858 L1445,170" fill="none" stroke="#2f74d0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="1445" cy="170" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
-<circle cx="1445" cy="330" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
-<circle cx="1445" cy="500" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
-<circle cx="1445" cy="680" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
-<polygon points="1445.0,782.0 1438.6,798.0 1451.4,798.0" fill="#2f74d0" stroke="#fff" stroke-width="1.5"/>
-<text x="1468" y="600" font-size="15" font-weight="700" fill="#2f74d0" text-anchor="middle" transform="rotate(-90 1468 600)">Arrosage</text>
+<path d="M1175,1200 L1175.0,1209.0 Q1175,1218 1184.0,1218.0 L1458.0,1218.0 Q1472,1218 1472.0,1204.0 L1472,170" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1175,1200 L1175.0,1209.0 Q1175,1218 1184.0,1218.0 L1458.0,1218.0 Q1472,1218 1472.0,1204.0 L1472,170" fill="none" stroke="#2f74d0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1472" cy="170" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="1472" cy="330" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="1472" cy="500" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="1472" cy="680" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<polygon points="1472.0,782.0 1465.6,798.0 1478.4,798.0" fill="#2f74d0" stroke="#fff" stroke-width="1.5"/>
+<polygon points="1328.0,1218.0 1312.0,1211.6 1312.0,1224.4" fill="#2f74d0" stroke="#fff" stroke-width="1.5"/>
+<text x="1462" y="600" font-size="15" font-weight="700" fill="#2f74d0" text-anchor="middle" transform="rotate(-90 1462 600)">Arrosage</text>
 <path d="M975,1000 L975.0,932.0 Q975,920 963.0,920.0 L940,920" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M975,1000 L975.0,932.0 Q975,920 963.0,920.0 L940,920" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M985,1000 L985.0,922.0 Q985,910 973.0,910.0 L940,910" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
