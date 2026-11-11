@@ -133,10 +133,10 @@ text(150, 470, "Conduite jardin · poly 25", 15, 600, C["jardin"], anchor="start
 text(1520, 640, "Conduite jardin · poly 25", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 1520 640)"')
 
 # --- faisceaux de 5 conduites principales
-ORDER = [C["froide"], C["froide"], C["chaude"], C["chaude"], C["retour"]]
-for i, col in enumerate(ORDER):  # -> Maison 3
+ORDER = [(C["froide"], None), (C["chaude"], "8 5"), (C["chaude"], "8 5"), (C["chaude"], None), (C["retour"], None)]
+for i, (col, da) in enumerate(ORDER):  # -> Maison 3
     x = 1045 + 10 * i; y = 920 - 10 * i
-    pipe([(x, T), (x, y), (940, y)], col, 4, r=12)
+    pipe([(x, T), (x, y), (940, y)], col, 4, da, r=12)
 # Arrosage gauche (réseau courbe avec robinets)
 d_arr = f"M1100,{T} L1100,760 Q1100,715 1055,715 L430,715 C285,715 270,640 270,500 L270,140"
 pipe(d_arr, C["arrosage"], 3)
@@ -144,12 +144,12 @@ for (x, y) in [(270, 140), (270, 330), (300, 640), (620, 715), (860, 715)]:
     svg.append(f'<circle cx="{x}" cy="{y}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
 text(290, 128, "Arrosage · tube poly 32", 16, 700, C["arrosage"], anchor="start")
 text(560, 705, "Tube poly 32 · robinets", 13, 600, C["arrosage"], italic=True)
-for i, col in enumerate(ORDER):  # -> Maison 2
+for i, (col, da) in enumerate(ORDER):  # -> Maison 2
     x = 1115 + 10 * i; y = 680 - 10 * i; xt = 700 + 10 * i
-    pipe([(x, T), (x, y), (xt, y), (xt, 490)], col, 4, r=14)
-for i, col in enumerate(ORDER):  # -> Maison 1
+    pipe([(x, T), (x, y), (xt, y), (xt, 490)], col, 4, da, r=14)
+for i, (col, da) in enumerate(ORDER):  # -> Maison 1
     x = 1170 + 10 * i
-    pipe([(x, T), (x, 510)], col, 4)
+    pipe([(x, T), (x, 510)], col, 4, da)
 
 # --- départs vers l'est
 # Eau piscine 1 & 3 (nord)
@@ -206,7 +206,8 @@ text(px + 20, 186, "LÉGENDE", 15, 800, "#5b6672", anchor="start")
 rows = [
     (C["sonede"], 4, None, "Arrivée SONEDE (3 lignes)"),
     (C["froide"], 4, None, "Eau froide"),
-    (C["chaude"], 4, None, "Eau chaude (chaudière)"),
+    (C["chaude"], 4, None, "Eau chaude sanitaire"),
+    (C["chaude"], 4, "8 5", "Chauffage"),
     (C["jardin"], 4, None, "Jardin poly 25 / puits"),
     (C["piscine"], 5, "12 7", "Eau piscine"),
     (C["arrosage"], 3, None, "Arrosage — tube poly 32"),
@@ -234,12 +235,14 @@ svg.append(f'<line x1="{px+20}" y1="{y}" x2="{px+270}" y2="{y}" stroke="#cbd2d9"
 text(px + 20, y, "FAISCEAU PRINCIPAL", 15, 800, "#5b6672", anchor="start"); y += 28
 text(px + 20, y, "Depuis le local chaudière vers", 14, 500, anchor="start"); y += 20
 text(px + 20, y, "chaque maison (1, 2, 3) :", 14, 500, anchor="start"); y += 30
-for col, lab in [(C["froide"], "2 × eau froide"), (C["chaude"], "2 × eau chaude"), (C["retour"], "1 × retour sanitaire")]:
-    svg.append(f'<rect x="{px+20}" y="{y-12}" width="34" height="14" rx="3" fill="{col}"/>')
+for col, da, lab in [(C["froide"], None, "1 × eau froide"), (C["chaude"], "8 5", "2 × chauffage"),
+                     (C["chaude"], None, "1 × eau chaude sanitaire"), (C["retour"], None, "1 × retour sanitaire")]:
+    dd = f' stroke-dasharray="{da}"' if da else ""
+    svg.append(f'<line x1="{px+20}" y1="{y-5}" x2="{px+54}" y2="{y-5}" stroke="{col}" stroke-width="5"{dd}/>')
     text(px + 66, y, lab, 14, 500, anchor="start"); y += 28
 
 # Nord
-ny = 970
+ny = 1010
 svg.append(f'<line x1="{px+20}" y1="{ny-60}" x2="{px+270}" y2="{ny-60}" stroke="#cbd2d9"/>')
 svg.append(f'<g transform="translate({px+145},{ny})"><circle r="38" fill="#fff" stroke="#9aa5b1" stroke-width="1.5"/>'
            f'<polygon points="0,-30 10,8 0,2 -10,8" fill="{C["txt"]}"/><polygon points="0,30 10,8 0,2 -10,8" fill="#cbd2d9"/></g>')
