@@ -199,7 +199,7 @@ px = 1640
 svg.append(f'<rect x="{px}" y="40" width="290" height="1260" rx="8" fill="#f8fafc" stroke="#cbd2d9" stroke-width="1.5"/>')
 text(px + 20, 82, "PLAN DU RÉSEAU", 22, 800, anchor="start")
 text(px + 20, 108, "D'EAU ET CHAUFFAGE", 22, 800, anchor="start")
-text(px + 20, 134, "Schéma de principe — non à l'échelle", 13, 500, "#5b6672", anchor="start", italic=True)
+text(px + 20, 136, "Maisons Ben Khdija — Kerkouane", 15, 700, "#7a4a1f", anchor="start")
 svg.append(f'<line x1="{px+20}" y1="152" x2="{px+270}" y2="152" stroke="#cbd2d9"/>')
 text(px + 20, 186, "LÉGENDE", 15, 800, "#5b6672", anchor="start")
 
@@ -257,7 +257,7 @@ text(px + 160, 1074, "ÉCHELLE", 12, 800, "#5b6672", anchor="start")
 text(px + 160, 1096, "Sans", 16, 700, anchor="start")
 text(px + 20, 1130, "SIGNATURE", 12, 800, "#5b6672", anchor="start")
 svg.append(f'<rect x="{px+20}" y="1140" width="250" height="110" rx="6" fill="#fff" stroke="#9aa5b1" stroke-width="1.5" stroke-dasharray="6 4"/>')
-text(px + 20, 1280, "Établi d'après croquis · orientation indicative", 11, 500, "#7b8794", anchor="start", italic=True)
+text(px + 20, 1280, "Schéma de principe — non à l'échelle", 11, 500, "#7b8794", anchor="start", italic=True)
 
 out = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
        f'font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">' + "\n".join(svg) + "</svg>")
