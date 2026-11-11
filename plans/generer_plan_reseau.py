@@ -100,8 +100,8 @@ building(160, 750, 300, 210, "Garage")
 building(460, 750, 480, 210, "Maison", num="3")
 building(300, 1110, 420, 100, "Piscine", fill=C["pool"])
 svg.append('<rect x="312" y="1122" width="396" height="76" rx="4" fill="url(#water)"/>')
-building(960, 1080, 300, 160, "Local", "chaudière", fill="#fbeee3")
-building(1260, 1080, 180, 160, "Studio")
+building(960, 1080, 340, 160, "Local", "chaudière", fill="#fbeee3")
+building(1300, 1080, 140, 160, "Studio")
 
 # ---------------------------------------------------------------- réseaux
 # Tous les départs sortent du même point : le collecteur en haut du local chaudière.
@@ -127,7 +127,7 @@ svg.append(f'<rect x="42" y="-36" width="56" height="28" rx="4" fill="#fff" stro
 text(70, -16, "C", 15, 800, C["sonede"])
 text(106, -15, "Compteur SONEDE — 3 lignes", 14, 600, C["sonede"], anchor="start")
 # Conduite jardin (boucle verte) : départ ouest, retour est
-pipe([(1030, T), (1030, 980), (120, 980), (120, 30), (1490, 30), (1490, 1056), (1255, 1056), (1255, T)], C["jardin"], 4, r=16)
+pipe([(1030, T), (1030, 980), (120, 980), (120, 30), (1490, 30), (1490, 1056), (1295, 1056), (1295, T)], C["jardin"], 4, r=16)
 arrow(120, 560, "u", C["jardin"]); arrow(800, 30, "r", C["jardin"]); arrow(1490, 560, "d", C["jardin"])
 text(150, 470, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 150 470)"')
 text(1520, 640, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 1520 640)"')
@@ -153,29 +153,32 @@ for i, col in enumerate(ORDER):  # -> Maison 1
 
 # --- départs vers l'est
 # Eau piscine 1 & 3 (nord)
-pipe([(1225, T), (1225, 1004), (1395, 1004), (1395, 50), (730, 50), (730, 70)], C["piscine"], 5, "12 7", r=14)
+pipe([(1265, T), (1265, 1004), (1395, 1004), (1395, 50), (730, 50), (730, 70)], C["piscine"], 5, "12 7", r=14)
 arrow(1395, 560, "u", C["piscine"]); arrow(1000, 50, "l", C["piscine"])
 text(1420, 420, "Eau piscine", 14, 600, C["piscine"], extra='transform="rotate(-90 1420 420)"')
 # Puits -> local chaudière
-pipe([(1430, 916), (1430, 1016), (1235, 1016), (1235, T)], C["jardin"], 5, r=14)
+pipe([(1430, 916), (1430, 1016), (1275, 1016), (1275, T)], C["jardin"], 5, r=14)
 arrow(1330, 1016, "l", C["jardin"], 8)
 svg.append(f'<circle cx="1430" cy="890" r="26" fill="#fff" stroke="{C["mur"]}" stroke-width="3"/>'
            f'<circle cx="1430" cy="890" r="19" fill="#dbeee3" stroke="{C["jardin"]}" stroke-width="2"/>')
 text(1430, 895, "Puits", 12, 700)
 # Arrosage droit
-pipe([(1245, T), (1245, 1040), (1472, 1040), (1472, 170)], C["arrosage"], 3, r=14)
+pipe([(1285, T), (1285, 1040), (1472, 1040), (1472, 170)], C["arrosage"], 3, r=14)
 for yy in [170, 330, 500, 680]:
     svg.append(f'<circle cx="1472" cy="{yy}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
 arrow(1472, 790, "u", C["arrosage"], 8)
 text(1462, 600, "Arrosage", 15, 700, C["arrosage"], extra='transform="rotate(-90 1462 600)"')
 
 # Collecteur : point de départ unique
-svg.append(f'<rect x="962" y="{T-6}" width="300" height="12" rx="6" fill="{C["mur"]}"/>')
-text(1110, T + 30, "Collecteur — départ unique", 12, 700, "#7a4a1f")
+svg.append(f'<rect x="962" y="{T-6}" width="340" height="12" rx="6" fill="{C["mur"]}"/>')
+text(1130, T + 30, "Collecteur — départ unique", 12, 700, "#7a4a1f")
 
-# Douche piscine 1 (alimentée par la Maison 1)
-pipe([(1080, 235), (1080, 198), (1018, 198)], C["froide"], 4, r=10)
-pipe([(1095, 235), (1095, 184), (1018, 184)], C["chaude"], 4, r=10)
+# Douches des piscines du haut : depuis le collecteur, couloir à droite de la Maison 1
+SH = [(1222, 860, 1280, 198, "w", C["chaude"]), (1232, 870, 1290, 184, "w", C["froide"]),
+      (1242, 880, 1300, 198, "e", C["froide"]), (1252, 890, 1310, 212, "e", C["chaude"])]
+for x0, yj, xc, yt, side, col in SH:
+    xe = 1018 if side == "w" else 1342
+    pipe([(x0, T), (x0, yj), (xc, yj), (xc, yt), (xe, yt)], col, 4, r=10)
 douche(1000, 191)
 
 # Piscine 3 à côté de la piscine du haut (devant Maison 1) + douche EF/EC
@@ -183,14 +186,12 @@ building(1100, 70, 200, 100, "Piscine", fill=C["pool"])
 svg.append('<rect x="1110" y="80" width="180" height="80" rx="4" fill="url(#water)"/>')
 pipe([(1200, 50), (1200, 70)], C["piscine"], 5)
 svg.append(f'<circle cx="1200" cy="50" r="5" fill="{C["piscine"]}" stroke="#fff" stroke-width="1.5"/>')
-pipe([(1250, 235), (1250, 198), (1322, 198)], C["chaude"], 4, r=10)
-pipe([(1262, 235), (1262, 212), (1322, 212)], C["froide"], 4, r=10)
-douche(1340, 205, False)
-text(1340, 238, "Douche", 14, 700)
+douche(1360, 205, False)
+text(1360, 238, "Douche", 14, 700)
 
 vanne(900, 900, True, "l")
 vanne(678, 540, True, "l")
-vanne(1240, 600, True, "r")
+vanne(1150, 600, True, "l")
 svg.append('</g>')
 
 # ---------------------------------------------------------------- cartouche / légende

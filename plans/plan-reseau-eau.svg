@@ -31,13 +31,13 @@
 <rect x="300" y="1110" width="420" height="100" rx="6" fill="#d9f1f6" stroke="#2b3440" stroke-width="3"/>
 <text x="510.0" y="1168.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Piscine</text>
 <rect x="312" y="1122" width="396" height="76" rx="4" fill="url(#water)"/>
-<rect x="964" y="1085" width="300" height="160" rx="6" fill="#000" opacity=".06"/>
-<rect x="960" y="1080" width="300" height="160" rx="6" fill="#fbeee3" stroke="#2b3440" stroke-width="3"/>
-<text x="1110.0" y="1160.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Local</text>
-<text x="1110.0" y="1184.0" font-size="15" font-weight="500" fill="#5b6672" text-anchor="middle" >chaudière</text>
-<rect x="1264" y="1085" width="180" height="160" rx="6" fill="#000" opacity=".06"/>
-<rect x="1260" y="1080" width="180" height="160" rx="6" fill="#f4f1ea" stroke="#2b3440" stroke-width="3"/>
-<text x="1350.0" y="1168.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Studio</text>
+<rect x="964" y="1085" width="340" height="160" rx="6" fill="#000" opacity=".06"/>
+<rect x="960" y="1080" width="340" height="160" rx="6" fill="#fbeee3" stroke="#2b3440" stroke-width="3"/>
+<text x="1130.0" y="1160.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Local</text>
+<text x="1130.0" y="1184.0" font-size="15" font-weight="500" fill="#5b6672" text-anchor="middle" >chaudière</text>
+<rect x="1304" y="1085" width="140" height="160" rx="6" fill="#000" opacity=".06"/>
+<rect x="1300" y="1080" width="140" height="160" rx="6" fill="#f4f1ea" stroke="#2b3440" stroke-width="3"/>
+<text x="1370.0" y="1168.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Studio</text>
 <path d="M970,1080 L970.0,1064.0 Q970,1052 958.0,1052.0 L824.0,1052.0 Q812,1052 812.0,1064.0 L812,1152" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M970,1080 L970.0,1064.0 Q970,1052 958.0,1052.0 L824.0,1052.0 Q812,1052 812.0,1064.0 L812,1152" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M980,1080 L980.0,1052.0 Q980,1040 968.0,1040.0 L804.0,1040.0 Q792,1040 792.0,1052.0 L792,1152" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
@@ -70,8 +70,8 @@
 <rect x="42" y="-36" width="56" height="28" rx="4" fill="#fff" stroke="#1f4fa8" stroke-width="2.5"/>
 <text x="70" y="-16" font-size="15" font-weight="800" fill="#1f4fa8" text-anchor="middle" >C</text>
 <text x="106" y="-15" font-size="14" font-weight="600" fill="#1f4fa8" text-anchor="start" >Compteur SONEDE — 3 lignes</text>
-<path d="M1030,1080 L1030.0,996.0 Q1030,980 1014.0,980.0 L136.0,980.0 Q120,980 120.0,964.0 L120.0,46.0 Q120,30 136.0,30.0 L1474.0,30.0 Q1490,30 1490.0,46.0 L1490.0,1040.0 Q1490,1056 1474.0,1056.0 L1267.0,1056.0 Q1255,1056 1255.0,1068.0 L1255,1080" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1030,1080 L1030.0,996.0 Q1030,980 1014.0,980.0 L136.0,980.0 Q120,980 120.0,964.0 L120.0,46.0 Q120,30 136.0,30.0 L1474.0,30.0 Q1490,30 1490.0,46.0 L1490.0,1040.0 Q1490,1056 1474.0,1056.0 L1267.0,1056.0 Q1255,1056 1255.0,1068.0 L1255,1080" fill="none" stroke="#2e9b5f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1030,1080 L1030.0,996.0 Q1030,980 1014.0,980.0 L136.0,980.0 Q120,980 120.0,964.0 L120.0,46.0 Q120,30 136.0,30.0 L1474.0,30.0 Q1490,30 1490.0,46.0 L1490.0,1040.0 Q1490,1056 1474.0,1056.0 L1307.0,1056.0 Q1295,1056 1295.0,1068.0 L1295,1080" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1030,1080 L1030.0,996.0 Q1030,980 1014.0,980.0 L136.0,980.0 Q120,980 120.0,964.0 L120.0,46.0 Q120,30 136.0,30.0 L1474.0,30.0 Q1490,30 1490.0,46.0 L1490.0,1040.0 Q1490,1056 1474.0,1056.0 L1307.0,1056.0 Q1295,1056 1295.0,1068.0 L1295,1080" fill="none" stroke="#2e9b5f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
 <polygon points="120.0,551.0 112.8,569.0 127.2,569.0" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
 <polygon points="809.0,30.0 791.0,22.8 791.0,37.2" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
 <polygon points="1490.0,569.0 1482.8,551.0 1497.2,551.0" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
@@ -116,30 +116,34 @@
 <path d="M1200,1080 L1200,510" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M1210,1080 L1210,510" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M1210,1080 L1210,510" fill="none" stroke="#2e9b5f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1225,1080 L1225.0,1018.0 Q1225,1004 1239.0,1004.0 L1381.0,1004.0 Q1395,1004 1395.0,990.0 L1395.0,64.0 Q1395,50 1381.0,50.0 L740.0,50.0 Q730,50 730.0,60.0 L730,70" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1225,1080 L1225.0,1018.0 Q1225,1004 1239.0,1004.0 L1381.0,1004.0 Q1395,1004 1395.0,990.0 L1395.0,64.0 Q1395,50 1381.0,50.0 L740.0,50.0 Q730,50 730.0,60.0 L730,70" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 7"/>
+<path d="M1265,1080 L1265.0,1018.0 Q1265,1004 1279.0,1004.0 L1381.0,1004.0 Q1395,1004 1395.0,990.0 L1395.0,64.0 Q1395,50 1381.0,50.0 L740.0,50.0 Q730,50 730.0,60.0 L730,70" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1265,1080 L1265.0,1018.0 Q1265,1004 1279.0,1004.0 L1381.0,1004.0 Q1395,1004 1395.0,990.0 L1395.0,64.0 Q1395,50 1381.0,50.0 L740.0,50.0 Q730,50 730.0,60.0 L730,70" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 7"/>
 <polygon points="1395.0,551.0 1387.8,569.0 1402.2,569.0" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
 <polygon points="991.0,50.0 1009.0,42.8 1009.0,57.2" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
 <text x="1420" y="420" font-size="14" font-weight="600" fill="#14a3b8" text-anchor="middle" transform="rotate(-90 1420 420)">Eau piscine</text>
-<path d="M1430,916 L1430.0,1002.0 Q1430,1016 1416.0,1016.0 L1249.0,1016.0 Q1235,1016 1235.0,1030.0 L1235,1080" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1430,916 L1430.0,1002.0 Q1430,1016 1416.0,1016.0 L1249.0,1016.0 Q1235,1016 1235.0,1030.0 L1235,1080" fill="none" stroke="#2e9b5f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1430,916 L1430.0,1002.0 Q1430,1016 1416.0,1016.0 L1289.0,1016.0 Q1275,1016 1275.0,1030.0 L1275,1080" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1430,916 L1430.0,1002.0 Q1430,1016 1416.0,1016.0 L1289.0,1016.0 Q1275,1016 1275.0,1030.0 L1275,1080" fill="none" stroke="#2e9b5f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
 <polygon points="1322.0,1016.0 1338.0,1009.6 1338.0,1022.4" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
 <circle cx="1430" cy="890" r="26" fill="#fff" stroke="#2b3440" stroke-width="3"/><circle cx="1430" cy="890" r="19" fill="#dbeee3" stroke="#2e9b5f" stroke-width="2"/>
 <text x="1430" y="895" font-size="12" font-weight="700" fill="#1d2530" text-anchor="middle" >Puits</text>
-<path d="M1245,1080 L1245.0,1054.0 Q1245,1040 1259.0,1040.0 L1458.0,1040.0 Q1472,1040 1472.0,1026.0 L1472,170" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1245,1080 L1245.0,1054.0 Q1245,1040 1259.0,1040.0 L1458.0,1040.0 Q1472,1040 1472.0,1026.0 L1472,170" fill="none" stroke="#2f74d0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1285,1080 L1285.0,1054.0 Q1285,1040 1299.0,1040.0 L1458.0,1040.0 Q1472,1040 1472.0,1026.0 L1472,170" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1285,1080 L1285.0,1054.0 Q1285,1040 1299.0,1040.0 L1458.0,1040.0 Q1472,1040 1472.0,1026.0 L1472,170" fill="none" stroke="#2f74d0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="1472" cy="170" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
 <circle cx="1472" cy="330" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
 <circle cx="1472" cy="500" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
 <circle cx="1472" cy="680" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
 <polygon points="1472.0,782.0 1465.6,798.0 1478.4,798.0" fill="#2f74d0" stroke="#fff" stroke-width="1.5"/>
 <text x="1462" y="600" font-size="15" font-weight="700" fill="#2f74d0" text-anchor="middle" transform="rotate(-90 1462 600)">Arrosage</text>
-<rect x="962" y="1074" width="300" height="12" rx="6" fill="#2b3440"/>
-<text x="1110" y="1110" font-size="12" font-weight="700" fill="#7a4a1f" text-anchor="middle" >Collecteur — départ unique</text>
-<path d="M1080,235 L1080.0,208.0 Q1080,198 1070.0,198.0 L1018,198" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1080,235 L1080.0,208.0 Q1080,198 1070.0,198.0 L1018,198" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1095,235 L1095.0,194.0 Q1095,184 1085.0,184.0 L1018,184" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1095,235 L1095.0,194.0 Q1095,184 1085.0,184.0 L1018,184" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="962" y="1074" width="340" height="12" rx="6" fill="#2b3440"/>
+<text x="1130" y="1110" font-size="12" font-weight="700" fill="#7a4a1f" text-anchor="middle" >Collecteur — départ unique</text>
+<path d="M1222,1080 L1222.0,870.0 Q1222,860 1232.0,860.0 L1270.0,860.0 Q1280,860 1280.0,850.0 L1280.0,208.0 Q1280,198 1270.0,198.0 L1018,198" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1222,1080 L1222.0,870.0 Q1222,860 1232.0,860.0 L1270.0,860.0 Q1280,860 1280.0,850.0 L1280.0,208.0 Q1280,198 1270.0,198.0 L1018,198" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1232,1080 L1232.0,880.0 Q1232,870 1242.0,870.0 L1280.0,870.0 Q1290,870 1290.0,860.0 L1290.0,194.0 Q1290,184 1280.0,184.0 L1018,184" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1232,1080 L1232.0,880.0 Q1232,870 1242.0,870.0 L1280.0,870.0 Q1290,870 1290.0,860.0 L1290.0,194.0 Q1290,184 1280.0,184.0 L1018,184" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1242,1080 L1242.0,890.0 Q1242,880 1252.0,880.0 L1290.0,880.0 Q1300,880 1300.0,870.0 L1300.0,208.0 Q1300,198 1310.0,198.0 L1342,198" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1242,1080 L1242.0,890.0 Q1242,880 1252.0,880.0 L1290.0,880.0 Q1300,880 1300.0,870.0 L1300.0,208.0 Q1300,198 1310.0,198.0 L1342,198" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1252,1080 L1252.0,900.0 Q1252,890 1262.0,890.0 L1300.0,890.0 Q1310,890 1310.0,880.0 L1310.0,222.0 Q1310,212 1320.0,212.0 L1342,212" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1252,1080 L1252.0,900.0 Q1252,890 1262.0,890.0 L1300.0,890.0 Q1310,890 1310.0,880.0 L1310.0,222.0 Q1310,212 1320.0,212.0 L1342,212" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
 <rect x="982" y="173" width="36" height="36" rx="6" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><circle cx="1000" cy="191" r="7" fill="none" stroke="#2b3440" stroke-width="2"/>
 <circle cx="990.65" cy="181.65" r="1.6" fill="#2f74d0"/>
 <circle cx="1000.0" cy="179.95" r="1.6" fill="#2f74d0"/>
@@ -157,29 +161,25 @@
 <path d="M1200,50 L1200,70" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M1200,50 L1200,70" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="1200" cy="50" r="5" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
-<path d="M1250,235 L1250.0,208.0 Q1250,198 1260.0,198.0 L1322,198" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1250,235 L1250.0,208.0 Q1250,198 1260.0,198.0 L1322,198" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1262,235 L1262.0,222.0 Q1262,212 1272.0,212.0 L1322,212" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1262,235 L1262.0,222.0 Q1262,212 1272.0,212.0 L1322,212" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="1322" y="187" width="36" height="36" rx="6" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><circle cx="1340" cy="205" r="7" fill="none" stroke="#2b3440" stroke-width="2"/>
-<circle cx="1330.65" cy="195.65" r="1.6" fill="#2f74d0"/>
-<circle cx="1340.0" cy="193.95" r="1.6" fill="#2f74d0"/>
-<circle cx="1349.35" cy="195.65" r="1.6" fill="#2f74d0"/>
-<circle cx="1328.95" cy="205.0" r="1.6" fill="#2f74d0"/>
-<circle cx="1351.05" cy="205.0" r="1.6" fill="#2f74d0"/>
-<circle cx="1330.65" cy="214.35" r="1.6" fill="#2f74d0"/>
-<circle cx="1340.0" cy="216.05" r="1.6" fill="#2f74d0"/>
-<circle cx="1349.35" cy="214.35" r="1.6" fill="#2f74d0"/>
-<text x="1340" y="238" font-size="14" font-weight="700" fill="#1d2530" text-anchor="middle" >Douche</text>
+<rect x="1342" y="187" width="36" height="36" rx="6" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><circle cx="1360" cy="205" r="7" fill="none" stroke="#2b3440" stroke-width="2"/>
+<circle cx="1350.65" cy="195.65" r="1.6" fill="#2f74d0"/>
+<circle cx="1360.0" cy="193.95" r="1.6" fill="#2f74d0"/>
+<circle cx="1369.35" cy="195.65" r="1.6" fill="#2f74d0"/>
+<circle cx="1348.95" cy="205.0" r="1.6" fill="#2f74d0"/>
+<circle cx="1371.05" cy="205.0" r="1.6" fill="#2f74d0"/>
+<circle cx="1350.65" cy="214.35" r="1.6" fill="#2f74d0"/>
+<circle cx="1360.0" cy="216.05" r="1.6" fill="#2f74d0"/>
+<circle cx="1369.35" cy="214.35" r="1.6" fill="#2f74d0"/>
+<text x="1360" y="238" font-size="14" font-weight="700" fill="#1d2530" text-anchor="middle" >Douche</text>
 <g><circle cx="900" cy="900" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M890,890 L910,910 M910,890 L890,910" stroke="#2b3440" stroke-width="2"/><circle cx="900" cy="900" r="4" fill="#2b3440"/></g>
 <text x="878" y="898" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >5 conduites</text>
 <text x="878" y="914" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >principales</text>
 <g><circle cx="678" cy="540" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M668,530 L688,550 M688,530 L668,550" stroke="#2b3440" stroke-width="2"/><circle cx="678" cy="540" r="4" fill="#2b3440"/></g>
 <text x="656" y="538" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >5 conduites</text>
 <text x="656" y="554" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >principales</text>
-<g><circle cx="1240" cy="600" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M1230,590 L1250,610 M1250,590 L1230,610" stroke="#2b3440" stroke-width="2"/><circle cx="1240" cy="600" r="4" fill="#2b3440"/></g>
-<text x="1262" y="598" font-size="13" font-weight="600" fill="#1d2530" text-anchor="start" >5 conduites</text>
-<text x="1262" y="614" font-size="13" font-weight="600" fill="#1d2530" text-anchor="start" >principales</text>
+<g><circle cx="1150" cy="600" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M1140,590 L1160,610 M1160,590 L1140,610" stroke="#2b3440" stroke-width="2"/><circle cx="1150" cy="600" r="4" fill="#2b3440"/></g>
+<text x="1128" y="598" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >5 conduites</text>
+<text x="1128" y="614" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >principales</text>
 </g>
 <rect x="1640" y="40" width="290" height="1260" rx="8" fill="#f8fafc" stroke="#cbd2d9" stroke-width="1.5"/>
 <text x="1660" y="82" font-size="22" font-weight="800" fill="#1d2530" text-anchor="start" >PLAN DU RÉSEAU</text>
