@@ -144,6 +144,13 @@ for (x, y) in [(270, 140), (270, 330), (300, 640), (620, 715), (860, 715)]:
 text(290, 128, "Arrosage", 16, 700, C["arrosage"], anchor="start")
 text(560, 705, "Ligne d'arrosage · robinets", 13, 600, C["arrosage"], italic=True)
 
+# Arrosage côté droit (depuis le puits)
+pipe([(1445, 858), (1445, 170)], C["arrosage"], 3)
+for yy in [170, 330, 500, 680]:
+    svg.append(f'<circle cx="1445" cy="{yy}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
+arrow(1445, 790, "u", C["arrosage"], 8)
+text(1468, 600, "Arrosage", 15, 700, C["arrosage"], extra='transform="rotate(-90 1468 600)"')
+
 # Faisceaux de 5 conduites principales
 ORDER = [C["froide"], C["froide"], C["chaude"], C["chaude"], C["jardin"]]
 # -> Maison 3

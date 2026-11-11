@@ -81,6 +81,14 @@
 <circle cx="860" cy="715" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
 <text x="290" y="128" font-size="16" font-weight="700" fill="#2f74d0" text-anchor="start" >Arrosage</text>
 <text x="560" y="705" font-size="13" font-weight="600" fill="#2f74d0" text-anchor="middle" font-style="italic" >Ligne d'arrosage · robinets</text>
+<path d="M1445,858 L1445,170" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1445,858 L1445,170" fill="none" stroke="#2f74d0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1445" cy="170" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="1445" cy="330" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="1445" cy="500" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="1445" cy="680" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<polygon points="1445.0,782.0 1438.6,798.0 1451.4,798.0" fill="#2f74d0" stroke="#fff" stroke-width="1.5"/>
+<text x="1468" y="600" font-size="15" font-weight="700" fill="#2f74d0" text-anchor="middle" transform="rotate(-90 1468 600)">Arrosage</text>
 <path d="M975,1000 L975.0,932.0 Q975,920 963.0,920.0 L940,920" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M975,1000 L975.0,932.0 Q975,920 963.0,920.0 L940,920" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M985,1000 L985.0,922.0 Q985,910 973.0,910.0 L940,910" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
