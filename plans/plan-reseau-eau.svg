@@ -235,10 +235,15 @@
 <text x="1706" y="878" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >1 × eau chaude sanitaire</text>
 <line x1="1660" y1="901" x2="1694" y2="901" stroke="#e3609e" stroke-width="5"/>
 <text x="1706" y="906" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >1 × retour sanitaire</text>
-<line x1="1660" y1="950" x2="1910" y2="950" stroke="#cbd2d9"/>
-<g transform="translate(1785,1010)"><circle r="38" fill="#fff" stroke="#9aa5b1" stroke-width="1.5"/><polygon points="0,-30 10,8 0,2 -10,8" fill="#1d2530"/><polygon points="0,30 10,8 0,2 -10,8" fill="#cbd2d9"/></g>
-<text x="1785" y="964" font-size="16" font-weight="800" fill="#1d2530" text-anchor="middle" >N</text>
-<text x="1785" y="1074" font-size="12" font-weight="500" fill="#7b8794" text-anchor="middle" font-style="italic" >Orientation indicative</text>
+<line x1="1660" y1="923" x2="1910" y2="923" stroke="#cbd2d9"/>
+<g transform="translate(1785,985)"><circle r="38" fill="#fff" stroke="#9aa5b1" stroke-width="1.5"/><polygon points="0,-30 10,8 0,2 -10,8" fill="#1d2530"/><polygon points="0,30 10,8 0,2 -10,8" fill="#cbd2d9"/></g>
+<text x="1785" y="939" font-size="16" font-weight="800" fill="#1d2530" text-anchor="middle" >N</text>
+<text x="1785" y="1049" font-size="12" font-weight="500" fill="#7b8794" text-anchor="middle" font-style="italic" >Orientation indicative</text>
+<line x1="1660" y1="1070" x2="1910" y2="1070" stroke="#cbd2d9"/>
+<text x="1660" y="1098" font-size="12" font-weight="800" fill="#5b6672" text-anchor="start" >MAÎTRE D'OUVRAGE</text>
+<text x="1660" y="1120" font-size="16" font-weight="700" fill="#1d2530" text-anchor="start" >Dr Naoufel Ben Khdija</text>
+<text x="1660" y="1154" font-size="12" font-weight="800" fill="#5b6672" text-anchor="start" >PLAN RÉALISÉ PAR</text>
+<text x="1660" y="1176" font-size="16" font-weight="700" fill="#1d2530" text-anchor="start" >Dbibi Zied</text>
 <line x1="1660" y1="1200" x2="1910" y2="1200" stroke="#cbd2d9"/>
 <text x="1660" y="1230" font-size="12" font-weight="500" fill="#5b6672" text-anchor="start" >Établi d'après croquis à main levée</text>
 <text x="1660" y="1250" font-size="12" font-weight="500" fill="#5b6672" text-anchor="start" >Échelle : sans</text>

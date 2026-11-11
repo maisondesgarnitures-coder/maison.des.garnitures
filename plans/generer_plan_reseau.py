@@ -242,12 +242,17 @@ for col, da, lab in [(C["froide"], None, "1 × eau froide"), (C["chaude"], "8 5"
     text(px + 66, y, lab, 14, 500, anchor="start"); y += 28
 
 # Nord
-ny = 1010
-svg.append(f'<line x1="{px+20}" y1="{ny-60}" x2="{px+270}" y2="{ny-60}" stroke="#cbd2d9"/>')
+ny = 985
+svg.append(f'<line x1="{px+20}" y1="{ny-62}" x2="{px+270}" y2="{ny-62}" stroke="#cbd2d9"/>')
 svg.append(f'<g transform="translate({px+145},{ny})"><circle r="38" fill="#fff" stroke="#9aa5b1" stroke-width="1.5"/>'
            f'<polygon points="0,-30 10,8 0,2 -10,8" fill="{C["txt"]}"/><polygon points="0,30 10,8 0,2 -10,8" fill="#cbd2d9"/></g>')
 text(px + 145, ny - 46, "N", 16, 800)
 text(px + 145, ny + 64, "Orientation indicative", 12, 500, "#7b8794", italic=True)
+svg.append(f'<line x1="{px+20}" y1="1070" x2="{px+270}" y2="1070" stroke="#cbd2d9"/>')
+text(px + 20, 1098, "MAÎTRE D'OUVRAGE", 12, 800, "#5b6672", anchor="start")
+text(px + 20, 1120, "Dr Naoufel Ben Khdija", 16, 700, anchor="start")
+text(px + 20, 1154, "PLAN RÉALISÉ PAR", 12, 800, "#5b6672", anchor="start")
+text(px + 20, 1176, "Dbibi Zied", 16, 700, anchor="start")
 svg.append(f'<line x1="{px+20}" y1="1200" x2="{px+270}" y2="1200" stroke="#cbd2d9"/>')
 text(px + 20, 1230, "Établi d'après croquis à main levée", 12, 500, "#5b6672", anchor="start")
 text(px + 20, 1250, "Échelle : sans", 12, 500, "#5b6672", anchor="start")
