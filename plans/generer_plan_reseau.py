@@ -100,82 +100,83 @@ building(160, 750, 300, 210, "Garage")
 building(460, 750, 480, 210, "Maison", num="3")
 building(300, 1110, 420, 100, "Piscine", fill=C["pool"])
 svg.append('<rect x="312" y="1122" width="396" height="76" rx="4" fill="url(#water)"/>')
-building(960, 1000, 240, 200, "Local", "chaudière", fill="#fbeee3")
-building(1200, 1000, 220, 200, "Studio")
+building(960, 1080, 300, 160, "Local", "chaudière", fill="#fbeee3")
+building(1260, 1080, 180, 160, "Studio")
 
 # ---------------------------------------------------------------- réseaux
-# Conduite jardin (boucle verte)
-pipe([(960, 1020), (120, 1020), (120, 30), (1490, 30), (1490, 1235), (1150, 1235), (1150, 1200)], C["jardin"], 4)
-arrow(120, 560, "u", C["jardin"]); arrow(800, 30, "r", C["jardin"]); arrow(1490, 560, "d", C["jardin"])
-text(150, 470, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 150 470)"')
-text(1520, 640, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 1520 640)"')
+# Tous les départs sortent du même point : le collecteur en haut du local chaudière.
+T = 1080  # face supérieure du local chaudière
 
-# Arrivée SONEDE
-for i in range(3):  # 3 lignes depuis le compteur
-    x = 58 + 12 * i; y = 1062 - 12 * i
-    pipe([(x, -8), (x, y), (960, y)], C["sonede"], 4, r=16)
-arrow(70, 300, "d", C["sonede"], 11); arrow(70, 800, "d", C["sonede"], 11); arrow(600, 1050, "r", C["sonede"], 11)
+# --- départs vers l'ouest (de gauche à droite sur le collecteur)
+# Douche piscine 2 : EC / EF
+pipe([(970, T), (970, 1052), (812, 1052), (812, 1152)], C["chaude"], 4, r=12)
+pipe([(980, T), (980, 1040), (792, 1040), (792, 1152)], C["froide"], 4, r=12)
+douche(802, 1170, False)
+text(802, 1210, "Douche", 13, 700)
+text(900, 1175, "EF + EC douche", 12, 600, "#5b6672")
+# Eau piscine 2
+pipe([(990, T), (990, 1028), (520, 1028), (520, 1110)], C["piscine"], 5, "12 7", r=12)
+arrow(660, 1028, "l", C["piscine"]); text(400, 1060, "Eau piscine", 14, 600, C["piscine"])
+# Arrivée SONEDE (3 lignes)
+for i in range(3):
+    x = 58 + 12 * i; y = 1016 - 12 * i; xc = 1000 + 10 * i
+    pipe([(x, -8), (x, y), (xc, y), (xc, T)], C["sonede"], 4, r=14)
+arrow(70, 300, "d", C["sonede"], 11); arrow(70, 800, "d", C["sonede"], 11); arrow(600, 1004, "r", C["sonede"], 11)
 text(36, 520, "Arrivée SONEDE · 3 lignes", 16, 700, C["sonede"], extra='transform="rotate(-90 36 520)"')
 svg.append(f'<rect x="42" y="-36" width="56" height="28" rx="4" fill="#fff" stroke="{C["sonede"]}" stroke-width="2.5"/>')
 text(70, -16, "C", 15, 800, C["sonede"])
 text(106, -15, "Compteur SONEDE — 3 lignes", 14, 600, C["sonede"], anchor="start")
+# Conduite jardin (boucle verte) : départ ouest, retour est
+pipe([(1030, T), (1030, 980), (120, 980), (120, 30), (1490, 30), (1490, 1056), (1255, 1056), (1255, T)], C["jardin"], 4, r=16)
+arrow(120, 560, "u", C["jardin"]); arrow(800, 30, "r", C["jardin"]); arrow(1490, 560, "d", C["jardin"])
+text(150, 470, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 150 470)"')
+text(1520, 640, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 1520 640)"')
 
-# Eau piscine 2 (sud)
-pipe([(960, 1085), (520, 1085), (520, 1110)], C["piscine"], 5, "12 7")
-arrow(760, 1085, "l", C["piscine"]); text(760, 1076, "Eau piscine", 14, 600, C["piscine"])
-
-# Eau piscine 1 (nord)
-pipe([(1175, 1000), (1175, 960), (1395, 960), (1395, 50), (730, 50), (730, 70)], C["piscine"], 5, "12 7")
-arrow(1395, 560, "u", C["piscine"]); arrow(1000, 50, "l", C["piscine"])
-text(1420, 420, "Eau piscine", 14, 600, C["piscine"], extra='transform="rotate(-90 1420 420)"')
-
-# Puits
-pipe([(1430, 916), (1430, 978), (1190, 978), (1190, 1000)], C["jardin"], 5)
-arrow(1320, 978, "l", C["jardin"])
-svg.append(f'<circle cx="1430" cy="890" r="26" fill="#fff" stroke="{C["mur"]}" stroke-width="3"/>'
-           f'<circle cx="1430" cy="890" r="19" fill="#dbeee3" stroke="{C["jardin"]}" stroke-width="2"/>')
-text(1430, 895, "Puits", 12, 700)
-
-# Arrosage (réseau courbe avec robinets)
-d_arr = "M1035,1000 L1035,760 Q1035,715 990,715 L430,715 C285,715 270,640 270,500 L270,140"
+# --- faisceaux de 5 conduites principales
+ORDER = [C["froide"], C["froide"], C["chaude"], C["chaude"], C["jardin"]]
+for i, col in enumerate(ORDER):  # -> Maison 3
+    x = 1045 + 10 * i; y = 920 - 10 * i
+    pipe([(x, T), (x, y), (940, y)], col, 4, r=12)
+# Arrosage gauche (réseau courbe avec robinets)
+d_arr = f"M1100,{T} L1100,760 Q1100,715 1055,715 L430,715 C285,715 270,640 270,500 L270,140"
 pipe(d_arr, C["arrosage"], 3)
 for (x, y) in [(270, 140), (270, 330), (300, 640), (620, 715), (860, 715)]:
     svg.append(f'<circle cx="{x}" cy="{y}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
 text(290, 128, "Arrosage", 16, 700, C["arrosage"], anchor="start")
 text(560, 705, "Ligne d'arrosage · robinets", 13, 600, C["arrosage"], italic=True)
+for i, col in enumerate(ORDER):  # -> Maison 2
+    x = 1115 + 10 * i; y = 680 - 10 * i; xt = 700 + 10 * i
+    pipe([(x, T), (x, y), (xt, y), (xt, 490)], col, 4, r=14)
+for i, col in enumerate(ORDER):  # -> Maison 1
+    x = 1170 + 10 * i
+    pipe([(x, T), (x, 510)], col, 4)
 
-# Arrosage côté droit (depuis le local chaudière)
-pipe([(1175, 1200), (1175, 1218), (1472, 1218), (1472, 170)], C["arrosage"], 3, r=14)
+# --- départs vers l'est
+# Eau piscine 1 & 3 (nord)
+pipe([(1225, T), (1225, 1004), (1395, 1004), (1395, 50), (730, 50), (730, 70)], C["piscine"], 5, "12 7", r=14)
+arrow(1395, 560, "u", C["piscine"]); arrow(1000, 50, "l", C["piscine"])
+text(1420, 420, "Eau piscine", 14, 600, C["piscine"], extra='transform="rotate(-90 1420 420)"')
+# Puits -> local chaudière
+pipe([(1430, 916), (1430, 1016), (1235, 1016), (1235, T)], C["jardin"], 5, r=14)
+arrow(1330, 1016, "l", C["jardin"], 8)
+svg.append(f'<circle cx="1430" cy="890" r="26" fill="#fff" stroke="{C["mur"]}" stroke-width="3"/>'
+           f'<circle cx="1430" cy="890" r="19" fill="#dbeee3" stroke="{C["jardin"]}" stroke-width="2"/>')
+text(1430, 895, "Puits", 12, 700)
+# Arrosage droit
+pipe([(1245, T), (1245, 1040), (1472, 1040), (1472, 170)], C["arrosage"], 3, r=14)
 for yy in [170, 330, 500, 680]:
     svg.append(f'<circle cx="1472" cy="{yy}" r="7" fill="{C["arrosage"]}" stroke="#fff" stroke-width="2"/>')
-arrow(1472, 790, "u", C["arrosage"], 8); arrow(1320, 1218, "r", C["arrosage"], 8)
+arrow(1472, 790, "u", C["arrosage"], 8)
 text(1462, 600, "Arrosage", 15, 700, C["arrosage"], extra='transform="rotate(-90 1462 600)"')
 
-# Faisceaux de 5 conduites principales
-ORDER = [C["froide"], C["froide"], C["chaude"], C["chaude"], C["jardin"]]
-# -> Maison 3
-for i, col in enumerate(ORDER):
-    x = 975 + 10 * i; y = 920 - 10 * i
-    pipe([(x, 1000), (x, y), (940, y)], col, 4, r=12)
-# -> Maison 2
-for i, col in enumerate(ORDER):
-    x = 1055 + 10 * i; y = 680 - 10 * i; xt = 700 + 10 * i
-    pipe([(x, 1000), (x, y), (xt, y), (xt, 490)], col, 4, r=14)
-# -> Maison 1
-for i, col in enumerate(ORDER):
-    x = 1115 + 10 * i
-    pipe([(x, 1000), (x, 510)], col, 4)
+# Collecteur : point de départ unique
+svg.append(f'<rect x="962" y="{T-6}" width="300" height="12" rx="6" fill="{C["mur"]}"/>')
+text(1110, T + 30, "Collecteur — départ unique", 12, 700, "#7a4a1f")
 
-
-# Douches devant chaque piscine (eau chaude + eau froide)
+# Douche piscine 1 (alimentée par la Maison 1)
 pipe([(1080, 235), (1080, 198), (1018, 198)], C["froide"], 4, r=10)
 pipe([(1095, 235), (1095, 184), (1018, 184)], C["chaude"], 4, r=10)
 douche(1000, 191)
-pipe([(960, 1150), (818, 1150)], C["froide"], 4)
-pipe([(960, 1170), (818, 1170)], C["chaude"], 4)
-arrow(890, 1150, "l", C["froide"], 7); arrow(890, 1170, "l", C["chaude"], 7)
-douche(800, 1160)
-text(890, 1192, "EF + EC douche", 12, 600, "#5b6672")
 
 # Piscine 3 à côté de la piscine du haut (devant Maison 1) + douche EF/EC
 building(1100, 70, 200, 100, "Piscine", fill=C["pool"])
@@ -189,7 +190,7 @@ text(1340, 238, "Douche", 14, 700)
 
 vanne(900, 900, True, "l")
 vanne(678, 540, True, "l")
-vanne(1180, 560, True, "r")
+vanne(1240, 600, True, "r")
 svg.append('</g>')
 
 # ---------------------------------------------------------------- cartouche / légende
