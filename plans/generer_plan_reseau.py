@@ -101,7 +101,7 @@ building(460, 750, 480, 210, "Maison", num="3")
 building(300, 1110, 420, 100, "Piscine", fill=C["pool"])
 svg.append('<rect x="312" y="1122" width="396" height="76" rx="4" fill="url(#water)"/>')
 building(960, 1080, 340, 160, "Local", "chaudière", fill="#fbeee3")
-building(1300, 1080, 140, 160, "Studio")
+building(1300, 1080, 260, 160, "Studio")
 
 # ---------------------------------------------------------------- réseaux
 # Tous les départs sortent du même point : le collecteur en haut du local chaudière.
