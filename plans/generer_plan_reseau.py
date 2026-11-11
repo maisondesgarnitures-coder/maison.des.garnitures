@@ -102,12 +102,14 @@ text(150, 470, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='t
 text(1520, 640, "Conduite jardin", 15, 600, C["jardin"], anchor="start", extra='transform="rotate(-90 1520 640)"')
 
 # Arrivée SONEDE
-pipe([(70, -30), (70, 1050), (960, 1050)], C["sonede"], 6)
+for i in range(3):  # 3 lignes depuis le compteur
+    x = 58 + 12 * i; y = 1062 - 12 * i
+    pipe([(x, -8), (x, y), (960, y)], C["sonede"], 4, r=16)
 arrow(70, 300, "d", C["sonede"], 11); arrow(70, 800, "d", C["sonede"], 11); arrow(600, 1050, "r", C["sonede"], 11)
-text(44, 520, "Arrivée SONEDE", 16, 700, C["sonede"], extra='transform="rotate(-90 44 520)"')
-svg.append(f'<rect x="48" y="-34" width="44" height="26" rx="4" fill="#fff" stroke="{C["sonede"]}" stroke-width="2.5"/>')
-text(70, -15, "C", 15, 800, C["sonede"])
-text(100, -14, "Compteur SONEDE", 14, 600, C["sonede"], anchor="start")
+text(36, 520, "Arrivée SONEDE · 3 lignes", 16, 700, C["sonede"], extra='transform="rotate(-90 36 520)"')
+svg.append(f'<rect x="42" y="-36" width="56" height="28" rx="4" fill="#fff" stroke="{C["sonede"]}" stroke-width="2.5"/>')
+text(70, -16, "C", 15, 800, C["sonede"])
+text(106, -15, "Compteur SONEDE — 3 lignes", 14, 600, C["sonede"], anchor="start")
 
 # Eau piscine 2 (sud)
 pipe([(960, 1085), (520, 1085), (520, 1110)], C["piscine"], 5, "12 7")
@@ -163,7 +165,7 @@ svg.append(f'<line x1="{px+20}" y1="152" x2="{px+270}" y2="152" stroke="#cbd2d9"
 text(px + 20, 186, "LÉGENDE", 15, 800, "#5b6672", anchor="start")
 
 rows = [
-    (C["sonede"], 6, None, "Arrivée SONEDE"),
+    (C["sonede"], 4, None, "Arrivée SONEDE (3 lignes)"),
     (C["froide"], 4, None, "Eau froide"),
     (C["chaude"], 4, None, "Eau chaude (chaudière)"),
     (C["jardin"], 4, None, "Conduite jardin / puits"),
