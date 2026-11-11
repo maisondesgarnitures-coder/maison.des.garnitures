@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1960 1340" width="1960" height="1340" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif"><rect width="1960" height="1340" fill="#ffffff"/>
+<defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#e9edf2" stroke-width="1"/></pattern><pattern id="water" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M0 10 Q4 6 8 10 T16 10" fill="none" stroke="#9fd8e3" stroke-width="1.5"/></pattern></defs>
+<g transform="translate(40,40)">
+<rect x="0" y="0" width="1560" height="1260" fill="url(#grid)" stroke="#9aa5b1" stroke-width="2" stroke-dasharray="10 6" rx="4"/>
+<text x="14" y="1248" font-size="13" font-weight="500" fill="#7b8794" text-anchor="start" font-style="italic" >Limite de propriété</text>
+<rect x="564" y="75" width="340" height="110" rx="6" fill="#000" opacity=".06"/>
+<rect x="560" y="70" width="340" height="110" rx="6" fill="#d9f1f6" stroke="#2b3440" stroke-width="3"/>
+<text x="730.0" y="133.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Piscine</text>
+<rect x="572" y="82" width="316" height="86" rx="4" fill="url(#water)"/>
+<rect x="544" y="245" width="420" height="250" rx="6" fill="#000" opacity=".06"/>
+<rect x="540" y="240" width="420" height="250" rx="6" fill="#f4f1ea" stroke="#2b3440" stroke-width="3"/>
+<circle cx="750.0" cy="387.0" r="20" fill="#fff" stroke="#2b3440" stroke-width="2"/>
+<text x="750.0" y="394.0" font-size="20" font-weight="700" fill="#1d2530" text-anchor="middle" >2</text>
+<text x="750.0" y="357.0" font-size="24" font-weight="700" fill="#1d2530" text-anchor="middle" >Maison</text>
+<rect x="1064" y="240" width="210" height="275" rx="6" fill="#000" opacity=".06"/>
+<rect x="1060" y="235" width="210" height="275" rx="6" fill="#f4f1ea" stroke="#2b3440" stroke-width="3"/>
+<circle cx="1165.0" cy="394.5" r="20" fill="#fff" stroke="#2b3440" stroke-width="2"/>
+<text x="1165.0" y="401.5" font-size="20" font-weight="700" fill="#1d2530" text-anchor="middle" >1</text>
+<text x="1165.0" y="364.5" font-size="24" font-weight="700" fill="#1d2530" text-anchor="middle" >Maison</text>
+<rect x="960" y="275" width="100" height="70" fill="#ebe7de" stroke="#2b3440" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="1010" y="315" font-size="13" font-weight="600" fill="#5b6672" text-anchor="middle" >Liaison</text>
+<rect x="164" y="755" width="300" height="210" rx="6" fill="#000" opacity=".06"/>
+<rect x="160" y="750" width="300" height="210" rx="6" fill="#f4f1ea" stroke="#2b3440" stroke-width="3"/>
+<text x="310.0" y="863.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Garage</text>
+<rect x="464" y="755" width="480" height="210" rx="6" fill="#000" opacity=".06"/>
+<rect x="460" y="750" width="480" height="210" rx="6" fill="#f4f1ea" stroke="#2b3440" stroke-width="3"/>
+<circle cx="700.0" cy="877.0" r="20" fill="#fff" stroke="#2b3440" stroke-width="2"/>
+<text x="700.0" y="884.0" font-size="20" font-weight="700" fill="#1d2530" text-anchor="middle" >3</text>
+<text x="700.0" y="847.0" font-size="24" font-weight="700" fill="#1d2530" text-anchor="middle" >Maison</text>
+<rect x="304" y="1115" width="420" height="100" rx="6" fill="#000" opacity=".06"/>
+<rect x="300" y="1110" width="420" height="100" rx="6" fill="#d9f1f6" stroke="#2b3440" stroke-width="3"/>
+<text x="510.0" y="1168.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Piscine</text>
+<rect x="312" y="1122" width="396" height="76" rx="4" fill="url(#water)"/>
+<rect x="964" y="1005" width="240" height="200" rx="6" fill="#000" opacity=".06"/>
+<rect x="960" y="1000" width="240" height="200" rx="6" fill="#fbeee3" stroke="#2b3440" stroke-width="3"/>
+<text x="1080.0" y="1100.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Local</text>
+<text x="1080.0" y="1124.0" font-size="15" font-weight="500" fill="#5b6672" text-anchor="middle" >chaudière</text>
+<rect x="1204" y="1005" width="220" height="200" rx="6" fill="#000" opacity=".06"/>
+<rect x="1200" y="1000" width="220" height="200" rx="6" fill="#f4f1ea" stroke="#2b3440" stroke-width="3"/>
+<text x="1310.0" y="1108.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Studio</text>
+<path d="M960,1020 L138.0,1020.0 Q120,1020 120.0,1002.0 L120.0,48.0 Q120,30 138.0,30.0 L1472.0,30.0 Q1490,30 1490.0,48.0 L1490.0,1217.0 Q1490,1235 1472.0,1235.0 L1167.5,1235.0 Q1150,1235 1150.0,1217.5 L1150,1200" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M960,1020 L138.0,1020.0 Q120,1020 120.0,1002.0 L120.0,48.0 Q120,30 138.0,30.0 L1472.0,30.0 Q1490,30 1490.0,48.0 L1490.0,1217.0 Q1490,1235 1472.0,1235.0 L1167.5,1235.0 Q1150,1235 1150.0,1217.5 L1150,1200" fill="none" stroke="#2e9b5f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="120.0,551.0 112.8,569.0 127.2,569.0" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
+<polygon points="809.0,30.0 791.0,22.8 791.0,37.2" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
+<polygon points="1490.0,569.0 1482.8,551.0 1497.2,551.0" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
+<text x="150" y="470" font-size="15" font-weight="600" fill="#2e9b5f" text-anchor="start" transform="rotate(-90 150 470)">Conduite jardin</text>
+<text x="1520" y="640" font-size="15" font-weight="600" fill="#2e9b5f" text-anchor="start" transform="rotate(-90 1520 640)">Conduite jardin</text>
+<path d="M70,-30 L70.0,1032.0 Q70,1050 88.0,1050.0 L960,1050" fill="none" stroke="#fff" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M70,-30 L70.0,1032.0 Q70,1050 88.0,1050.0 L960,1050" fill="none" stroke="#1f4fa8" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="70.0,311.0 61.2,289.0 78.8,289.0" fill="#1f4fa8" stroke="#fff" stroke-width="1.5"/>
+<polygon points="70.0,811.0 61.2,789.0 78.8,789.0" fill="#1f4fa8" stroke="#fff" stroke-width="1.5"/>
+<polygon points="611.0,1050.0 589.0,1041.2 589.0,1058.8" fill="#1f4fa8" stroke="#fff" stroke-width="1.5"/>
+<text x="44" y="520" font-size="16" font-weight="700" fill="#1f4fa8" text-anchor="middle" transform="rotate(-90 44 520)">Arrivée SONEDE</text>
+<rect x="48" y="-34" width="44" height="26" rx="4" fill="#fff" stroke="#1f4fa8" stroke-width="2.5"/>
+<text x="70" y="-15" font-size="15" font-weight="800" fill="#1f4fa8" text-anchor="middle" >C</text>
+<text x="100" y="-14" font-size="14" font-weight="600" fill="#1f4fa8" text-anchor="start" >Compteur SONEDE</text>
+<path d="M960,1085 L532.5,1085.0 Q520,1085 520.0,1097.5 L520,1110" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M960,1085 L532.5,1085.0 Q520,1085 520.0,1097.5 L520,1110" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 7"/>
+<polygon points="751.0,1085.0 769.0,1077.8 769.0,1092.2" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
+<text x="760" y="1076" font-size="14" font-weight="600" fill="#14a3b8" text-anchor="middle" >Eau piscine</text>
+<path d="M1175,1000 L1175.0,978.0 Q1175,960 1193.0,960.0 L1377.0,960.0 Q1395,960 1395.0,942.0 L1395.0,143.0 Q1395,125 1377.0,125.0 L900,125" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1175,1000 L1175.0,978.0 Q1175,960 1193.0,960.0 L1377.0,960.0 Q1395,960 1395.0,942.0 L1395.0,143.0 Q1395,125 1377.0,125.0 L900,125" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 7"/>
+<polygon points="1395.0,551.0 1387.8,569.0 1402.2,569.0" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
+<polygon points="1141.0,125.0 1159.0,117.8 1159.0,132.2" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
+<text x="1150" y="115" font-size="14" font-weight="600" fill="#14a3b8" text-anchor="middle" >Eau piscine</text>
+<path d="M1445,922 L1445.0,960.0 Q1445,978 1427.0,978.0 L1201.0,978.0 Q1190,978 1190.0,989.0 L1190,1000" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1445,922 L1445.0,960.0 Q1445,978 1427.0,978.0 L1201.0,978.0 Q1190,978 1190.0,989.0 L1190,1000" fill="none" stroke="#2e9b5f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="1311.0,978.0 1329.0,970.8 1329.0,985.2" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
+<circle cx="1445" cy="890" r="32" fill="#fff" stroke="#2b3440" stroke-width="3"/><circle cx="1445" cy="890" r="22" fill="#dbeee3" stroke="#2e9b5f" stroke-width="2"/>
+<text x="1445" y="896" font-size="15" font-weight="700" fill="#1d2530" text-anchor="middle" >Puits</text>
+<path d="M1035,1000 L1035,760 Q1035,715 990,715 L430,715 C285,715 270,640 270,500 L270,140" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1035,1000 L1035,760 Q1035,715 990,715 L430,715 C285,715 270,640 270,500 L270,140" fill="none" stroke="#2f74d0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="270" cy="140" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="270" cy="330" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="300" cy="640" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="620" cy="715" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<circle cx="860" cy="715" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<text x="290" y="128" font-size="16" font-weight="700" fill="#2f74d0" text-anchor="start" >Arrosage</text>
+<text x="560" y="705" font-size="13" font-weight="600" fill="#2f74d0" text-anchor="middle" font-style="italic" >Ligne d'arrosage · robinets</text>
+<path d="M975,1000 L975.0,932.0 Q975,920 963.0,920.0 L940,920" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M975,1000 L975.0,932.0 Q975,920 963.0,920.0 L940,920" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M985,1000 L985.0,922.0 Q985,910 973.0,910.0 L940,910" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M985,1000 L985.0,922.0 Q985,910 973.0,910.0 L940,910" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M995,1000 L995.0,912.0 Q995,900 983.0,900.0 L940,900" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M995,1000 L995.0,912.0 Q995,900 983.0,900.0 L940,900" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1005,1000 L1005.0,902.0 Q1005,890 993.0,890.0 L940,890" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1005,1000 L1005.0,902.0 Q1005,890 993.0,890.0 L940,890" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1015,1000 L1015.0,892.0 Q1015,880 1003.0,880.0 L940,880" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1015,1000 L1015.0,892.0 Q1015,880 1003.0,880.0 L940,880" fill="none" stroke="#2e9b5f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1055,1000 L1055.0,694.0 Q1055,680 1041.0,680.0 L714.0,680.0 Q700,680 700.0,666.0 L700,490" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1055,1000 L1055.0,694.0 Q1055,680 1041.0,680.0 L714.0,680.0 Q700,680 700.0,666.0 L700,490" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1065,1000 L1065.0,684.0 Q1065,670 1051.0,670.0 L724.0,670.0 Q710,670 710.0,656.0 L710,490" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1065,1000 L1065.0,684.0 Q1065,670 1051.0,670.0 L724.0,670.0 Q710,670 710.0,656.0 L710,490" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1075,1000 L1075.0,674.0 Q1075,660 1061.0,660.0 L734.0,660.0 Q720,660 720.0,646.0 L720,490" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1075,1000 L1075.0,674.0 Q1075,660 1061.0,660.0 L734.0,660.0 Q720,660 720.0,646.0 L720,490" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1085,1000 L1085.0,664.0 Q1085,650 1071.0,650.0 L744.0,650.0 Q730,650 730.0,636.0 L730,490" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1085,1000 L1085.0,664.0 Q1085,650 1071.0,650.0 L744.0,650.0 Q730,650 730.0,636.0 L730,490" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1095,1000 L1095.0,654.0 Q1095,640 1081.0,640.0 L754.0,640.0 Q740,640 740.0,626.0 L740,490" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1095,1000 L1095.0,654.0 Q1095,640 1081.0,640.0 L754.0,640.0 Q740,640 740.0,626.0 L740,490" fill="none" stroke="#2e9b5f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1115,1000 L1115,510" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1115,1000 L1115,510" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1125,1000 L1125,510" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1125,1000 L1125,510" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1135,1000 L1135,510" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1135,1000 L1135,510" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1145,1000 L1145,510" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1145,1000 L1145,510" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1155,1000 L1155,510" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1155,1000 L1155,510" fill="none" stroke="#2e9b5f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<g><circle cx="900" cy="900" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M890,890 L910,910 M910,890 L890,910" stroke="#2b3440" stroke-width="2"/><circle cx="900" cy="900" r="4" fill="#2b3440"/></g>
+<text x="878" y="898" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >5 conduites</text>
+<text x="878" y="914" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >principales</text>
+<g><circle cx="678" cy="540" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M668,530 L688,550 M688,530 L668,550" stroke="#2b3440" stroke-width="2"/><circle cx="678" cy="540" r="4" fill="#2b3440"/></g>
+<text x="656" y="538" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >5 conduites</text>
+<text x="656" y="554" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >principales</text>
+<g><circle cx="1180" cy="560" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M1170,550 L1190,570 M1190,550 L1170,570" stroke="#2b3440" stroke-width="2"/><circle cx="1180" cy="560" r="4" fill="#2b3440"/></g>
+<text x="1202" y="558" font-size="13" font-weight="600" fill="#1d2530" text-anchor="start" >5 conduites</text>
+<text x="1202" y="574" font-size="13" font-weight="600" fill="#1d2530" text-anchor="start" >principales</text>
+</g>
+<rect x="1640" y="40" width="290" height="1260" rx="8" fill="#f8fafc" stroke="#cbd2d9" stroke-width="1.5"/>
+<text x="1660" y="82" font-size="22" font-weight="800" fill="#1d2530" text-anchor="start" >PLAN DU RÉSEAU</text>
+<text x="1660" y="108" font-size="22" font-weight="800" fill="#1d2530" text-anchor="start" >D'EAU ET CHAUFFAGE</text>
+<text x="1660" y="134" font-size="13" font-weight="500" fill="#5b6672" text-anchor="start" font-style="italic" >Schéma de principe — non à l'échelle</text>
+<line x1="1660" y1="152" x2="1910" y2="152" stroke="#cbd2d9"/>
+<text x="1660" y="186" font-size="15" font-weight="800" fill="#5b6672" text-anchor="start" >LÉGENDE</text>
+<line x1="1660" y1="220" x2="1720" y2="220" stroke="#1f4fa8" stroke-width="6" stroke-linecap="round"/>
+<text x="1735" y="225" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Arrivée SONEDE</text>
+<line x1="1660" y1="258" x2="1720" y2="258" stroke="#2f74d0" stroke-width="4" stroke-linecap="round"/>
+<text x="1735" y="263" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Eau froide</text>
+<line x1="1660" y1="296" x2="1720" y2="296" stroke="#d6402b" stroke-width="4" stroke-linecap="round"/>
+<text x="1735" y="301" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Eau chaude (chaudière)</text>
+<line x1="1660" y1="334" x2="1720" y2="334" stroke="#2e9b5f" stroke-width="4" stroke-linecap="round"/>
+<text x="1735" y="339" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Conduite jardin / puits</text>
+<line x1="1660" y1="372" x2="1720" y2="372" stroke="#14a3b8" stroke-width="5" stroke-linecap="round" stroke-dasharray="12 7"/>
+<text x="1735" y="377" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Eau piscine</text>
+<line x1="1660" y1="410" x2="1720" y2="410" stroke="#2f74d0" stroke-width="3" stroke-linecap="round"/>
+<text x="1735" y="415" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Ligne d'arrosage</text>
+<circle cx="1690" cy="448" r="7" fill="#2f74d0" stroke="#fff" stroke-width="2"/>
+<text x="1735" y="453" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Robinet d'arrosage</text>
+<circle cx="1690" cy="490" r="12" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M1682,482 L1698,498 M1698,482 L1682,498" stroke="#2b3440" stroke-width="2"/>
+<text x="1735" y="487" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Vanne / regard</text>
+<text x="1735" y="505" font-size="13" font-weight="500" fill="#5b6672" text-anchor="start" >5 conduites principales</text>
+<polygon points="1699.0,536.0 1681.0,528.8 1681.0,543.2" fill="#1d2530" stroke="#fff" stroke-width="1.5"/>
+<text x="1735" y="541" font-size="15" font-weight="500" fill="#1d2530" text-anchor="start" >Sens d'écoulement</text>
+<line x1="1660" y1="586" x2="1910" y2="586" stroke="#cbd2d9"/>
+<text x="1660" y="620" font-size="15" font-weight="800" fill="#5b6672" text-anchor="start" >FAISCEAU PRINCIPAL</text>
+<text x="1660" y="648" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >Depuis le local chaudière vers</text>
+<text x="1660" y="668" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >chaque maison (1, 2, 3) :</text>
+<rect x="1660" y="686" width="34" height="14" rx="3" fill="#2f74d0"/>
+<text x="1706" y="698" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >2 × eau froide</text>
+<rect x="1660" y="714" width="34" height="14" rx="3" fill="#d6402b"/>
+<text x="1706" y="726" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >2 × eau chaude</text>
+<rect x="1660" y="742" width="34" height="14" rx="3" fill="#2e9b5f"/>
+<text x="1706" y="754" font-size="14" font-weight="500" fill="#1d2530" text-anchor="start" >1 × conduite jardin</text>
+<line x1="1660" y1="860" x2="1910" y2="860" stroke="#cbd2d9"/>
+<g transform="translate(1785,920)"><circle r="38" fill="#fff" stroke="#9aa5b1" stroke-width="1.5"/><polygon points="0,-30 10,8 0,2 -10,8" fill="#1d2530"/><polygon points="0,30 10,8 0,2 -10,8" fill="#cbd2d9"/></g>
+<text x="1785" y="874" font-size="16" font-weight="800" fill="#1d2530" text-anchor="middle" >N</text>
+<text x="1785" y="984" font-size="12" font-weight="500" fill="#7b8794" text-anchor="middle" font-style="italic" >Orientation indicative</text>
+<line x1="1660" y1="1200" x2="1910" y2="1200" stroke="#cbd2d9"/>
+<text x="1660" y="1230" font-size="12" font-weight="500" fill="#5b6672" text-anchor="start" >Établi d'après croquis à main levée</text>
+<text x="1660" y="1250" font-size="12" font-weight="500" fill="#5b6672" text-anchor="start" >Échelle : sans</text>
+<text x="1660" y="1270" font-size="12" font-weight="500" fill="#5b6672" text-anchor="start" >Date : novembre 2026</text></svg>
