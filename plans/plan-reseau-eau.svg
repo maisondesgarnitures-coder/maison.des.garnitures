@@ -62,11 +62,11 @@
 <path d="M960,1085 L532.5,1085.0 Q520,1085 520.0,1097.5 L520,1110" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 7"/>
 <polygon points="751.0,1085.0 769.0,1077.8 769.0,1092.2" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
 <text x="760" y="1076" font-size="14" font-weight="600" fill="#14a3b8" text-anchor="middle" >Eau piscine</text>
-<path d="M1175,1000 L1175.0,978.0 Q1175,960 1193.0,960.0 L1377.0,960.0 Q1395,960 1395.0,942.0 L1395.0,143.0 Q1395,125 1377.0,125.0 L900,125" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1175,1000 L1175.0,978.0 Q1175,960 1193.0,960.0 L1377.0,960.0 Q1395,960 1395.0,942.0 L1395.0,143.0 Q1395,125 1377.0,125.0 L900,125" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 7"/>
+<path d="M1175,1000 L1175.0,978.0 Q1175,960 1193.0,960.0 L1377.0,960.0 Q1395,960 1395.0,942.0 L1395.0,68.0 Q1395,50 1377.0,50.0 L740.0,50.0 Q730,50 730.0,60.0 L730,70" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1175,1000 L1175.0,978.0 Q1175,960 1193.0,960.0 L1377.0,960.0 Q1395,960 1395.0,942.0 L1395.0,68.0 Q1395,50 1377.0,50.0 L740.0,50.0 Q730,50 730.0,60.0 L730,70" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="12 7"/>
 <polygon points="1395.0,551.0 1387.8,569.0 1402.2,569.0" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
-<polygon points="1141.0,125.0 1159.0,117.8 1159.0,132.2" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
-<text x="1150" y="115" font-size="14" font-weight="600" fill="#14a3b8" text-anchor="middle" >Eau piscine</text>
+<polygon points="991.0,50.0 1009.0,42.8 1009.0,57.2" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
+<text x="1420" y="420" font-size="14" font-weight="600" fill="#14a3b8" text-anchor="middle" transform="rotate(-90 1420 420)">Eau piscine</text>
 <path d="M1445,922 L1445.0,960.0 Q1445,978 1427.0,978.0 L1201.0,978.0 Q1190,978 1190.0,989.0 L1190,1000" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M1445,922 L1445.0,960.0 Q1445,978 1427.0,978.0 L1201.0,978.0 Q1190,978 1190.0,989.0 L1190,1000" fill="none" stroke="#2e9b5f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
 <polygon points="1311.0,978.0 1329.0,970.8 1329.0,985.2" fill="#2e9b5f" stroke="#fff" stroke-width="1.5"/>
@@ -142,37 +142,36 @@
 <circle cx="809.35" cy="1169.35" r="1.6" fill="#2f74d0"/>
 <text x="800" y="1134" font-size="14" font-weight="700" fill="#1d2530" text-anchor="middle" >Douche</text>
 <text x="890" y="1192" font-size="12" font-weight="600" fill="#5b6672" text-anchor="middle" >EF + EC douche</text>
-<rect x="1209" y="635" width="165" height="220" rx="6" fill="#000" opacity=".06"/>
-<rect x="1205" y="630" width="165" height="220" rx="6" fill="#d9f1f6" stroke="#2b3440" stroke-width="3"/>
-<text x="1287.5" y="748.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Piscine</text>
-<rect x="1215" y="640" width="145" height="200" rx="4" fill="url(#water)"/>
-<text x="1287" y="770" font-size="12" font-weight="600" fill="#5b6672" text-anchor="middle" >devant Maison 1</text>
-<path d="M1395,740 L1370,740" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1395,740 L1370,740" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 4"/>
-<circle cx="1395" cy="740" r="5" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
-<path d="M1238,510 L1238,572" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1238,510 L1238,572" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1252,510 L1252,572" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1252,510 L1252,572" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-<rect x="1227" y="572" width="36" height="36" rx="6" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><circle cx="1245" cy="590" r="7" fill="none" stroke="#2b3440" stroke-width="2"/>
-<circle cx="1235.65" cy="580.65" r="1.6" fill="#2f74d0"/>
-<circle cx="1245.0" cy="578.95" r="1.6" fill="#2f74d0"/>
-<circle cx="1254.35" cy="580.65" r="1.6" fill="#2f74d0"/>
-<circle cx="1233.95" cy="590.0" r="1.6" fill="#2f74d0"/>
-<circle cx="1256.05" cy="590.0" r="1.6" fill="#2f74d0"/>
-<circle cx="1235.65" cy="599.35" r="1.6" fill="#2f74d0"/>
-<circle cx="1245.0" cy="601.05" r="1.6" fill="#2f74d0"/>
-<circle cx="1254.35" cy="599.35" r="1.6" fill="#2f74d0"/>
-<text x="1272" y="595" font-size="14" font-weight="700" fill="#1d2530" text-anchor="start" >Douche</text>
+<rect x="1104" y="75" width="200" height="100" rx="6" fill="#000" opacity=".06"/>
+<rect x="1100" y="70" width="200" height="100" rx="6" fill="#d9f1f6" stroke="#2b3440" stroke-width="3"/>
+<text x="1200.0" y="128.0" font-size="22" font-weight="700" fill="#1d2530" text-anchor="middle" >Piscine</text>
+<rect x="1110" y="80" width="180" height="80" rx="4" fill="url(#water)"/>
+<path d="M1200,50 L1200,70" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1200,50 L1200,70" fill="none" stroke="#14a3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1200" cy="50" r="5" fill="#14a3b8" stroke="#fff" stroke-width="1.5"/>
+<path d="M1250,235 L1250.0,208.0 Q1250,198 1260.0,198.0 L1322,198" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1250,235 L1250.0,208.0 Q1250,198 1260.0,198.0 L1322,198" fill="none" stroke="#d6402b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1262,235 L1262.0,222.0 Q1262,212 1272.0,212.0 L1322,212" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1262,235 L1262.0,222.0 Q1262,212 1272.0,212.0 L1322,212" fill="none" stroke="#2f74d0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1322" y="187" width="36" height="36" rx="6" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><circle cx="1340" cy="205" r="7" fill="none" stroke="#2b3440" stroke-width="2"/>
+<circle cx="1330.65" cy="195.65" r="1.6" fill="#2f74d0"/>
+<circle cx="1340.0" cy="193.95" r="1.6" fill="#2f74d0"/>
+<circle cx="1349.35" cy="195.65" r="1.6" fill="#2f74d0"/>
+<circle cx="1328.95" cy="205.0" r="1.6" fill="#2f74d0"/>
+<circle cx="1351.05" cy="205.0" r="1.6" fill="#2f74d0"/>
+<circle cx="1330.65" cy="214.35" r="1.6" fill="#2f74d0"/>
+<circle cx="1340.0" cy="216.05" r="1.6" fill="#2f74d0"/>
+<circle cx="1349.35" cy="214.35" r="1.6" fill="#2f74d0"/>
+<text x="1340" y="238" font-size="14" font-weight="700" fill="#1d2530" text-anchor="middle" >Douche</text>
 <g><circle cx="900" cy="900" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M890,890 L910,910 M910,890 L890,910" stroke="#2b3440" stroke-width="2"/><circle cx="900" cy="900" r="4" fill="#2b3440"/></g>
 <text x="878" y="898" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >5 conduites</text>
 <text x="878" y="914" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >principales</text>
 <g><circle cx="678" cy="540" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M668,530 L688,550 M688,530 L668,550" stroke="#2b3440" stroke-width="2"/><circle cx="678" cy="540" r="4" fill="#2b3440"/></g>
 <text x="656" y="538" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >5 conduites</text>
 <text x="656" y="554" font-size="13" font-weight="600" fill="#1d2530" text-anchor="end" >principales</text>
-<g><circle cx="1180" cy="905" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M1170,895 L1190,915 M1190,895 L1170,915" stroke="#2b3440" stroke-width="2"/><circle cx="1180" cy="905" r="4" fill="#2b3440"/></g>
-<text x="1202" y="903" font-size="13" font-weight="600" fill="#1d2530" text-anchor="start" >5 conduites</text>
-<text x="1202" y="919" font-size="13" font-weight="600" fill="#1d2530" text-anchor="start" >principales</text>
+<g><circle cx="1180" cy="560" r="14" fill="#fff" stroke="#2b3440" stroke-width="2.5"/><path d="M1170,550 L1190,570 M1190,550 L1170,570" stroke="#2b3440" stroke-width="2"/><circle cx="1180" cy="560" r="4" fill="#2b3440"/></g>
+<text x="1202" y="558" font-size="13" font-weight="600" fill="#1d2530" text-anchor="start" >5 conduites</text>
+<text x="1202" y="574" font-size="13" font-weight="600" fill="#1d2530" text-anchor="start" >principales</text>
 </g>
 <rect x="1640" y="40" width="290" height="1260" rx="8" fill="#f8fafc" stroke="#cbd2d9" stroke-width="1.5"/>
 <text x="1660" y="82" font-size="22" font-weight="800" fill="#1d2530" text-anchor="start" >PLAN DU RÉSEAU</text>

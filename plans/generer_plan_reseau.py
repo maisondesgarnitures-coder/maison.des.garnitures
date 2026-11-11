@@ -125,9 +125,9 @@ pipe([(960, 1085), (520, 1085), (520, 1110)], C["piscine"], 5, "12 7")
 arrow(760, 1085, "l", C["piscine"]); text(760, 1076, "Eau piscine", 14, 600, C["piscine"])
 
 # Eau piscine 1 (nord)
-pipe([(1175, 1000), (1175, 960), (1395, 960), (1395, 125), (900, 125)], C["piscine"], 5, "12 7")
-arrow(1395, 560, "u", C["piscine"]); arrow(1150, 125, "l", C["piscine"])
-text(1150, 115, "Eau piscine", 14, 600, C["piscine"])
+pipe([(1175, 1000), (1175, 960), (1395, 960), (1395, 50), (730, 50), (730, 70)], C["piscine"], 5, "12 7")
+arrow(1395, 560, "u", C["piscine"]); arrow(1000, 50, "l", C["piscine"])
+text(1420, 420, "Eau piscine", 14, 600, C["piscine"], extra='transform="rotate(-90 1420 420)"')
 
 # Puits
 pipe([(1445, 922), (1445, 978), (1190, 978), (1190, 1000)], C["jardin"], 5)
@@ -170,20 +170,19 @@ arrow(890, 1150, "l", C["froide"], 7); arrow(890, 1170, "l", C["chaude"], 7)
 douche(800, 1160)
 text(890, 1192, "EF + EC douche", 12, 600, "#5b6672")
 
-# Piscine 3 devant la Maison 1 (+ douche EF/EC)
-building(1205, 630, 165, 220, "Piscine", fill=C["pool"])
-svg.append('<rect x="1215" y="640" width="145" height="200" rx="4" fill="url(#water)"/>')
-text(1287, 770, "devant Maison 1", 12, 600, "#5b6672")
-pipe([(1395, 740), (1370, 740)], C["piscine"], 5, "6 4")
-svg.append(f'<circle cx="1395" cy="740" r="5" fill="{C["piscine"]}" stroke="#fff" stroke-width="1.5"/>')
-pipe([(1238, 510), (1238, 572)], C["froide"], 4)
-pipe([(1252, 510), (1252, 572)], C["chaude"], 4)
-douche(1245, 590, False)
-text(1272, 595, "Douche", 14, 700, anchor="start")
+# Piscine 3 à côté de la piscine du haut (devant Maison 1) + douche EF/EC
+building(1100, 70, 200, 100, "Piscine", fill=C["pool"])
+svg.append('<rect x="1110" y="80" width="180" height="80" rx="4" fill="url(#water)"/>')
+pipe([(1200, 50), (1200, 70)], C["piscine"], 5)
+svg.append(f'<circle cx="1200" cy="50" r="5" fill="{C["piscine"]}" stroke="#fff" stroke-width="1.5"/>')
+pipe([(1250, 235), (1250, 198), (1322, 198)], C["chaude"], 4, r=10)
+pipe([(1262, 235), (1262, 212), (1322, 212)], C["froide"], 4, r=10)
+douche(1340, 205, False)
+text(1340, 238, "Douche", 14, 700)
 
 vanne(900, 900, True, "l")
 vanne(678, 540, True, "l")
-vanne(1180, 905, True, "r")
+vanne(1180, 560, True, "r")
 svg.append('</g>')
 
 # ---------------------------------------------------------------- cartouche / légende
