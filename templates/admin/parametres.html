@@ -36,8 +36,14 @@
   </p>
   <input type="number" min="0" name="seuil_alerte_stock" value="{{ params.seuil_alerte_stock if params.seuil_alerte_stock is not none else 1 }}">
 
+  <label>Frais minimum pour un colis de plusieurs produits (TND)</label>
+  <input type="number" step="0.01" name="frais_livraison_colis_multiple" value="{{ params.frais_livraison_colis_multiple if params.frais_livraison_colis_multiple is not none else 15 }}">
+
   <label>Livraison gratuite a partir de (TND)</label>
-  <input type="number" step="0.01" name="montant_livraison_gratuite" value="{{ params.montant_livraison_gratuite }}">
+  <p style="font-size:12px; color:var(--texte-secondaire); margin:0 0 6px;">
+    Laisse 0 pour ne jamais offrir la livraison.
+  </p>
+  <input type="number" step="0.01" min="0" name="montant_livraison_gratuite" value="{{ params.montant_livraison_gratuite or 0 }}">
 
   <hr style="margin:24px 0; border:none; border-top:1px solid var(--bordure);">
   <h3 style="margin:0 0 4px;">Facebook Ads / Meta</h3>

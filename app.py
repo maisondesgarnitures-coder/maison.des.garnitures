@@ -975,8 +975,11 @@ class ParametreBoutique(db.Model):
     instagram = db.Column(db.String(255), default="")
     tiktok = db.Column(db.String(255), default="")
     email = db.Column(db.String(150), default="")
-    frais_livraison_defaut = db.Column(db.Float, default=8.0)
-    montant_livraison_gratuite = db.Column(db.Float, default=150.0)
+    frais_livraison_defaut = db.Column(db.Float, default=10.0)
+    # Colis de plusieurs produits : jamais moins que ce montant.
+    frais_livraison_colis_multiple = db.Column(db.Float, default=15.0)
+    # 0 ou vide : pas de livraison gratuite.
+    montant_livraison_gratuite = db.Column(db.Float, default=0.0)
     pixel_meta_id = db.Column(db.String(80), default="")
     meta_capi_token = db.Column(db.Text, default="")
     meta_test_event_code = db.Column(db.String(50), default="")
@@ -1681,7 +1684,7 @@ def voir_produit(produit_id):
                            produits_associes=lies,
                            gouvernorats_json=GOUVERNORATS_TUNISIE,
                            frais_livraison=(p.prix_livraison if p.prix_livraison is not None
-                                            else (params.frais_livraison_defaut if params else 8.0)),
+                                            else (params.frais_livraison_defaut if params else 10.0)),
                            seuil_gratuit=(params.montant_livraison_gratuite if params else 0))
 
 @app.route("/recherche")
@@ -1817,7 +1820,7 @@ def stock_disponible(produit, variante=None):
 def frais_livraison_panier(articles, params):
     """Le produit le plus cher a livrer fixe les frais : on ne cumule pas les
     livraisons quand plusieurs articles partent dans le meme colis."""
-    defaut = params.frais_livraison_defaut if params else 8.0
+    defaut = params.frais_livraison_defaut if params else 10.0
     specifiques = [a["produit"].prix_livraison for a in articles
                    if a["produit"].prix_livraison is not None]
     specifiques += [a["lot"].prix_livraison for a in articles
@@ -1969,16 +1972,27 @@ def retirer_code_promo():
 # ---------------------------------------------------------------------------
 
 def calculer_livraison(articles, total, params):
-    """Un port fixe par l'admin s'impose, meme au-dessus du seuil de gratuite."""
+    """Un port fixe par l'admin s'impose, meme au-dessus du seuil de gratuite.
+    Un colis de plusieurs produits differents ne descend jamais sous le
+    minimum « colis multiple » : il est plus lourd et plus encombrant."""
     port_specifique = [a["produit"].prix_livraison for a in articles
                        if a["produit"].prix_livraison is not None]
     port_specifique += [a["lot"].prix_livraison for a in articles
                         if a.get("lot") and a["lot"].prix_livraison is not None]
     if port_specifique:
-        return max(port_specifique)
-    if params and total >= (params.montant_livraison_gratuite or 0):
-        return 0
-    return frais_livraison_panier(articles, params)
+        frais = max(port_specifique)
+    else:
+        # Seuil a 0 ou vide : la livraison gratuite est desactivee. Sans ce
+        # garde-fou, « total >= 0 » rendait toutes les commandes gratuites.
+        seuil = (params.montant_livraison_gratuite or 0) if params else 0
+        if seuil > 0 and total >= seuil:
+            return 0
+        frais = frais_livraison_panier(articles, params)
+    produits_distincts = {a["produit"].id for a in articles}
+    if len(produits_distincts) > 1:
+        minimum = params.frais_livraison_colis_multiple if params else None
+        frais = max(frais, minimum if minimum is not None else 15.0)
+    return frais
 
 
 def valider_coordonnees(formulaire, articles):
@@ -5629,8 +5643,9 @@ def admin_parametres():
         elif jeton:
             params.meta_capi_token = jeton
 
-        params.frais_livraison_defaut = nombre_ou_defaut(request.form.get("frais_livraison_defaut"), 8.0)
-        params.montant_livraison_gratuite = nombre_ou_defaut(request.form.get("montant_livraison_gratuite"), 150.0)
+        params.frais_livraison_defaut = nombre_ou_defaut(request.form.get("frais_livraison_defaut"), 10.0)
+        params.frais_livraison_colis_multiple = nombre_ou_defaut(request.form.get("frais_livraison_colis_multiple"), 15.0)
+        params.montant_livraison_gratuite = nombre_ou_defaut(request.form.get("montant_livraison_gratuite"), 0.0)
         params.taux_tva = nombre_ou_defaut(request.form.get("taux_tva"), 19.0)
         params.timbre_fiscal = nombre_ou_defaut(request.form.get("timbre_fiscal"), 1.0)
         params.seuil_alerte_stock = int(nombre_ou_defaut(request.form.get("seuil_alerte_stock"), 1))
@@ -5998,6 +6013,7 @@ def migrer_colonnes_manquantes():
     """SQLite ne gere pas les migrations : on ajoute les colonnes absentes a la main."""
     nouvelles = {
         "parametre_boutique": [
+            ("frais_livraison_colis_multiple", "FLOAT DEFAULT 15.0"),
             ("meta_capi_token", "TEXT DEFAULT ''"),
             ("meta_test_event_code", "VARCHAR(50) DEFAULT ''"),
             ("google_analytics_id", "VARCHAR(40) DEFAULT ''"),
@@ -6141,9 +6157,35 @@ def migrer_colonnes_manquantes():
     nettoyer_bordereaux_perimes()
 
 
+def passer_au_tarif_livraison_2026():
+    """Ancien tarif (8 DT, gratuit des 150 DT) -> 10 DT, sans livraison
+    gratuite. Ne tourne qu'une fois : au demarrage ou la colonne « colis
+    multiple » apparait. Une valeur choisie a la main est respectee ; seuls
+    les anciens reglages par defaut sont remplaces."""
+    params = ParametreBoutique.query.first()
+    if not params:
+        return
+    if params.frais_livraison_defaut in (None, 8.0):
+        params.frais_livraison_defaut = 10.0
+    if params.montant_livraison_gratuite in (None, 150.0):
+        params.montant_livraison_gratuite = 0.0
+    if params.frais_livraison_colis_multiple is None:
+        params.frais_livraison_colis_multiple = 15.0
+    db.session.commit()
+    app.logger.info("Tarif de livraison mis a jour : %s DT, colis multiple %s DT, gratuit des %s DT",
+                    params.frais_livraison_defaut, params.frais_livraison_colis_multiple,
+                    params.montant_livraison_gratuite)
+
+
 def initialiser_donnees():
     db.create_all()
+    inspecteur = db.inspect(db.engine)
+    tarif_ancien = ("parametre_boutique" in inspecteur.get_table_names() and
+                    "frais_livraison_colis_multiple" not in
+                    {c["name"] for c in inspecteur.get_columns("parametre_boutique")})
     migrer_colonnes_manquantes()
+    if tarif_ancien:
+        passer_au_tarif_livraison_2026()
     if not ParametreBoutique.query.first(): db.session.add(ParametreBoutique(**MODELES_MESSAGES_DEFAUT))
     params_existants = ParametreBoutique.query.first()
     if params_existants:
