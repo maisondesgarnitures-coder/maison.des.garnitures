@@ -223,6 +223,13 @@
         <p class="aide">Utile pour une machine lourde. Si le panier en contient plusieurs, le tarif le plus eleve s'applique.</p>
       </div>
       <div>
+        <label>Colis lourd a partir de (pieces)</label>
+        <input type="number" min="1" step="1" name="quantite_colis_lourd"
+               value="{{ produit.quantite_colis_lourd if produit and produit.quantite_colis_lourd else '' }}"
+               placeholder="jamais">
+        <p class="aide">Ex. 100 pour des charnieres : a partir de cette quantite, la livraison passe au tarif « colis de plusieurs produits » (Parametres).</p>
+      </div>
+      <div>
         <label>Cout reel de la livraison</label>
         <input type="number" step="0.001" name="cout_livraison"
                value="{{ produit.cout_livraison if produit and produit.cout_livraison is not none else '' }}"

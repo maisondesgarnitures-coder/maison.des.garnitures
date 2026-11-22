@@ -374,6 +374,9 @@ class Produit(db.Model):
     # Livraison : vide = on applique les frais generaux de la boutique.
     prix_livraison = db.Column(db.Float)
     cout_livraison = db.Column(db.Float)
+    # Colis lourd : a partir de cette quantite commandee, la livraison passe
+    # au tarif « colis multiple » (ex. 100 charnieres). Vide = jamais.
+    quantite_colis_lourd = db.Column(db.Integer)
     # Stock : seuil d'alerte propre au produit, vide = seuil general.
     seuil_alerte = db.Column(db.Integer)
     stock_entrant = db.Column(db.Integer, default=0)
@@ -1988,8 +1991,17 @@ def calculer_livraison(articles, total, params):
         if seuil > 0 and total >= seuil:
             return 0
         frais = frais_livraison_panier(articles, params)
-    produits_distincts = {a["produit"].id for a in articles}
-    if len(produits_distincts) > 1:
+    # Pieces reelles par produit, toutes variantes et tous lots confondus.
+    pieces, produits = {}, {}
+    for a in articles:
+        produit = a["produit"]
+        produits[produit.id] = produit
+        pieces[produit.id] = (pieces.get(produit.id, 0)
+                              + (a.get("articles_reels") or a.get("quantite") or 1))
+    colis_lourd = any(p.quantite_colis_lourd and pieces[pid] >= p.quantite_colis_lourd
+                      for pid, p in produits.items())
+    quantites = produits
+    if len(quantites) > 1 or colis_lourd:
         minimum = params.frais_livraison_colis_multiple if params else None
         frais = max(frais, minimum if minimum is not None else 15.0)
     return frais
@@ -5008,6 +5020,8 @@ def appliquer_champs_avances(produit, formulaire):
     """Champs communs a la creation et a la modification."""
     produit.prix_livraison = nombre_ou_vide(formulaire.get("prix_livraison"))
     produit.cout_livraison = nombre_ou_vide(formulaire.get("cout_livraison"))
+    lourd = nombre_ou_vide(formulaire.get("quantite_colis_lourd"))
+    produit.quantite_colis_lourd = int(lourd) if lourd and lourd > 0 else None
 
     seuil = nombre_ou_vide(formulaire.get("seuil_alerte"))
     produit.seuil_alerte = int(seuil) if seuil is not None else None
@@ -6048,6 +6062,7 @@ def migrer_colonnes_manquantes():
                     ("cout", "FLOAT DEFAULT 0"),
                     ("date_maj_stock", "DATETIME"), ("ordre", "INTEGER DEFAULT 0"),
                     ("prix_livraison", "FLOAT"), ("cout_livraison", "FLOAT"),
+                    ("quantite_colis_lourd", "INTEGER"),
                     ("seuil_alerte", "INTEGER"), ("stock_entrant", "INTEGER DEFAULT 0"),
                     ("stock_abime", "INTEGER DEFAULT 0"),
                     ("vente_en_rupture", "BOOLEAN DEFAULT 0"),
@@ -6177,15 +6192,30 @@ def passer_au_tarif_livraison_2026():
                     params.montant_livraison_gratuite)
 
 
+def poser_colis_lourds_initiaux():
+    """Une seule fois, quand la colonne apparait : la charniere 3D passe au
+    tarif colis lourd a partir de 100 pieces. Le reste se regle a la main."""
+    produit = Produit.query.filter_by(reference="CH-AMORTIE-3D").first()
+    if produit and produit.quantite_colis_lourd is None:
+        produit.quantite_colis_lourd = 100
+        db.session.commit()
+        app.logger.info("Colis lourd : %s a partir de 100 pieces", produit.reference)
+
+
 def initialiser_donnees():
     db.create_all()
     inspecteur = db.inspect(db.engine)
+    colis_lourd_absent = ("produit" in inspecteur.get_table_names() and
+                          "quantite_colis_lourd" not in
+                          {c["name"] for c in inspecteur.get_columns("produit")})
     tarif_ancien = ("parametre_boutique" in inspecteur.get_table_names() and
                     "frais_livraison_colis_multiple" not in
                     {c["name"] for c in inspecteur.get_columns("parametre_boutique")})
     migrer_colonnes_manquantes()
     if tarif_ancien:
         passer_au_tarif_livraison_2026()
+    if colis_lourd_absent:
+        poser_colis_lourds_initiaux()
     if not ParametreBoutique.query.first(): db.session.add(ParametreBoutique(**MODELES_MESSAGES_DEFAUT))
     params_existants = ParametreBoutique.query.first()
     if params_existants:
